@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97757"/>
+      <stop offset="50%" stop-color="#E8956A"/>
+      <stop offset="100%" stop-color="#D97757"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F5A623"/>
+      <stop offset="100%" stop-color="#D97757"/>
+    </linearGradient>
+    <filter id="nodeGlow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="url(#bg)" stroke="url(#glow)" stroke-width="2.5" opacity="0.95"/>
+
+  <!-- Neural pathways (connections) -->
+  <g stroke="url(#glow)" stroke-width="1.5" fill="none" opacity="0.5">
+    <!-- Left hemisphere connections -->
+    <path d="M38 38 Q45 50 44 58"/>
+    <path d="M38 38 Q48 35 54 40"/>
+    <path d="M44 58 Q50 65 54 62"/>
+    <path d="M44 58 Q38 68 40 78"/>
+    <path d="M54 40 Q60 48 54 62"/>
+    <path d="M54 62 Q48 72 52 82"/>
+    <path d="M40 78 Q46 82 52 82"/>
+
+    <!-- Right hemisphere connections -->
+    <path d="M90 38 Q83 50 84 58"/>
+    <path d="M90 38 Q80 35 74 40"/>
+    <path d="M84 58 Q78 65 74 62"/>
+    <path d="M84 58 Q90 68 88 78"/>
+    <path d="M74 40 Q68 48 74 62"/>
+    <path d="M74 62 Q80 72 76 82"/>
+    <path d="M88 78 Q82 82 76 82"/>
+
+    <!-- Cross-hemisphere (corpus callosum) -->
+    <path d="M54 40 Q64 36 74 40"/>
+    <path d="M54 62 Q64 58 74 62"/>
+    <path d="M52 82 Q64 86 76 82"/>
+
+    <!-- Brain stem -->
+    <path d="M52 82 Q58 92 64 96"/>
+    <path d="M76 82 Q70 92 64 96"/>
+  </g>
+
+  <!-- Neural pathway highlights -->
+  <g stroke="url(#accent)" stroke-width="1" fill="none" opacity="0.3">
+    <path d="M38 38 Q64 30 90 38"/>
+    <path d="M40 78 Q64 90 88 78"/>
+  </g>
+
+  <!-- Nodes (neurons) -->
+  <g filter="url(#nodeGlow)">
+    <!-- Left hemisphere -->
+    <circle cx="38" cy="38" r="4" fill="url(#glow)"/>
+    <circle cx="44" cy="58" r="3.5" fill="url(#glow)"/>
+    <circle cx="54" cy="40" r="3" fill="url(#accent)"/>
+    <circle cx="54" cy="62" r="3.5" fill="url(#glow)"/>
+    <circle cx="40" cy="78" r="3" fill="url(#accent)"/>
+    <circle cx="52" cy="82" r="3.5" fill="url(#glow)"/>
+
+    <!-- Right hemisphere -->
+    <circle cx="90" cy="38" r="4" fill="url(#glow)"/>
+    <circle cx="84" cy="58" r="3.5" fill="url(#glow)"/>
+    <circle cx="74" cy="40" r="3" fill="url(#accent)"/>
+    <circle cx="74" cy="62" r="3.5" fill="url(#glow)"/>
+    <circle cx="88" cy="78" r="3" fill="url(#accent)"/>
+    <circle cx="76" cy="82" r="3.5" fill="url(#glow)"/>
+
+    <!-- Center / brain stem -->
+    <circle cx="64" cy="96" r="3" fill="url(#accent)"/>
+
+    <!-- Extra detail nodes -->
+    <circle cx="64" cy="30" r="2" fill="#D97757" opacity="0.6"/>
+    <circle cx="50" cy="48" r="2" fill="#E8956A" opacity="0.5"/>
+    <circle cx="78" cy="48" r="2" fill="#E8956A" opacity="0.5"/>
+    <circle cx="64" cy="72" r="2" fill="#D97757" opacity="0.6"/>
+  </g>
+
+  <!-- Inner glow ring -->
+  <circle cx="64" cy="64" r="48" fill="none" stroke="#D97757" stroke-width="0.5" opacity="0.2"/>
+</svg>

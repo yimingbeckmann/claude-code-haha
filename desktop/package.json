@@ -1,0 +1,56 @@
+{
+  "name": "tensor-code-2",
+  "version": "2.4.0",
+  "description": "Tensor Code 2 — AI Coding IDE",
+  "main": "main.js",
+  "scripts": {
+    "dev": "concurrently -k \"cd ../app && npm run dev\" \"wait-on http://localhost:1420 && electron .\"",
+    "prepare-build": "node scripts/prepare.js",
+    "build": "npm run prepare-build && electron-builder --mac",
+    "start": "electron ."
+  },
+  "dependencies": {
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
+    "node-pty": "^1.1.0",
+    "ws": "^8.20.0",
+    "xterm": "^5.3.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "electron": "^41.0.3",
+    "electron-builder": "^26.8.1",
+    "wait-on": "^8.0.0"
+  },
+  "build": {
+    "appId": "com.tensorcode.desktop",
+    "productName": "Tensor Code 2",
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "target": "dmg",
+      "darkModeSupport": true,
+      "icon": "icons/icon.icns"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "bridge-server.js",
+      "terminal.html",
+      "renderer/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "backend",
+        "to": "backend"
+      },
+      {
+        "from": "claude-code-runtime",
+        "to": "claude-code-runtime",
+        "filter": ["**/*"]
+      }
+    ],
+    "directories": {
+      "output": "dist"
+    }
+  }
+}

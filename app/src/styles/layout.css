@@ -1,0 +1,2483 @@
+/* ============================================================================
+   layout.css -- Comprehensive app layout system
+   Covers: shell, sidebar, header, messages, input, panels, modals,
+   split views, responsive, scrollbars, welcome, tool items, code blocks
+   ============================================================================ */
+
+/* ── 0. REDUCED MOTION ─────────────────────────────────────────────────── */
+
+.reduced-motion *,
+.reduced-motion *::before,
+.reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+}
+
+/* ── 1. APP SHELL: 3-column CSS Grid ────────────────────────────────────── */
+
+.app-shell {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  position: relative;
+  isolation: isolate;
+}
+
+/* Legacy compat */
+.app-shell.with-sidebar {
+  flex-direction: row;
+}
+
+.app-shell.with-sidebar .app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+
+/* ── 2. MAIN CONTENT: Flex column with header/messages/input/status ──── */
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+/* When terminal is open, the main content shares vertical space */
+.main-content.with-terminal {
+  flex: 1;
+  min-height: 200px;
+}
+
+
+/* ── 3. SIDEBAR — styles in sidebar.css ────────────────────────────────── */
+
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.sidebar-toggle:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px;
+}
+
+.sidebar-section {
+  margin-bottom: 12px;
+}
+
+.sidebar-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-dim);
+  padding: 4px 8px;
+  margin-bottom: 2px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: background 0.15s;
+}
+
+.sidebar-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.sidebar-item.active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.sidebar-item-icon {
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 13px;
+}
+
+/* Session group support */
+.sidebar-group {
+  margin-bottom: 4px;
+}
+
+.sidebar-group-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  padding: 10px 8px 3px;
+  opacity: 0.6;
+}
+
+.sidebar-group-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+/* Project selector in sidebar */
+.sidebar-project-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  margin: 2px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: background 0.15s;
+}
+
+.sidebar-project-selector:hover {
+  background: var(--bg-hover);
+}
+
+
+/* ── 4. LOGO HEADER BAR ─────────────────────────────────────────────────── */
+
+.logo-header {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  position: relative;
+  height: 36px;
+  gap: 6px;
+  flex-shrink: 0;
+  z-index: 5;
+}
+
+.logo-header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.logo-version {
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+.logo-header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+}
+
+.logo-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Header icon buttons */
+.hdr-icon-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.hdr-icon-btn:hover {
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+}
+
+.hdr-icon-active {
+  color: var(--success);
+}
+
+/* Diff stats button */
+.hdr-diff-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  display: flex;
+  gap: 4px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  transition: background 0.15s;
+}
+
+.hdr-diff-btn:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Session ID display */
+.hdr-session-id {
+  color: var(--text-dim);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+  user-select: none;
+}
+
+.hdr-session-id.hdr-clickable {
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 1px 6px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.hdr-session-id.hdr-clickable:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+}
+
+.hdr-session-input {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--accent);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 2px 6px;
+  border-radius: 3px;
+  outline: none;
+  max-width: 200px;
+  text-align: center;
+}
+
+/* Model, mode, tools labels */
+.hdr-model {
+  color: var(--accent);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.hdr-mode {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.hdr-tools {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  padding: 1px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+
+.hdr-tools:hover {
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+}
+
+/* Connection dot */
+.hdr-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--error);
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+
+.hdr-dot.hdr-dot-on {
+  background: var(--success);
+}
+
+.hdr-dot.hdr-dot-streaming {
+  background: var(--success);
+  animation: pulse-dot 1.2s ease-in-out infinite;
+  box-shadow: 0 0 4px var(--success);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* Continue in button */
+.hdr-continue-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+
+.hdr-continue-btn:hover {
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+}
+
+/* Dropdown shared styles */
+.hdr-dropdown-wrap {
+  position: relative;
+}
+
+.hdr-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px;
+  z-index: 60;
+  min-width: 140px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.hdr-dropdown-right {
+  left: auto;
+  right: 0;
+}
+
+.hdr-dropdown-item {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.1s, color 0.1s;
+}
+
+.hdr-dropdown-item:hover {
+  background: var(--bg-active);
+  color: var(--text-primary);
+}
+
+.hdr-dropdown-hint {
+  display: block;
+  font-size: 10px;
+  color: var(--text-dim);
+  padding: 2px 8px;
+  font-family: var(--font-mono);
+}
+
+.hdr-dropdown-sep {
+  height: 1px;
+  background: var(--border);
+  margin: 3px 6px;
+}
+
+/* Tools dropdown */
+.tools-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 14px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  z-index: 50;
+  max-width: 300px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.tool-tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: var(--bg-active);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+
+
+/* ── 5. MESSAGE SCROLL AREA ─────────────────────────────────────────────── */
+
+.message-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  scroll-behavior: smooth;
+  overscroll-behavior-y: contain;
+  scrollbar-gutter: stable;
+}
+
+.message-scroll > * {
+  width: 100%;
+  max-width: clamp(600px, 65%, 900px);
+}
+
+/* Scroll snap for auto-following new messages */
+.message-scroll.auto-scroll {
+  scroll-snap-type: y proximity;
+}
+
+.message-scroll.auto-scroll > *:last-child {
+  scroll-snap-align: end;
+}
+
+/* Reduced padding on narrower screens */
+@media (max-width: 1100px) {
+  .message-scroll {
+    padding: 16px 40px;
+  }
+}
+
+@media (max-width: 700px) {
+  .message-scroll {
+    padding: 12px 16px;
+  }
+}
+
+
+/* ── 6. MESSAGE LAYOUT ──────────────────────────────────────────────────── */
+
+.message {
+  margin-bottom: 8px;
+  animation: fade-in 0.15s ease-out;
+}
+
+/* User messages: right-aligned */
+.message-user {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.message-user .message-header {
+  justify-content: flex-end;
+}
+
+.message-user .message-body {
+  word-break: break-word;
+  text-align: right;
+}
+
+/* Assistant messages: left-aligned */
+.message-assistant {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.message-assistant .message-body {
+  width: 100%;
+  line-height: 1.6;
+}
+
+/* Message header row */
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.message-role {
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.role-user {
+  color: var(--accent);
+}
+
+.role-assistant {
+  color: var(--text-muted);
+}
+
+.message-model {
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+.message-time {
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+.message-dot {
+  font-size: 8px;
+}
+
+.dot-assistant {
+  color: var(--accent);
+}
+
+.message-copy-btn,
+.msg-copy-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 1px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+
+.message-copy-btn:hover,
+.msg-copy-btn:hover {
+  color: var(--text-secondary);
+  background: var(--bg-tertiary);
+  border-color: var(--border-hover);
+}
+
+.message-body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.user-body {
+  font-size: 14px;
+}
+
+.assistant-body {
+  font-size: 14px;
+}
+
+/* Slash commands in user messages */
+.slash-command {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Attachments row */
+.message-attachments {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.attachment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.attachment-icon {
+  font-size: 12px;
+}
+
+.attachment-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-size {
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.15s ease-out;
+}
+
+
+/* ── 7. TOOL DISPLAY: Compact tool call items ───────────────────────────── */
+
+.tool-item-compact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  margin: 2px 0;
+  border-left: 3px solid var(--text-dim);
+  border-radius: 0 6px 6px 0;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: background 0.1s;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  min-height: 28px;
+  position: relative;
+}
+
+.tool-item-compact:hover {
+  background: var(--bg-tertiary);
+}
+
+.tool-item-dot {
+  flex-shrink: 0;
+  font-size: 12px;
+  width: 14px;
+  text-align: center;
+}
+
+.tool-item-spinner {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: tool-spin 0.6s linear infinite;
+}
+
+@keyframes tool-spin {
+  to { transform: rotate(360deg); }
+}
+
+.tool-item-name {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  border: 1px solid;
+  flex-shrink: 0;
+  text-transform: capitalize;
+}
+
+.tool-item-summary {
+  flex: 1;
+  color: var(--text-secondary);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.tool-item-dur {
+  color: var(--text-dim);
+  font-size: 10px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.tool-item-caret {
+  color: var(--text-dim);
+  font-size: 10px;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+
+.tool-item-detail {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 0 0 6px 6px;
+  padding: 8px 12px;
+  margin-top: -1px;
+}
+
+.tool-item-detail pre {
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-all;
+  color: var(--text-secondary);
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+
+/* ── 8. CODE BLOCKS ─────────────────────────────────────────────────────── */
+
+.code-block {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 8px 0;
+  background: var(--bg-secondary);
+}
+
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+
+.code-lang {
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  text-transform: lowercase;
+}
+
+.code-copy-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 1px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+}
+
+.code-copy-btn:hover {
+  color: var(--text-secondary);
+  background: var(--bg-active);
+}
+
+.code-block pre {
+  margin: 0;
+  padding: 12px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: var(--font-mono);
+}
+
+.code-block code {
+  font-family: var(--font-mono);
+  font-size: inherit;
+}
+
+.inline-code {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 0.9em;
+  font-family: var(--font-mono);
+  color: var(--accent);
+}
+
+/* Markdown tables */
+.md-table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  font-size: 13px;
+  width: 100%;
+}
+
+.md-th,
+.md-td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.md-th {
+  background: var(--bg-tertiary);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+
+/* ── 9. INPUT AREA: Sticky bottom bar ───────────────────────────────────── */
+
+.input-area {
+  padding: 0;
+  border-top: 1px solid var(--border);
+  background: var(--bg-primary);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 3;
+}
+
+/* Backdrop-blur variant for floating input */
+.input-area.input-area-floating {
+  position: sticky;
+  bottom: 0;
+  background: rgba(var(--bg-primary-rgb, 10, 10, 15), 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.input-row {
+  display: flex;
+  gap: 0;
+  align-items: flex-end;
+}
+
+.prompt-textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 10px 16px;
+  resize: none;
+  outline: none;
+  min-height: 38px;
+  max-height: 200px;
+  line-height: 1.5;
+  overflow-y: auto;
+}
+
+.prompt-textarea:focus {
+  border-color: transparent;
+}
+
+.prompt-textarea::placeholder {
+  color: var(--text-dim);
+}
+
+.prompt-textarea:disabled {
+  opacity: 0.5;
+}
+
+/* Send / Abort buttons */
+.send-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bg-tertiary);
+  color: var(--text-dim);
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+  margin: 6px 12px 6px 0;
+  flex-shrink: 0;
+}
+
+.send-btn.send-btn-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.send-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.send-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.send-btn:active:not(:disabled) {
+  transform: scale(0.92);
+}
+
+.abort-btn {
+  background: var(--error);
+  color: #fff;
+}
+
+.abort-btn:hover {
+  background: var(--error);
+  opacity: 0.85;
+}
+
+/* Footer hints */
+.input-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px 4px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  flex-wrap: wrap;
+}
+
+.footer-hint {
+  color: var(--text-dim);
+}
+
+.footer-sep {
+  color: var(--text-dim);
+  opacity: 0.4;
+}
+
+.footer-key {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0 3px;
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+
+/* ── 10. STATUS LINE ────────────────────────────────────────────────────── */
+
+.status-line {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  height: 22px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  flex-shrink: 0;
+  gap: 0;
+  z-index: 2;
+}
+
+.status-line-left {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.status-line-right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.status-line-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.status-line-sep {
+  color: var(--text-dim);
+  opacity: 0.3;
+  user-select: none;
+  font-size: 10px;
+  margin: 0 6px;
+}
+
+/* Legacy compat */
+.diff-added {
+  color: var(--success);
+}
+
+.diff-removed {
+  color: var(--error);
+}
+
+
+/* ── 11. WELCOME SCREEN ─────────────────────────────────────────────────── */
+
+.welcome-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  user-select: none;
+}
+
+.welcome-icon {
+  font-size: 32px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.welcome-title {
+  font-size: 20px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.welcome-subtitle {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.welcome-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 520px;
+  margin-top: 16px;
+}
+
+.welcome-suggestion-chip {
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.welcome-suggestion-chip:hover {
+  color: var(--text-primary);
+  border-color: var(--border-hover);
+  background: var(--bg-tertiary);
+}
+
+.welcome-info-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 12px;
+}
+
+
+/* ── 12. PANEL SLIDES: Right panels (git, files, settings) ──────────── */
+
+.panel-slide {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+}
+
+.panel-slide.panel-slide-open {
+  transform: translateX(0);
+}
+
+.panel-slide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.panel-slide-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.panel-slide-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.panel-slide-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.panel-slide-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+}
+
+/* Panel overlay backdrop */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* File preview panel */
+.file-preview-panel {
+  border-left: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+/* Git panel */
+.git-panel {
+  border-left: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+
+/* ── 13. MODAL OVERLAYS ─────────────────────────────────────────────────── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: modal-fade-in 0.15s ease-out;
+}
+
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-dialog {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 640px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modal-slide-up 0.2s ease-out;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes modal-slide-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+/* Diff review panel (overlay) */
+.diff-review-panel {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.diff-review-dialog {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 800px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.diff-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.diff-review-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.diff-review-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+}
+
+.diff-review-close:hover {
+  color: var(--text-primary);
+}
+
+.diff-review-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.diff-review-file {
+  margin-bottom: 16px;
+}
+
+.diff-review-file-header {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  padding: 6px 10px;
+  background: var(--bg-tertiary);
+  border-radius: 6px 6px 0 0;
+  border: 1px solid var(--border);
+  border-bottom: none;
+}
+
+.diff-review-content {
+  border: 1px solid var(--border);
+  border-radius: 0 0 6px 6px;
+  overflow-x: auto;
+}
+
+.diff-review-content pre {
+  font-size: 11px;
+  padding: 8px 10px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.diff-review-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+
+/* ── 14. SPLIT VIEWS: Terminal panel below messages ─────────────────────── */
+
+.split-view {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.split-view-main {
+  flex: 1;
+  min-height: 200px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.split-view-divider {
+  height: 4px;
+  background: var(--border);
+  cursor: ns-resize;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.split-view-divider:hover {
+  background: var(--accent);
+}
+
+.split-view-panel {
+  min-height: 120px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Terminal panel */
+.terminal-panel {
+  border-top: 1px solid var(--border);
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: height 0.2s ease;
+}
+
+.terminal-panel.collapsed {
+  height: 32px;
+}
+
+.terminal-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  min-height: 32px;
+  flex-shrink: 0;
+}
+
+.terminal-panel-header:hover {
+  background: var(--bg-tertiary);
+}
+
+.terminal-panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.terminal-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.terminal-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+
+/* ── 15. FILE PREVIEW ───────────────────────────────────────────────────── */
+
+.file-preview {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  margin: 8px 0;
+}
+
+.file-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border);
+}
+
+.file-preview-name {
+  font-size: 12px;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-preview-lang {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.file-preview-body {
+  max-height: 400px;
+  overflow: auto;
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.file-preview-line-numbers {
+  display: inline-block;
+  width: 40px;
+  text-align: right;
+  color: var(--text-dim);
+  user-select: none;
+  padding-right: 12px;
+  border-right: 1px solid var(--border);
+  margin-right: 12px;
+}
+
+
+/* ── 16. GIT PANEL ──────────────────────────────────────────────────────── */
+
+.git-panel {
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+  overflow: hidden;
+}
+
+.git-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.git-panel-header:hover {
+  background: var(--bg-tertiary);
+}
+
+.git-panel-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.git-panel-branch {
+  font-size: 11px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.git-panel-body {
+  padding: 8px 12px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.git-file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+
+.git-file-status {
+  width: 16px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.git-file-status.added    { color: var(--success); }
+.git-file-status.modified { color: var(--warning); }
+.git-file-status.deleted  { color: var(--error); }
+.git-file-status.untracked { color: var(--text-dim); }
+
+.git-file-name {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* ── 17. CONTEXT BAR ────────────────────────────────────────────────────── */
+
+.context-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.context-bar-label {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.context-bar-track {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.context-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.context-bar-fill.warning { background: var(--warning); }
+.context-bar-fill.danger  { background: var(--error); }
+
+.context-bar-value {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+
+/* ── 18. PLAN MODE BANNER ───────────────────────────────────────────────── */
+
+.plan-mode-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: var(--purple-dim);
+  border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.plan-mode-icon {
+  color: var(--purple);
+  font-size: 14px;
+}
+
+.plan-mode-text {
+  color: var(--purple);
+  font-weight: 500;
+}
+
+.plan-mode-dismiss {
+  margin-left: auto;
+  background: none;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: var(--purple);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: background 0.15s;
+}
+
+.plan-mode-dismiss:hover {
+  background: rgba(168, 85, 247, 0.15);
+}
+
+.plan-banner {
+  padding: 6px 16px;
+  background: rgba(72, 150, 140, 0.1);
+  border-top: 1px solid rgba(72, 150, 140, 0.15);
+  color: #48968C;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+
+/* ── 19. PHOENIX BACKGROUND ─────────────────────────────────────────────── */
+
+.phoenix-bg {
+  position: absolute;
+  bottom: -225px;
+  right: 2px;
+  width: 840px;
+  height: 985px;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 1;
+  object-fit: contain;
+  transition: opacity 0.8s ease;
+}
+
+
+/* ── 20. CUSTOM SCROLLBARS ──────────────────────────────────────────────── */
+
+/* Thin, dark custom scrollbars for webkit browsers */
+.message-scroll::-webkit-scrollbar,
+.sidebar-body::-webkit-scrollbar,
+.terminal-panel-body::-webkit-scrollbar,
+.file-preview-body::-webkit-scrollbar,
+.git-panel-body::-webkit-scrollbar,
+.diff-review-body::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar,
+.panel-slide-body::-webkit-scrollbar,
+.tool-item-detail pre::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.message-scroll::-webkit-scrollbar-track,
+.sidebar-body::-webkit-scrollbar-track,
+.terminal-panel-body::-webkit-scrollbar-track,
+.file-preview-body::-webkit-scrollbar-track,
+.git-panel-body::-webkit-scrollbar-track,
+.diff-review-body::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track,
+.panel-slide-body::-webkit-scrollbar-track,
+.tool-item-detail pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.message-scroll::-webkit-scrollbar-thumb,
+.sidebar-body::-webkit-scrollbar-thumb,
+.terminal-panel-body::-webkit-scrollbar-thumb,
+.file-preview-body::-webkit-scrollbar-thumb,
+.git-panel-body::-webkit-scrollbar-thumb,
+.diff-review-body::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb,
+.panel-slide-body::-webkit-scrollbar-thumb,
+.tool-item-detail pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+
+.message-scroll::-webkit-scrollbar-thumb:hover,
+.sidebar-body::-webkit-scrollbar-thumb:hover,
+.terminal-panel-body::-webkit-scrollbar-thumb:hover,
+.file-preview-body::-webkit-scrollbar-thumb:hover,
+.git-panel-body::-webkit-scrollbar-thumb:hover,
+.diff-review-body::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover,
+.panel-slide-body::-webkit-scrollbar-thumb:hover,
+.tool-item-detail pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+/* Firefox scrollbar styling */
+.message-scroll,
+.sidebar-body,
+.terminal-panel-body,
+.file-preview-body,
+.git-panel-body,
+.diff-review-body,
+.modal-body,
+.panel-slide-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+}
+
+/* Code block horizontal scrollbar */
+.code-block pre::-webkit-scrollbar {
+  height: 4px;
+}
+
+.code-block pre::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.code-block pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+
+/* ── 21. RESPONSIVE LAYOUT ──────────────────────────────────────────────── */
+
+/* Narrow screens: sidebar collapses to icons only */
+@media (max-width: 900px) {
+  .sidebar {
+    width: 52px !important;
+  }
+
+  /* Hide text labels, keep icons */
+  .sidebar-item-icon + span,
+  .sidebar-section-title,
+  .sidebar-group-label {
+    display: none;
+  }
+}
+
+/* Very narrow screens: sidebar hidden entirely, full-width content */
+@media (max-width: 640px) {
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+    width: 260px;
+  }
+
+  .sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+
+  /* Slide panels go full width on mobile */
+  .panel-slide {
+    width: 100%;
+  }
+
+  /* Modal stretches more on mobile */
+  .modal-dialog {
+    width: 96%;
+    max-height: 90vh;
+    border-radius: 8px;
+  }
+
+  .diff-review-dialog {
+    width: 96%;
+    max-height: 90vh;
+  }
+
+  .logo-header {
+    padding: 0 8px;
+    gap: 4px;
+  }
+
+  .input-footer {
+    padding: 0 8px 3px;
+  }
+}
+
+/* Panels are narrower on medium screens */
+@media (max-width: 1200px) {
+  .app-shell.sidebar-open.panel-open {
+    grid-template-columns: 260px 1fr 320px;
+  }
+
+  .panel-slide {
+    width: 320px;
+  }
+}
+
+
+/* ── 22. ANIMATION KEYFRAMES ────────────────────────────────────────────── */
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── AGENT PANEL: Right-slide panel for agent tasks ─────────────────────── */
+
+.agent-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border);
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+}
+
+.agent-panel.agent-panel-open {
+  transform: translateX(0);
+}
+
+.agent-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-tertiary);
+}
+
+.agent-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agent-panel-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: var(--radius-full, 9999px);
+}
+
+.agent-panel-status--running {
+  color: var(--agent-running, var(--info));
+  background: rgba(97, 175, 239, 0.12);
+}
+
+.agent-panel-status--running::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--agent-running, var(--info));
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.agent-panel-status--completed {
+  color: var(--agent-completed, var(--success));
+  background: rgba(152, 195, 121, 0.12);
+}
+
+.agent-panel-status--failed {
+  color: var(--agent-failed, var(--error));
+  background: rgba(224, 108, 117, 0.12);
+}
+
+.agent-panel-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.agent-panel-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.agent-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 14px;
+}
+
+.agent-panel-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agent-panel-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+
+/* ── SETTINGS OVERLAY: Full settings dialog ────────────────────────────── */
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: modal-fade-in 0.15s ease-out;
+}
+
+.settings-dialog {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 720px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modal-slide-up 0.2s ease-out;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.settings-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.settings-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  flex-shrink: 0;
+  overflow-x: auto;
+}
+
+.settings-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  padding: 8px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.settings-tab:hover {
+  color: var(--text-secondary);
+}
+
+.settings-tab.settings-tab-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.settings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.settings-section {
+  margin-bottom: 20px;
+}
+
+.settings-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  gap: 12px;
+}
+
+.settings-label {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.settings-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.settings-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+
+/* ── PERMISSION OVERLAY: Permission dialog ─────────────────────────────── */
+
+.permission-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: modal-fade-in 0.15s ease-out;
+}
+
+.permission-dialog {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 90%;
+  max-width: 480px;
+  overflow: hidden;
+  animation: perm-slide-up 0.2s ease-out;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+}
+
+.permission-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.permission-dialog-icon {
+  font-size: 16px;
+  color: var(--permission-warn, var(--warning));
+}
+
+.permission-dialog-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.permission-dialog-body {
+  padding: 14px 16px;
+}
+
+.permission-dialog-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.permission-dialog-command {
+  padding: 8px 10px;
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.permission-dialog-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  justify-content: flex-end;
+}
+
+.permission-btn {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.permission-btn--allow {
+  background: var(--permission-allow, var(--success));
+  color: var(--text-inverse, #000);
+  border-color: var(--permission-allow, var(--success));
+}
+
+.permission-btn--allow:hover {
+  opacity: 0.9;
+}
+
+.permission-btn--deny {
+  background: transparent;
+  color: var(--permission-deny, var(--error));
+  border-color: var(--permission-deny, var(--error));
+}
+
+.permission-btn--deny:hover {
+  background: var(--error-dim);
+}
+
+.permission-btn--always {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.permission-btn--always:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+
+/* ── RESPONSIVE STATUS LINE ENHANCEMENTS ───────────────────────────────── */
+
+.status-line-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-line-dot--connected {
+  background: var(--status-connected, var(--success));
+}
+
+.status-line-dot--disconnected {
+  background: var(--status-disconnected, var(--error));
+}
+
+.status-line-dot--streaming {
+  background: var(--status-streaming, var(--info));
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.status-line-effort {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 0 4px;
+}
+
+.status-line-effort--low {
+  color: var(--effort-low, var(--cyan));
+}
+
+.status-line-effort--medium {
+  color: var(--effort-medium, var(--warning));
+}
+
+.status-line-effort--high {
+  color: var(--effort-high, var(--error));
+}
+
+.status-line-model {
+  color: var(--accent);
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+.status-line-mode {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  padding: 0 4px;
+}
+
+.status-line-cost {
+  color: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 700px) {
+  .status-line {
+    font-size: 10px;
+    height: 20px;
+    padding: 0 8px;
+  }
+
+  .status-line-sep {
+    margin: 0 3px;
+  }
+
+  .status-line-cost,
+  .status-line-model {
+    display: none;
+  }
+}
+
+
+/* ── IMPROVED INPUT AREA ENHANCEMENTS ──────────────────────────────────── */
+
+.input-area-focused {
+  border-top-color: var(--accent);
+  box-shadow: 0 -1px 0 0 var(--accent);
+}
+
+.input-area-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.input-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-top: 1px solid var(--border-subtle, var(--border));
+  background: var(--bg-secondary);
+}
+
+.input-toolbar-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  transition: color 0.15s, background 0.15s;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.input-toolbar-btn:hover {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.input-toolbar-btn.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.input-toolbar-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+.input-hint {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-family: var(--font-mono);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.input-hint kbd {
+  display: inline-block;
+  padding: 0 3px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+@keyframes perm-slide-up {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+
+/* ── RESPONSIVE: Agent panel on small screens ──────────────────────────── */
+
+@media (max-width: 900px) {
+  .agent-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .settings-dialog {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .permission-dialog {
+    width: 95%;
+  }
+}
+
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .app-shell,
+  .sidebar,
+  .panel-slide,
+  .agent-panel,
+  .terminal-panel,
+  .modal-overlay,
+  .settings-overlay,
+  .permission-overlay,
+  .modal-dialog,
+  .message,
+  .animate-fade-in,
+  .tool-item-compact {
+    animation: none !important;
+    transition: none !important;
+  }
+}

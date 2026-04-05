@@ -1,0 +1,793 @@
+/* AgentTeamView — multi-agent orchestration visualization */
+
+/* ---- Root ---- */
+.atv-root {
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Team header ---- */
+.atv-team-header {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-tertiary);
+}
+
+.atv-team-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.atv-team-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.atv-team-id {
+  font-size: 10px;
+  color: var(--text-muted);
+  background: var(--bg-primary);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+/* ---- Summary row (inside header) ---- */
+.atv-summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.atv-summary-count {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.atv-summary-tokens {
+  color: var(--text-primary);
+}
+
+.atv-summary-cost {
+  color: var(--success);
+}
+
+.atv-summary-time {
+  color: var(--text-muted);
+}
+
+.atv-summary-sep {
+  color: var(--text-muted);
+}
+
+/* ---- Team stats bar ---- */
+.atv-stats {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-primary);
+}
+
+.atv-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  border-right: 1px solid var(--border);
+}
+
+.atv-stat:last-child {
+  border-right: none;
+}
+
+.atv-stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.atv-stat-value--active {
+  color: var(--accent);
+}
+
+.atv-stat-value--completed {
+  color: var(--success);
+}
+
+.atv-stat-value--elapsed {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.atv-stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+/* ---- Tabs ---- */
+.atv-tabs {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  padding: 0 8px;
+  gap: 2px;
+}
+
+.atv-tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.atv-tab:hover {
+  color: var(--text-secondary);
+}
+
+.atv-tab--active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.atv-tab-spacer {
+  flex: 1;
+}
+
+.atv-toggle-btn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+  margin: 4px 0;
+}
+
+.atv-toggle-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---- Body ---- */
+.atv-body {
+  padding: 8px 12px 12px;
+  max-height: 480px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.atv-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+/* ---- Node wrapper (tree mode) ---- */
+.atv-node-wrapper--tree {
+  position: relative;
+  padding-left: calc(var(--depth, 0) * 24px);
+}
+
+/* ---- Connector lines (CSS borders) ---- */
+.atv-connector {
+  position: absolute;
+  top: 0;
+  bottom: 50%;
+  left: calc((var(--depth, 0) - 1) * 24px + 10px);
+  width: 14px;
+  border-left: 1px solid var(--text-muted);
+  border-bottom: 1px solid var(--text-muted);
+  border-bottom-left-radius: 4px;
+  pointer-events: none;
+}
+
+/* Vertical trunk line connecting siblings */
+.atv-children > .atv-node-wrapper--tree:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--depth, 0) * 24px - 14px);
+  width: 0;
+  border-left: 1px solid var(--text-muted);
+  pointer-events: none;
+}
+
+/* ---- Node card ---- */
+.atv-node {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  margin: 4px 0;
+  background: var(--bg-primary);
+  transition: border-color 0.2s, box-shadow 0.2s, opacity 0.3s;
+}
+
+.atv-node--clickable {
+  cursor: pointer;
+}
+
+.atv-node--clickable:hover {
+  border-color: var(--border-hover);
+}
+
+/* Running: spinning orange border + glow */
+.atv-node--running {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent-dim);
+  animation: atv-pulse 2s ease-in-out infinite;
+}
+
+/* Completed: green, dimmed */
+.atv-node--completed {
+  border-color: var(--success);
+  opacity: 0.65;
+}
+
+/* Failed: red */
+.atv-node--failed {
+  border-color: var(--error);
+  box-shadow: 0 0 6px var(--error-dim);
+}
+
+@keyframes atv-pulse {
+  0%, 100% {
+    box-shadow: 0 0 4px var(--accent-dim);
+    border-color: var(--accent);
+  }
+  50% {
+    box-shadow: 0 0 14px var(--accent-dim), 0 0 4px var(--accent);
+    border-color: var(--accent-bright);
+  }
+}
+
+/* ---- Node internals ---- */
+.atv-node-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.atv-status-icon {
+  font-size: 12px;
+  width: 14px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.atv-status-icon--running {
+  color: var(--accent);
+  animation: atv-spin 1s linear infinite;
+}
+
+.atv-status-icon--completed {
+  color: var(--success);
+}
+
+.atv-status-icon--failed {
+  color: var(--error);
+}
+
+@keyframes atv-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.atv-node-type {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.atv-expand-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.atv-node-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-left: 20px;
+  line-height: 1.4;
+}
+
+.atv-node-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  margin-left: 20px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.atv-meta-sep {
+  color: var(--text-dim);
+}
+
+/* ---- Tool calls ---- */
+.atv-tool-list {
+  margin: 2px 0 4px 20px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+}
+
+.atv-tool-call {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 11px;
+}
+
+.atv-tool-call--running {
+  color: var(--accent);
+}
+
+.atv-tool-call--completed {
+  color: var(--text-muted);
+}
+
+.atv-tool-call--failed {
+  color: var(--error);
+}
+
+.atv-tool-icon {
+  width: 12px;
+  text-align: center;
+  flex-shrink: 0;
+  font-size: 8px;
+}
+
+.atv-tool-name {
+  font-family: var(--font-mono);
+}
+
+.atv-tool-duration {
+  margin-left: auto;
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+/* ---- Children container ---- */
+.atv-children {
+  position: relative;
+}
+
+/* ---- Member card ---- */
+.atv-member {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin-bottom: 6px;
+  background: var(--bg-primary);
+  transition: border-color 0.2s;
+}
+
+.atv-member--active {
+  border-left: 3px solid var(--accent);
+}
+
+.atv-member--idle {
+  border-left: 3px solid var(--text-muted);
+}
+
+.atv-member--completed {
+  border-left: 3px solid var(--success);
+  opacity: 0.7;
+}
+
+.atv-member-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.atv-member-status {
+  font-size: 10px;
+  width: 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.atv-member-status--active {
+  color: var(--accent);
+}
+
+.atv-member-status--idle {
+  color: var(--text-muted);
+}
+
+.atv-member-status--completed {
+  color: var(--success);
+}
+
+.atv-member-role {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.atv-member-remove {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+
+.atv-member-remove:hover {
+  color: var(--error);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.atv-member-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-left: 18px;
+  line-height: 1.4;
+}
+
+.atv-member-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  margin-left: 18px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.atv-member-agent-id {
+  font-family: var(--font-mono);
+  color: var(--text-dim);
+}
+
+.atv-member-task {
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.atv-members-tab {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Add member form ---- */
+.atv-add-member-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+}
+
+.atv-add-member-input {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 8px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.atv-add-member-input:focus {
+  border-color: var(--accent);
+}
+
+.atv-add-member-input::placeholder {
+  color: var(--text-muted);
+}
+
+.atv-add-member-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+/* ---- Scratchpad ---- */
+.atv-scratchpad {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 200px;
+}
+
+.atv-scratchpad-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.atv-scratchpad-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.atv-scratchpad-refresh {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 1px 6px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.atv-scratchpad-refresh:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.atv-scratchpad-list {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 300px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  padding: 6px;
+}
+
+.atv-scratchpad-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.atv-scratchpad-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+.atv-scratchpad-empty {
+  text-align: center;
+  padding: 20px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.atv-scratchpad-entry {
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.atv-scratchpad-entry:last-child {
+  border-bottom: none;
+}
+
+.atv-scratchpad-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.atv-scratchpad-author {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.atv-scratchpad-time {
+  font-size: 10px;
+  color: var(--text-dim);
+}
+
+.atv-scratchpad-content {
+  font-size: 12px;
+  color: var(--text-primary);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.atv-scratchpad-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.atv-scratchpad-input {
+  flex: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 8px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.atv-scratchpad-input:focus {
+  border-color: var(--accent);
+}
+
+.atv-scratchpad-input::placeholder {
+  color: var(--text-muted);
+}
+
+.atv-scratchpad-send {
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 14px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.atv-scratchpad-send:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.atv-scratchpad-send:not(:disabled):hover {
+  opacity: 0.85;
+}
+
+/* ---- Controls footer ---- */
+.atv-controls {
+  border-top: 1px solid var(--border);
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.atv-message-form {
+  display: flex;
+  gap: 6px;
+}
+
+.atv-message-input {
+  flex: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 8px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.atv-message-input:focus {
+  border-color: var(--accent);
+}
+
+.atv-message-input::placeholder {
+  color: var(--text-muted);
+}
+
+.atv-delete-section {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.atv-delete-confirm {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.atv-delete-confirm-text {
+  font-size: 11px;
+  color: var(--error);
+  font-weight: 600;
+}
+
+/* ---- Shared button styles ---- */
+.atv-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: opacity 0.15s, border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.atv-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.atv-btn--primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.atv-btn--primary:not(:disabled):hover {
+  opacity: 0.85;
+}
+
+.atv-btn--ghost {
+  background: none;
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.atv-btn--ghost:hover {
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+.atv-btn--danger {
+  background: var(--error);
+  color: #fff;
+  border-color: var(--error);
+}
+
+.atv-btn--danger:hover {
+  opacity: 0.85;
+}
+
+.atv-btn--danger-outline {
+  background: none;
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.atv-btn--danger-outline:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.atv-btn--full {
+  width: 100%;
+  margin-top: 8px;
+}

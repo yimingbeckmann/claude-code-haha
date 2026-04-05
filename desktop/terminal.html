@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tensor Code 2</title>
+  <link rel="stylesheet" href="./node_modules/@xterm/xterm/css/xterm.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; background: #0a0a0f; }
+    #titlebar {
+      -webkit-app-region: drag;
+      height: 38px;
+      background: #0a0a0f;
+      display: flex;
+      align-items: center;
+      padding-left: 80px;
+      font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-size: 13px;
+      color: #666;
+      user-select: none;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    #titlebar .tabs {
+      display: flex;
+      gap: 2px;
+      -webkit-app-region: no-drag;
+    }
+    #titlebar .tab {
+      padding: 4px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #888;
+      font-size: 12px;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    #titlebar .tab:hover { background: rgba(255,255,255,0.05); color: #ccc; }
+    #titlebar .tab.active { background: rgba(249,115,22,0.15); color: #f97316; }
+    #terminal-wrap { height: calc(100% - 38px); padding: 4px; }
+    #terminal { height: 100%; }
+    #gui-wrap { height: calc(100% - 38px); display: none; }
+    #gui-wrap iframe { width: 100%; height: 100%; border: none; }
+  </style>
+</head>
+<body>
+  <div id="titlebar">
+    <div class="tabs">
+      <div class="tab active" id="tab-cli" onclick="switchTab('cli')">CLI</div>
+      <div class="tab" id="tab-gui" onclick="switchTab('gui')">GUI</div>
+    </div>
+  </div>
+  <div id="terminal-wrap"><div id="terminal"></div></div>
+  <div id="gui-wrap"><iframe id="gui-frame" allow="microphone; clipboard-read; clipboard-write"></iframe></div>
+
+  <script>
+    const { Terminal } = require('@xterm/xterm');
+    const { FitAddon } = require('@xterm/addon-fit');
+    const { ipcRenderer } = require('electron');
+
+    const term = new Terminal({
+      fontSize: 14,
+      fontFamily: "'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace",
+      theme: {
+        background: '#0a0a0f',
+        foreground: '#e0e0e0',
+        cursor: '#f97316',
+        cursorAccent: '#0a0a0f',
+        selectionBackground: 'rgba(249,115,22,0.3)',
+        black: '#1a1a2e',
+        red: '#ef4444',
+        green: '#22c55e',
+        yellow: '#f59e0b',
+        blue: '#3b82f6',
+        magenta: '#a855f7',
+        cyan: '#06b6d4',
+        white: '#e0e0e0',
+        brightBlack: '#4a4a6a',
+        brightRed: '#f87171',
+        brightGreen: '#4ade80',
+        brightYellow: '#fbbf24',
+        brightBlue: '#60a5fa',
+        brightMagenta: '#c084fc',
+        brightCyan: '#22d3ee',
+        brightWhite: '#ffffff',
+      },
+      cursorBlink: true,
+      cursorStyle: 'bar',
+      scrollback: 10000,
+      allowProposedApi: true,
+    });
+
+    const fitAddon = new FitAddon();
+    term.loadAddon(fitAddon);
+    term.open(document.getElementById('terminal'));
+    fitAddon.fit();
+
+    term.onData((data) => ipcRenderer.send('pty-input', data));
+    ipcRenderer.on('pty-output', (_e, data) => term.write(data));
+
+    window.addEventListener('resize', () => {
+      fitAddon.fit();
+      ipcRenderer.send('pty-resize', { cols: term.cols, rows: term.rows });
+    });
+
+    setTimeout(() => {
+      fitAddon.fit();
+      ipcRenderer.send('pty-resize', { cols: term.cols, rows: term.rows });
+      term.focus();
+    }, 200);
+
+    window.switchTab = (mode) => {
+      document.getElementById('tab-cli').classList.toggle('active', mode === 'cli');
+      document.getElementById('tab-gui').classList.toggle('active', mode === 'gui');
+      document.getElementById('terminal-wrap').style.display = mode === 'cli' ? 'block' : 'none';
+      document.getElementById('gui-wrap').style.display = mode === 'gui' ? 'block' : 'none';
+      if (mode === 'gui') {
+        const frame = document.getElementById('gui-frame');
+        if (!frame.src) {
+          ipcRenderer.invoke('get-config').then((cfg) => {
+            frame.src = 'http://127.0.0.1:' + cfg.spaPort;
+          });
+        }
+      }
+      if (mode === 'cli') {
+        setTimeout(() => { fitAddon.fit(); term.focus(); }, 50);
+      }
+    };
+
+    // Handle microphone permission requests from the GUI iframe
+    window.addEventListener("message", async (e) => {
+      if (e.data && e.data.type === "request-mic-permission") {
+        try {
+          const result = await ipcRenderer.invoke("request-mic-permission");
+          const frame = document.getElementById("gui-frame");
+          if (frame && frame.contentWindow) {
+            frame.contentWindow.postMessage({ type: "mic-permission-result", granted: result.granted }, "*");
+          }
+        } catch (err) {
+          console.error("Mic permission request failed:", err);
+        }
+      }
+    });
+
+    // ─── Context menu (right-click) ─────────────────────────────
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      ipcRenderer.send('show-context-menu');
+    });
+
+    // ─── Feature IPC listeners ───────────────────────────────────
+    // Tools
+    ipcRenderer.on('toggle-kairos', (_e, enabled) => {
+      console.log('[menu] KAIROS toggled:', enabled);
+      document.dispatchEvent(new CustomEvent('claw-toggle-kairos', { detail: { enabled } }));
+    });
+    ipcRenderer.on('launch-swarm', () => {
+      console.log('[menu] Swarm launched');
+      document.dispatchEvent(new CustomEvent('claw-launch-swarm'));
+    });
+    ipcRenderer.on('launch-buddy', () => {
+      console.log('[menu] Buddy launched');
+      document.dispatchEvent(new CustomEvent('claw-launch-buddy'));
+    });
+    ipcRenderer.on('launch-stickers', () => {
+      console.log('[menu] Stickers launched');
+      document.dispatchEvent(new CustomEvent('claw-launch-stickers'));
+    });
+    ipcRenderer.on('toggle-undercover', (_e, enabled) => {
+      console.log('[menu] Undercover toggled:', enabled);
+      document.dispatchEvent(new CustomEvent('claw-toggle-undercover', { detail: { enabled } }));
+    });
+
+    // Code
+    ipcRenderer.on('launch-ultra-review', () => {
+      console.log('[menu] Ultra Review launched');
+      document.dispatchEvent(new CustomEvent('claw-launch-ultra-review'));
+    });
+    ipcRenderer.on('launch-security-review', () => {
+      console.log('[menu] Security Review launched');
+      document.dispatchEvent(new CustomEvent('claw-launch-security-review'));
+    });
+    ipcRenderer.on('launch-init-verifiers', () => {
+      console.log('[menu] Init Verifiers launched');
+      document.dispatchEvent(new CustomEvent('claw-launch-init-verifiers'));
+    });
+    ipcRenderer.on('launch-insights', () => {
+      console.log('[menu] Insights launched');
+      document.dispatchEvent(new CustomEvent('claw-launch-insights'));
+    });
+
+    // Session
+    ipcRenderer.on('session-fork', () => {
+      console.log('[menu] Session fork');
+      document.dispatchEvent(new CustomEvent('claw-session-fork'));
+    });
+    ipcRenderer.on('session-rewind', () => {
+      console.log('[menu] Session rewind');
+      document.dispatchEvent(new CustomEvent('claw-session-rewind'));
+    });
+
+    // View
+    ipcRenderer.on('toggle-brief-mode', (_e, enabled) => {
+      console.log('[menu] Brief mode toggled:', enabled);
+      document.dispatchEvent(new CustomEvent('claw-toggle-brief-mode', { detail: { enabled } }));
+    });
+
+    term.focus();
+  </script>
+</body>
+</html>

@@ -1,0 +1,367 @@
+.diff-review-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg-primary, #0a0a0f);
+  display: flex;
+  flex-direction: column;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ── Header ── */
+.diff-review-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #1e1e2e;
+  background: #0d0d14;
+  flex-shrink: 0;
+}
+
+.diff-review-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.diff-review-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.diff-review-summary {
+  font-size: 12px;
+  color: #888;
+}
+
+.diff-review-summary .added {
+  color: #4ade80;
+}
+
+.diff-review-summary .removed {
+  color: #f87171;
+}
+
+.diff-review-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.diff-review-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #2a2a3a;
+  background: #14141f;
+  color: #ccc;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.diff-review-btn:hover {
+  background: #1c1c2e;
+  border-color: #3a3a4a;
+}
+
+.diff-review-btn-primary {
+  background: var(--accent, #f97316);
+  border-color: var(--accent, #f97316);
+  color: #fff;
+  font-weight: 600;
+}
+
+.diff-review-btn-primary:hover {
+  background: #ea6a0e;
+  border-color: #ea6a0e;
+}
+
+.diff-review-close-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.diff-review-close-btn:hover {
+  background: #1e1e2e;
+  color: #fff;
+}
+
+/* ── Body ── */
+.diff-review-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── File list (left panel) ── */
+.diff-review-file-list {
+  width: 280px;
+  min-width: 280px;
+  border-right: 1px solid #1e1e2e;
+  overflow-y: auto;
+  background: #0c0c12;
+  flex-shrink: 0;
+}
+
+.diff-review-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background 0.1s;
+  font-size: 13px;
+}
+
+.diff-review-file-item:hover {
+  background: #12121c;
+}
+
+.diff-review-file-item.selected {
+  background: #14141f;
+  border-left-color: var(--accent, #f97316);
+}
+
+.diff-review-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  color: #d0d0d0;
+}
+
+.diff-review-file-stats {
+  display: flex;
+  gap: 6px;
+  font-size: 11px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.diff-review-file-stats .stat-added {
+  color: #4ade80;
+}
+
+.diff-review-file-stats .stat-removed {
+  color: #f87171;
+}
+
+/* ── Diff content (right panel) ── */
+.diff-review-content {
+  flex: 1;
+  overflow: auto;
+  background: var(--bg-primary, #0a0a0f);
+}
+
+.diff-review-content-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #555;
+  font-size: 14px;
+}
+
+/* ── Hunk header ── */
+.diff-hunk-header {
+  padding: 6px 16px;
+  background: #111122;
+  color: #7c7caa;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  border-top: 1px solid #1e1e2e;
+  border-bottom: 1px solid #1e1e2e;
+  user-select: none;
+}
+
+/* ── Diff table ── */
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.diff-line {
+  cursor: pointer;
+  transition: filter 0.1s;
+}
+
+.diff-line:hover {
+  filter: brightness(1.2);
+}
+
+/* Line numbers */
+.diff-line-num {
+  width: 48px;
+  min-width: 48px;
+  padding: 0 8px;
+  text-align: right;
+  color: #444;
+  user-select: none;
+  vertical-align: top;
+  border-right: 1px solid #1a1a2a;
+  font-size: 12px;
+}
+
+.diff-line-num.old-num {
+  border-right: 1px solid #1a1a2a;
+}
+
+.diff-line-num.new-num {
+  border-right: 1px solid #1e1e2e;
+}
+
+/* Line content */
+.diff-line-content {
+  padding: 0 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Line types */
+.diff-line-added {
+  background: rgba(74, 222, 128, 0.08);
+}
+
+.diff-line-added .diff-line-num {
+  background: rgba(74, 222, 128, 0.1);
+  color: #4ade80;
+}
+
+.diff-line-added .diff-line-content {
+  color: #d4edda;
+}
+
+.diff-line-removed {
+  background: rgba(248, 113, 113, 0.08);
+}
+
+.diff-line-removed .diff-line-num {
+  background: rgba(248, 113, 113, 0.1);
+  color: #f87171;
+}
+
+.diff-line-removed .diff-line-content {
+  color: #f8d7da;
+}
+
+.diff-line-context {
+  background: transparent;
+}
+
+.diff-line-context .diff-line-content {
+  color: #888;
+}
+
+/* Word-level highlighting */
+.diff-word-added {
+  background: rgba(74, 222, 128, 0.28);
+  border-radius: 2px;
+  padding: 1px 0;
+}
+
+.diff-word-removed {
+  background: rgba(248, 113, 113, 0.28);
+  border-radius: 2px;
+  padding: 1px 0;
+}
+
+/* ── Inline comment ── */
+.diff-inline-comment-row td {
+  padding: 0;
+  background: #111120;
+}
+
+.diff-inline-comment-form {
+  padding: 8px 12px;
+  margin: 0 48px;
+  border: 1px solid #2a2a3a;
+  border-radius: 6px;
+  background: #0e0e18;
+}
+
+.diff-inline-comment-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 8px;
+  background: #0a0a0f;
+  border: 1px solid #2a2a3a;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.diff-inline-comment-textarea:focus {
+  border-color: var(--accent, #f97316);
+}
+
+.diff-inline-comment-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.diff-inline-comment-hint {
+  font-size: 11px;
+  color: #555;
+  margin-right: auto;
+  align-self: center;
+}
+
+/* ── Existing comment badge ── */
+.diff-comment-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 1px 6px;
+  background: var(--accent, #f97316);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  vertical-align: middle;
+}
+
+/* ── Scrollbar ── */
+.diff-review-file-list::-webkit-scrollbar,
+.diff-review-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.diff-review-file-list::-webkit-scrollbar-track,
+.diff-review-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.diff-review-file-list::-webkit-scrollbar-thumb,
+.diff-review-content::-webkit-scrollbar-thumb {
+  background: #2a2a3a;
+  border-radius: 3px;
+}
+
+.diff-review-file-list::-webkit-scrollbar-thumb:hover,
+.diff-review-content::-webkit-scrollbar-thumb:hover {
+  background: #3a3a4a;
+}
