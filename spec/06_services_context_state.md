@@ -1,4 +1,4 @@
-# Claude Code — Services, Context, State & Screens
+# MacHelper — Services, Context, State & Screens
 
 This document exhaustively covers all files in `src/services/`, `src/context/`, `src/bootstrap/state.ts`, `src/coordinator/`, `src/server/`, and `src/screens/`. Every exported symbol is listed with its full signature, key logic, configuration, and dependencies.
 
@@ -98,7 +98,7 @@ This document exhaustively covers all files in `src/services/`, `src/context/`, 
 
 **Path:** `src/bootstrap/state.ts`
 
-**Purpose:** The single global session state singleton for the entire Claude Code process. Acts as the authoritative source of truth for all per-session metrics, model configuration, telemetry handles, and feature flags. Designed as a strict leaf in the import DAG — imports nothing from `src/utils/` except via explicit safe indirection.
+**Purpose:** The single global session state singleton for the entire MacHelper process. Acts as the authoritative source of truth for all per-session metrics, model configuration, telemetry handles, and feature flags. Designed as a strict leaf in the import DAG — imports nothing from `src/utils/` except via explicit safe indirection.
 
 **Key Types Exported:**
 
@@ -249,7 +249,7 @@ export function setMainLoopModelOverride(model: ModelSetting | undefined): void
 
 **Path:** `src/coordinator/coordinatorMode.ts`
 
-**Purpose:** Implements multi-worker "coordinator mode" where Claude Code orchestrates multiple parallel subagents. Provides the system prompt, user context injection, mode detection, and session-resume alignment logic.
+**Purpose:** Implements multi-worker "coordinator mode" where MacHelper orchestrates multiple parallel subagents. Provides the system prompt, user context injection, mode detection, and session-resume alignment logic.
 
 **Exports:**
 
@@ -266,9 +266,9 @@ export function getCoordinatorSystemPrompt(): string
 ```
 
 **Key Logic:**
-- `isCoordinatorMode()`: reads `CLAUDE_CODE_COORDINATOR_MODE` env var; only active when `feature('COORDINATOR_MODE')` bundle flag is set
-- `matchSessionMode()`: when resuming a session, aligns the current coordinator mode with the stored session mode. Flips `process.env.CLAUDE_CODE_COORDINATOR_MODE` in-place (since `isCoordinatorMode()` reads it live). Returns a user-visible warning message if mode was switched, `undefined` if no change needed. Logs `tengu_coordinator_mode_switched` analytics event
-- `getCoordinatorUserContext()`: returns `{ workerToolsContext: string }` with worker tool list, MCP server names, and scratchpad directory (if gate `tengu_scratch` enabled). In `CLAUDE_CODE_SIMPLE` mode, limits worker tools to Bash/Read/Edit
+- `isCoordinatorMode()`: reads `MACHELPER_COORDINATOR_MODE` env var; only active when `feature('COORDINATOR_MODE')` bundle flag is set
+- `matchSessionMode()`: when resuming a session, aligns the current coordinator mode with the stored session mode. Flips `process.env.MACHELPER_COORDINATOR_MODE` in-place (since `isCoordinatorMode()` reads it live). Returns a user-visible warning message if mode was switched, `undefined` if no change needed. Logs `tengu_coordinator_mode_switched` analytics event
+- `getCoordinatorUserContext()`: returns `{ workerToolsContext: string }` with worker tool list, MCP server names, and scratchpad directory (if gate `tengu_scratch` enabled). In `MACHELPER_SIMPLE` mode, limits worker tools to Bash/Read/Edit
 - `getCoordinatorSystemPrompt()`: returns a multi-section system prompt (1500+ chars) describing coordinator role, available tools (Agent, SendMessage, TaskStop), task workflow phases (Research → Synthesis → Implementation → Verification), concurrency strategy, worker prompt writing guidelines, and full example session
 
 **Internal Constants:**
@@ -283,8 +283,8 @@ const INTERNAL_WORKER_TOOLS = new Set([
 
 **Configuration:**
 - `COORDINATOR_MODE` bundle feature flag
-- `CLAUDE_CODE_COORDINATOR_MODE` env var
-- `CLAUDE_CODE_SIMPLE` env var — restricts worker tool set to Bash/Read/Edit
+- `MACHELPER_COORDINATOR_MODE` env var
+- `MACHELPER_SIMPLE` env var — restricts worker tool set to Bash/Read/Edit
 - GrowthBook gate `tengu_scratch` — enables scratchpad directory context
 
 **Dependencies:** `bun:bundle`, `constants/tools.js`, `services/analytics/growthbook.js`, `services/analytics/index.js`, various tool name constants, `utils/envUtils.js`
@@ -295,7 +295,7 @@ const INTERNAL_WORKER_TOOLS = new Set([
 
 **Path:** `src/server/types.ts`
 
-**Purpose:** Shared type definitions for the Claude Code server (direct-connect mode). Provides the Zod validation schema for session creation responses.
+**Purpose:** Shared type definitions for the MacHelper server (direct-connect mode). Provides the Zod validation schema for session creation responses.
 
 **Exports:**
 
@@ -342,7 +342,7 @@ export type SessionIndex = Record<string, SessionIndexEntry>
 
 **Path:** `src/server/createDirectConnectSession.ts`
 
-**Purpose:** Creates a session on a remote direct-connect Claude Code server. Posts to `/sessions`, validates response, returns a `DirectConnectConfig` ready for use by the REPL or headless runner.
+**Purpose:** Creates a session on a remote direct-connect MacHelper server. Posts to `/sessions`, validates response, returns a `DirectConnectConfig` ready for use by the REPL or headless runner.
 
 **Exports:**
 
@@ -378,7 +378,7 @@ export async function createDirectConnectSession(opts: {
 
 **Path:** `src/server/directConnectManager.ts`
 
-**Purpose:** WebSocket client for communicating with a remote direct-connect Claude Code server. Handles message routing, permission request/response, interrupt signals, and connection lifecycle.
+**Purpose:** WebSocket client for communicating with a remote direct-connect MacHelper server. Handles message routing, permission request/response, interrupt signals, and connection lifecycle.
 
 **Exports:**
 
@@ -438,7 +438,7 @@ export function isFeedbackSurveyDisabled(): boolean
 ```
 
 **Key Logic:**
-- `isAnalyticsDisabled()`: returns `true` when `NODE_ENV === 'test'`, `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX`, `CLAUDE_CODE_USE_FOUNDRY` truthy, or `isTelemetryDisabled()` is true
+- `isAnalyticsDisabled()`: returns `true` when `NODE_ENV === 'test'`, `MACHELPER_USE_BEDROCK`, `MACHELPER_USE_VERTEX`, `MACHELPER_USE_FOUNDRY` truthy, or `isTelemetryDisabled()` is true
 - `isFeedbackSurveyDisabled()`: returns `true` when `NODE_ENV === 'test'` or `isTelemetryDisabled()` — does NOT gate on 3P providers (Bedrock/Vertex/Foundry) since the survey is local UI with no transcript data; enterprise captures via OTEL
 
 **Dependencies:** `utils/envUtils.js`, `utils/privacyLevel.js`
@@ -685,12 +685,12 @@ export function isSinkKilled(sink: SinkName): boolean
 
 **Path:** `src/services/analytics/datadog.ts`
 
-**Purpose:** Datadog metrics and event logging integration for Claude Code analytics.
+**Purpose:** Datadog metrics and event logging integration for MacHelper analytics.
 
 **Key Logic:**
 - Sends events via `@datadog/datadog-ci` or direct HTTP to Datadog API
 - Disabled when `isAnalyticsDisabled()` returns true
-- Event namespace: `tengu_*` prefix for all Claude Code events
+- Event namespace: `tengu_*` prefix for all MacHelper events
 - Tags include version, platform, user type, session metadata
 
 ---
@@ -732,7 +732,7 @@ export function isSinkKilled(sink: SinkName): boolean
 - Configures `ANTHROPIC_API_URL` base URL, auth headers, proxy settings
 - Calls `initializeGrowthBook()` early in startup
 - Sets up OTel span management
-- Handles `CLAUDE_CODE_SKIP_BEDROCK_TLS` for Bedrock TLS verification skip
+- Handles `MACHELPER_SKIP_BEDROCK_TLS` for Bedrock TLS verification skip
 
 ---
 
@@ -1014,17 +1014,17 @@ export async function listFilesCreatedAfter(
 
 **Path:** `src/services/api/firstTokenDate.ts`
 
-**Purpose:** Fetches and stores the date when the user first made a Claude Code API call.
+**Purpose:** Fetches and stores the date when the user first made a MacHelper API call.
 
 **Exports:**
 
 ```typescript
-export async function fetchAndStoreClaudeCodeFirstTokenDate(): Promise<void>
+export async function fetchAndStoreMacHelperFirstTokenDate(): Promise<void>
 ```
 
 **Key Logic:**
-- Fetches `/api/organization/claude_code_first_token_date`
-- Stores in `claudeCodeFirstTokenDate` config field
+- Fetches `/api/organization/machelper_first_token_date`
+- Stores in `macHelperFirstTokenDate` config field
 - Idempotent — no-ops if already stored
 
 ---
@@ -1126,7 +1126,7 @@ export function logAPISuccessAndDuration(opts: {
 **Constants:**
 - `CACHE_TTL_MS = 60 * 60 * 1000` (1 hour in-memory)
 - `DISK_CACHE_TTL_MS = 24 * 60 * 60 * 1000` (24 hours on disk)
-- Endpoint: `api/claude_code/organizations/metrics_enabled`
+- Endpoint: `api/machelper/organizations/metrics_enabled`
 
 **Exports:**
 
@@ -1233,7 +1233,7 @@ export function resetPromptCacheBreakDetection(): void
 
 **Path:** `src/services/api/referral.ts`
 
-**Purpose:** Manages referral program eligibility, redemptions, and guest passes for Claude Code subscribers.
+**Purpose:** Manages referral program eligibility, redemptions, and guest passes for MacHelper subscribers.
 
 **Constants:**
 - `CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000` (24 hours)
@@ -1340,7 +1340,7 @@ export async function fetchUltrareviewQuota(): Promise<UltrareviewQuotaResponse 
 
 **Path:** `src/services/api/usage.ts`
 
-**Purpose:** Fetches usage statistics for the current user/organization from the Claude Code API.
+**Purpose:** Fetches usage statistics for the current user/organization from the MacHelper API.
 
 **Exports:**
 
@@ -1801,7 +1801,7 @@ export async function trySessionMemoryCompaction(
 
 **Key Logic:**
 - GrowthBook config `tengu_sm_compact_config` overrides defaults
-- Guarded by `ENABLE_CLAUDE_CODE_SM_COMPACT` / `DISABLE_CLAUDE_CODE_SM_COMPACT` env vars
+- Guarded by `ENABLE_MACHELPER_SM_COMPACT` / `DISABLE_MACHELPER_SM_COMPACT` env vars
 - AND requires both GrowthBook gates `tengu_session_memory` AND `tengu_sm_compact` to be enabled
 - `adjustIndexToPreserveAPIInvariants()`: ensures cut point doesn't leave orphaned tool_use without tool_result
 - `calculateMessagesToKeepIndex()`: binary search-based index calculation respecting min/max token bounds
@@ -1836,7 +1836,7 @@ export function getTimeBasedMCConfig(): TimeBasedMCConfig
 
 **Path:** `src/services/diagnosticTracking.ts`
 
-**Purpose:** Tracks file diagnostics (lint errors, type errors) before and after file edits to detect regressions introduced by Claude Code.
+**Purpose:** Tracks file diagnostics (lint errors, type errors) before and after file edits to detect regressions introduced by MacHelper.
 
 **Constants:**
 - `MAX_DIAGNOSTICS_SUMMARY_CHARS = 4000`
@@ -1902,7 +1902,7 @@ export async function logPermissionContextForAnts(
 
 **Path:** `src/services/MagicDocs/magicDocs.ts`
 
-**Purpose:** Auto-maintained markdown documentation files that stay in sync with code changes made by Claude Code.
+**Purpose:** Auto-maintained markdown documentation files that stay in sync with code changes made by MacHelper.
 
 **Key Logic:**
 - Monitors file edits and regenerates associated markdown docs
@@ -2006,7 +2006,7 @@ export function checkMockFastModeRateLimit(isFastModeActive?: boolean): MockHead
 
 **Path:** `src/services/preventSleep.ts`
 
-**Purpose:** Prevents system sleep while Claude Code tasks are running.
+**Purpose:** Prevents system sleep while MacHelper tasks are running.
 
 **Key Logic:**
 - Uses platform-specific APIs (caffeinate on macOS, systemd-inhibit on Linux)
@@ -2559,7 +2559,7 @@ type VersionLockInfo = {
 
 **Path:** `src/screens/REPL.tsx`
 
-**Purpose:** The main interactive REPL screen — the primary conversational UI that orchestrates the entire Claude Code interactive session.
+**Purpose:** The main interactive REPL screen — the primary conversational UI that orchestrates the entire MacHelper interactive session.
 
 **Key Logic:**
 - Manages the full conversation lifecycle: user input → API query → tool execution → response display

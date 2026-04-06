@@ -332,10 +332,10 @@ async fn flush_entries(entries: Vec<LogEntry>) {
 /// Append `entry` to `~/.claude/history.jsonl`.
 ///
 /// The call is fire-and-forget: it spawns a background Tokio task and returns
-/// immediately.  If `CLAUDE_CODE_SKIP_PROMPT_HISTORY` is truthy the call is
+/// immediately.  If `MACHELPER_SKIP_PROMPT_HISTORY` is truthy the call is
 /// a no-op.
 pub fn add_to_history(entry: HistoryEntry) {
-    if std::env::var("CLAUDE_CODE_SKIP_PROMPT_HISTORY")
+    if std::env::var("MACHELPER_SKIP_PROMPT_HISTORY")
         .map(|v| matches!(v.to_lowercase().as_str(), "1" | "true" | "yes"))
         .unwrap_or(false)
     {

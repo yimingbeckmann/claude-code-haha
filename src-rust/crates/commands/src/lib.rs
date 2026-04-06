@@ -1,4 +1,4 @@
-// cc-commands: Slash command system for the Claude Code Rust port.
+// cc-commands: Slash command system for the MacHelper Rust port.
 //
 // This crate implements the /command framework that allows users to type
 // commands like /help, /compact, /clear, /model, /config, /cost, etc.
@@ -270,7 +270,7 @@ fn generate_keybindings_template() -> anyhow::Result<String> {
     }
 
     let template = KeybindingTemplateFile {
-        schema: "https://www.schemastore.org/claude-code-keybindings.json",
+        schema: "https://www.schemastore.org/machelper-keybindings.json",
         docs: "https://code.claude.com/docs/en/keybindings",
         bindings: grouped
             .into_iter()
@@ -453,7 +453,7 @@ impl SlashCommand for HelpCommand {
                 .push(format!("  /{:<20} {}", format!("{}{}", cmd.name(), alias_str), cmd.description()));
         }
 
-        let mut output = String::from("Claude Code — Slash Commands\n");
+        let mut output = String::from("MacHelper — Slash Commands\n");
         output.push_str("════════════════════════════\n");
 
         for cat in &category_order {
@@ -537,7 +537,7 @@ impl SlashCommand for CostCommand {
 impl SlashCommand for ExitCommand {
     fn name(&self) -> &str { "exit" }
     fn aliases(&self) -> Vec<&str> { vec!["quit", "q"] }
-    fn description(&self) -> &str { "Exit Claude Code" }
+    fn description(&self) -> &str { "Exit MacHelper" }
 
     async fn execute(&self, _args: &str, _ctx: &mut CommandContext) -> CommandResult {
         CommandResult::Exit
@@ -991,7 +991,7 @@ impl SlashCommand for VersionCommand {
 
     async fn execute(&self, _args: &str, _ctx: &mut CommandContext) -> CommandResult {
         CommandResult::Message(format!(
-            "Claude Code (Rust) v{}",
+            "MacHelper (Rust) v{}",
             cc_core::constants::APP_VERSION
         ))
     }
@@ -1090,7 +1090,7 @@ impl SlashCommand for StatusCommand {
             .unwrap_or_else(|_| "n/a".to_string());
 
         CommandResult::Message(format!(
-            "Claude Code Status\n\
+            "MacHelper Status\n\
              ══════════════════\n\
              Auth:           {auth_status}\n\
              Model:          {model}\n\
@@ -1305,19 +1305,19 @@ impl SlashCommand for MemoryCommand {
 impl SlashCommand for BugCommand {
     fn name(&self) -> &str { "feedback" }
     fn aliases(&self) -> Vec<&str> { vec!["bug"] }
-    fn description(&self) -> &str { "Submit feedback about Claude Code" }
+    fn description(&self) -> &str { "Submit feedback about MacHelper" }
     fn help(&self) -> &str { "Usage: /feedback [report]" }
 
     async fn execute(&self, args: &str, _ctx: &mut CommandContext) -> CommandResult {
         let report = args.trim();
         if report.is_empty() {
             CommandResult::Message(
-                "To submit feedback or report a bug, visit: https://github.com/anthropics/claude-code/issues"
+                "To submit feedback or report a bug, visit: https://github.com/anthropics/machelper/issues"
                     .to_string(),
             )
         } else {
             CommandResult::Message(format!(
-                "To submit feedback or report a bug, visit: https://github.com/anthropics/claude-code/issues\nSuggested report summary: {}",
+                "To submit feedback or report a bug, visit: https://github.com/anthropics/machelper/issues\nSuggested report summary: {}",
                 report
             ))
         }
@@ -1395,7 +1395,7 @@ impl SlashCommand for PluginCommand {
     fn description(&self) -> &str { "Manage plugins" }
     fn help(&self) -> &str {
         "Usage: /plugin [list|enable <name>|disable <name>|info <name>|install <path>]\n\
-         Manage Claude Code plugins."
+         Manage MacHelper plugins."
     }
 
     async fn execute(&self, args: &str, ctx: &mut CommandContext) -> CommandResult {
@@ -1735,7 +1735,7 @@ impl SlashCommand for McpCommand {
            /mcp status       — show server connection status\n\n\
          To add/remove MCP servers, edit ~/.claude/settings.json\n\
          under the 'mcpServers' key, or use the MCP CLI.\n\
-         Docs: https://docs.anthropic.com/claude-code/mcp"
+         Docs: https://docs.anthropic.com/machelper/mcp"
     }
 
     async fn execute(&self, args: &str, ctx: &mut CommandContext) -> CommandResult {
@@ -1753,7 +1753,7 @@ impl SlashCommand for McpCommand {
                      }\n\
                    ]\n\
                  }\n\n\
-                 Docs: https://docs.anthropic.com/claude-code/mcp"
+                 Docs: https://docs.anthropic.com/machelper/mcp"
                     .to_string(),
             );
         }
@@ -1780,7 +1780,7 @@ impl SlashCommand for McpCommand {
             }
             output.push_str(
                 "\nNote: Live connection status requires the MCP runtime to be active.\n\
-                 Restart Claude Code to reconnect to MCP servers."
+                 Restart MacHelper to reconnect to MCP servers."
             );
             return CommandResult::Message(output);
         }
@@ -2512,7 +2512,7 @@ impl SlashCommand for RemoteControlCommand {
     fn description(&self) -> &str { "Show or manage the remote control (Bridge) connection" }
     fn help(&self) -> &str {
         "Usage: /remote-control [start|stop|status]\n\n\
-         The Bridge feature lets you connect your local Claude Code CLI to the\n\
+         The Bridge feature lets you connect your local MacHelper CLI to the\n\
          claude.ai web UI or mobile app.\n\n\
          Subcommands:\n\
          /remote-control          Show current bridge status and connection URL\n\
@@ -2532,7 +2532,7 @@ impl SlashCommand for RemoteControlCommand {
         match args.trim() {
             "" | "status" => {
                 let status = if remote_at_startup { "enabled at startup" } else { "disabled" };
-                let bridge_url = std::env::var("CLAUDE_CODE_BRIDGE_URL")
+                let bridge_url = std::env::var("MACHELPER_BRIDGE_URL")
                     .unwrap_or_else(|_| "https://claude.ai".to_string());
                 CommandResult::Message(format!(
                     "Remote Control (Bridge) Status\n\
@@ -2540,15 +2540,15 @@ impl SlashCommand for RemoteControlCommand {
                      Status:      {status}\n\
                      Bridge URL:  {bridge_url}\n\
                      Token:       {token}\n\n\
-                     To connect from the web UI, visit:\n  {bridge_url}/claude-code\n\n\
+                     To connect from the web UI, visit:\n  {bridge_url}/machelper\n\n\
                      Use /remote-control start  to enable bridge at startup\n\
                      Use /remote-control stop   to disable bridge at startup",
                     status = status,
                     bridge_url = bridge_url,
-                    token = if std::env::var("CLAUDE_CODE_BRIDGE_TOKEN").is_ok() {
-                        "configured (set via CLAUDE_CODE_BRIDGE_TOKEN)"
+                    token = if std::env::var("MACHELPER_BRIDGE_TOKEN").is_ok() {
+                        "configured (set via MACHELPER_BRIDGE_TOKEN)"
                     } else {
-                        "not set — set CLAUDE_CODE_BRIDGE_TOKEN to connect"
+                        "not set — set MACHELPER_BRIDGE_TOKEN to connect"
                     },
                 ))
             }
@@ -2558,7 +2558,7 @@ impl SlashCommand for RemoteControlCommand {
                 }
                 CommandResult::Message(
                     "Remote control bridge enabled at startup.\n\
-                     Set CLAUDE_CODE_BRIDGE_TOKEN=<token> and restart Claude Code\n\
+                     Set MACHELPER_BRIDGE_TOKEN=<token> and restart MacHelper\n\
                      to connect to the claude.ai web UI."
                         .to_string(),
                 )
@@ -2585,7 +2585,7 @@ impl SlashCommand for RemoteEnvCommand {
     fn description(&self) -> &str { "Show and manage environment variables for remote sessions" }
     fn help(&self) -> &str {
         "Usage: /remote-env [set <KEY> <VALUE> | unset <KEY> | list]\n\n\
-         Manages env vars stored in config that are forwarded to remote Claude Code sessions.\n\
+         Manages env vars stored in config that are forwarded to remote MacHelper sessions.\n\
          These are persisted to settings under the 'env' key."
     }
 
@@ -2829,7 +2829,7 @@ impl SlashCommand for ChromeCommand {
     fn description(&self) -> &str { "Chrome DevTools integration — connect Claude to a browser tab" }
     fn help(&self) -> &str {
         "Usage: /chrome [url]\n\n\
-         Integrates Claude Code with Google Chrome via the Chrome DevTools Protocol (CDP).\n\n\
+         Integrates MacHelper with Google Chrome via the Chrome DevTools Protocol (CDP).\n\n\
          To use:\n\
          1. Launch Chrome with remote debugging:\n\
             chrome --remote-debugging-port=9222\n\
@@ -2881,7 +2881,7 @@ impl SlashCommand for ChromeCommand {
                     Linux:   google-chrome --remote-debugging-port=9222 --no-first-run\n\n\
                  3. Then run /chrome again\n\n\
                  Note: Do not use your primary Chrome profile for security reasons.\n\
-                 Docs: https://docs.anthropic.com/claude-code/chrome-devtools",
+                 Docs: https://docs.anthropic.com/machelper/chrome-devtools",
                 cdp_url = cdp_url,
             ))
         }
@@ -2995,7 +2995,7 @@ impl SlashCommand for UpgradeCommand {
     fn description(&self) -> &str { "Check for updates and show upgrade options" }
     fn help(&self) -> &str {
         "Usage: /upgrade\n\n\
-         Checks GitHub releases for the latest version of Claude Code.\n\
+         Checks GitHub releases for the latest version of MacHelper.\n\
          If a newer version is available, shows the upgrade command."
     }
 
@@ -3004,7 +3004,7 @@ impl SlashCommand for UpgradeCommand {
 
         // Check GitHub releases API for latest version
         let client = reqwest::Client::builder()
-            .user_agent(format!("claude-code-rust/{}", current))
+            .user_agent(format!("machelper-rust/{}", current))
             .timeout(std::time::Duration::from_secs(8))
             .build();
 
@@ -3014,13 +3014,13 @@ impl SlashCommand for UpgradeCommand {
                 return CommandResult::Message(format!(
                     "Current version: {current}\n\
                      Could not check for updates (HTTP client error: {e})\n\
-                     Visit https://github.com/anthropics/claude-code/releases for updates."
+                     Visit https://github.com/anthropics/machelper/releases for updates."
                 ))
             }
         };
 
         let resp = client
-            .get("https://api.github.com/repos/anthropics/claude-code/releases/latest")
+            .get("https://api.github.com/repos/anthropics/machelper/releases/latest")
             .send()
             .await;
 
@@ -3038,11 +3038,11 @@ impl SlashCommand for UpgradeCommand {
                 let url = json
                     .get("html_url")
                     .and_then(|v| v.as_str())
-                    .unwrap_or("https://github.com/anthropics/claude-code/releases");
+                    .unwrap_or("https://github.com/anthropics/machelper/releases");
 
                 if tag == current || tag == "unknown" {
                     CommandResult::Message(format!(
-                        "Claude Code v{current} — you are up to date.\n\
+                        "MacHelper v{current} — you are up to date.\n\
                          Release page: {url}"
                     ))
                 } else {
@@ -3052,9 +3052,9 @@ impl SlashCommand for UpgradeCommand {
                          Latest version:   v{tag}\n\
                          Release page:     {url}\n\n\
                          To upgrade (npm):\n\
-                           npm install -g @anthropic-ai/claude-code@latest\n\n\
+                           npm install -g @anthropic-ai/machelper@latest\n\n\
                          To upgrade (cargo):\n\
-                           cargo install claude-code --force"
+                           cargo install machelper --force"
                     ))
                 }
             }
@@ -3063,13 +3063,13 @@ impl SlashCommand for UpgradeCommand {
                 CommandResult::Message(format!(
                     "Current version: v{current}\n\
                      Could not check for updates (HTTP {status}).\n\
-                     Visit https://github.com/anthropics/claude-code/releases for updates."
+                     Visit https://github.com/anthropics/machelper/releases for updates."
                 ))
             }
             Err(e) => CommandResult::Message(format!(
                 "Current version: v{current}\n\
                  Could not check for updates: {e}\n\
-                 Visit https://github.com/anthropics/claude-code/releases for updates."
+                 Visit https://github.com/anthropics/machelper/releases for updates."
             )),
         }
     }
@@ -3100,7 +3100,7 @@ impl SlashCommand for ReleaseNotesCommand {
         };
 
         let client = reqwest::Client::builder()
-            .user_agent(format!("claude-code-rust/{}", current))
+            .user_agent(format!("machelper-rust/{}", current))
             .timeout(std::time::Duration::from_secs(8))
             .build();
 
@@ -3108,14 +3108,14 @@ impl SlashCommand for ReleaseNotesCommand {
             Ok(c) => c,
             Err(_) => {
                 return CommandResult::Message(format!(
-                    "Claude Code {tag} release notes:\n\
-                     Visit https://github.com/anthropics/claude-code/releases/tag/{tag}"
+                    "MacHelper {tag} release notes:\n\
+                     Visit https://github.com/anthropics/machelper/releases/tag/{tag}"
                 ))
             }
         };
 
         let url = format!(
-            "https://api.github.com/repos/anthropics/claude-code/releases/tags/{}",
+            "https://api.github.com/repos/anthropics/machelper/releases/tags/{}",
             tag
         );
 
@@ -3140,7 +3140,7 @@ impl SlashCommand for ReleaseNotesCommand {
                     .unwrap_or("");
 
                 CommandResult::Message(format!(
-                    "Release Notes: Claude Code {tag}\n\
+                    "Release Notes: MacHelper {tag}\n\
                      Published: {published}\n\
                      URL: {html_url}\n\
                      ─────────────────────────────────\n\
@@ -3149,17 +3149,17 @@ impl SlashCommand for ReleaseNotesCommand {
             }
             Ok(r) if r.status().as_u16() == 404 => CommandResult::Message(format!(
                 "No release found for {tag}.\n\
-                 View all releases: https://github.com/anthropics/claude-code/releases"
+                 View all releases: https://github.com/anthropics/machelper/releases"
             )),
             Ok(r) => CommandResult::Message(format!(
                 "Could not fetch release notes (HTTP {}).\n\
-                 View at: https://github.com/anthropics/claude-code/releases/tag/{}",
+                 View at: https://github.com/anthropics/machelper/releases/tag/{}",
                 r.status(),
                 tag
             )),
             Err(e) => CommandResult::Message(format!(
                 "Could not fetch release notes: {e}\n\
-                 View at: https://github.com/anthropics/claude-code/releases/tag/{tag}"
+                 View at: https://github.com/anthropics/machelper/releases/tag/{tag}"
             )),
         }
     }
@@ -3365,11 +3365,11 @@ impl SlashCommand for SecurityReviewCommand {
 #[async_trait]
 impl SlashCommand for TerminalSetupCommand {
     fn name(&self) -> &str { "terminal-setup" }
-    fn description(&self) -> &str { "Help configure your terminal for optimal Claude Code use" }
+    fn description(&self) -> &str { "Help configure your terminal for optimal MacHelper use" }
     fn help(&self) -> &str {
         "Usage: /terminal-setup\n\n\
          Diagnoses your terminal environment and gives recommendations for\n\
-         optimal Claude Code display (font, color support, Unicode, etc.)."
+         optimal MacHelper display (font, color support, Unicode, etc.)."
     }
 
     async fn execute(&self, _args: &str, _ctx: &mut CommandContext) -> CommandResult {
@@ -3433,7 +3433,7 @@ impl SlashCommand for TerminalSetupCommand {
             "Terminal Setup Diagnostic\n\
              ─────────────────────────\n\
              {checks}\n\n\
-             Recommendations for optimal Claude Code experience:\n\
+             Recommendations for optimal MacHelper experience:\n\
              ─────────────────────────────────────────────────\n\
              1. Font: Use a Nerd Font for box-drawing characters and icons\n\
                 {nerd_hint}\n\
@@ -3761,7 +3761,7 @@ impl SlashCommand for FeedbackCommand {
     }
 
     async fn execute(&self, args: &str, _ctx: &mut CommandContext) -> CommandResult {
-        let url = "https://github.com/anthropics/claude-code/issues/new";
+        let url = "https://github.com/anthropics/machelper/issues/new";
         let report = args.trim();
         let display_url = if report.is_empty() {
             url.to_string()
@@ -3892,7 +3892,7 @@ impl SlashCommand for ShareCommand {
 
         let base_url = std::env::var("ANTHROPIC_BASE_URL")
             .unwrap_or_else(|_| "https://api.anthropic.com".to_string());
-        let url = format!("{}/api/claude_code/share_session", base_url);
+        let url = format!("{}/api/machelper/share_session", base_url);
 
         let req = if use_bearer {
             client
@@ -4216,7 +4216,7 @@ pub fn all_commands() -> Vec<Box<dyn SlashCommand>> {
             slash_name: "add-dir",
             target_name: "add-dir",
             slash_aliases: &[],
-            slash_description: "Add a directory to Claude Code's allowed workspace paths",
+            slash_description: "Add a directory to MacHelper's allowed workspace paths",
             slash_help: "Usage: /add-dir <path>",
         }),
         Box::new(NamedCommandAdapter {
@@ -4244,7 +4244,7 @@ pub fn all_commands() -> Vec<Box<dyn SlashCommand>> {
             slash_name: "passes",
             target_name: "passes",
             slash_aliases: &[],
-            slash_description: "Share a free week of Claude Code with friends",
+            slash_description: "Share a free week of MacHelper with friends",
             slash_help: "Usage: /passes",
         }),
         Box::new(NamedCommandAdapter {
@@ -4265,14 +4265,14 @@ pub fn all_commands() -> Vec<Box<dyn SlashCommand>> {
             slash_name: "desktop",
             target_name: "desktop",
             slash_aliases: &[],
-            slash_description: "Open the Claude Code desktop app",
+            slash_description: "Open the MacHelper desktop app",
             slash_help: "Usage: /desktop",
         }),
         Box::new(NamedCommandAdapter {
             slash_name: "mobile",
             target_name: "mobile",
             slash_aliases: &[],
-            slash_description: "Set up Claude Code on mobile",
+            slash_description: "Set up MacHelper on mobile",
             slash_help: "Usage: /mobile",
         }),
         Box::new(NamedCommandAdapter {
@@ -4286,7 +4286,7 @@ pub fn all_commands() -> Vec<Box<dyn SlashCommand>> {
             slash_name: "web-setup",
             target_name: "remote-setup",
             slash_aliases: &["remote-setup"],
-            slash_description: "Configure a remote Claude Code environment",
+            slash_description: "Configure a remote MacHelper environment",
             slash_help: "Usage: /web-setup",
         }),
         Box::new(NamedCommandAdapter {

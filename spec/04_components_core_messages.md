@@ -1,4 +1,4 @@
-# Claude Code — Components: Core & Messages
+# MacHelper — Components: Core & Messages
 
 This document covers every component in `src/components/` (top-level files) and `src/components/messages/` (including `UserToolResultMessage/` sub-directory).
 
@@ -151,7 +151,7 @@ Global state is accessed via `useAppState`, `useSetAppState`, `useAppStateStore`
 
 **Key state:** `useNativeInstaller: boolean | null`, `isPackageManager: boolean | null`
 
-**Key behavior:** Renders `PackageManagerAutoUpdater`, `NativeAutoUpdater`, or `AutoUpdater` depending on how Claude Code was installed.
+**Key behavior:** Renders `PackageManagerAutoUpdater`, `NativeAutoUpdater`, or `AutoUpdater` depending on how MacHelper was installed.
 
 ---
 
@@ -1248,7 +1248,7 @@ Global state is accessed via `useAppState`, `useSetAppState`, `useAppStateStore`
 
 ### PackageManagerAutoUpdater.tsx
 
-**Purpose:** Notifies users about available updates when Claude Code was installed via a package manager (brew, pip, etc.).
+**Purpose:** Notifies users about available updates when MacHelper was installed via a package manager (brew, pip, etc.).
 
 **Exports:** `PackageManagerAutoUpdater`
 
@@ -1340,7 +1340,7 @@ Global state is accessed via `useAppState`, `useSetAppState`, `useAppStateStore`
 
 ### ResumeTask.tsx
 
-**Purpose:** Lists remote Claude Code sessions (from Sessions API) for resuming. Filters by current git repository.
+**Purpose:** Lists remote MacHelper sessions (from Sessions API) for resuming. Filters by current git repository.
 
 **Exports:** `ResumeTask`
 
@@ -1537,7 +1537,7 @@ Global state is accessed via `useAppState`, `useSetAppState`, `useAppStateStore`
 |---|---|---|---|
 | `onClose` | `(result?: string, options?: { display?: CommandResultDisplay }) => void` | yes | Close callback |
 
-**Types:** `StatsResult = { type: 'success'; data: ClaudeCodeStats } | { type: 'error'; message: string } | { type: 'empty' }`
+**Types:** `StatsResult = { type: 'success'; data: MacHelperStats } | { type: 'error'; message: string } | { type: 'empty' }`
 
 **Constants:** `DATE_RANGE_LABELS: Record<StatsDateRange, string>` (`7d`, `30d`, `90d`)
 
@@ -1791,7 +1791,7 @@ Global state is accessed via `useAppState`, `useSetAppState`, `useAppStateStore`
 | `onSubmit` | `(selectedWorkflows: Workflow[]) => void` | yes | Called with selected workflows |
 | `defaultSelections` | `Workflow[]` | yes | Initially selected workflows |
 
-**Workflows:** `claude` (@Claude Code tag), `claude-review` (automated PR review)
+**Workflows:** `claude` (@MacHelper tag), `claude-review` (automated PR review)
 
 ---
 
@@ -2543,7 +2543,7 @@ type ParsedMessage = {
 **Key behavior:**
 - Feature-gated `KAIROS` / `KAIROS_BRIEF` reads `isBriefOnly` from `useAppState` (same pattern as `UserPromptMessage` to avoid subscriptions in non-KAIROS builds).
 - Captures `classifierRule` and `yoloReason` via `useState` lazy initializer from `getClassifierApproval(toolUseID)` / `getYoloClassifierApproval(toolUseID)`. Deletes from map on effect to prevent linear memory growth.
-- Validates `message.toolUseResult` against `tool.outputSchema?.safeParse(...)` — returns null if parse fails (handles corrupt/old-format resumed transcripts; issue anthropics/claude-code#39817).
+- Validates `message.toolUseResult` against `tool.outputSchema?.safeParse(...)` — returns null if parse fails (handles corrupt/old-format resumed transcripts; issue anthropics/machelper#39817).
 - Wraps tool's `renderToolResultMessage` in `SentryErrorBoundary`.
 - Renders `HookProgressMessage` items from filtered progress messages.
 

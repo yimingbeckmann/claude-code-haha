@@ -1,4 +1,4 @@
-//! Git utilities for Claude Code.
+//! Git utilities for MacHelper.
 //! Mirrors src/utils/git.ts (926 lines) and src/utils/git/ subdirectory.
 
 use std::path::{Path, PathBuf};

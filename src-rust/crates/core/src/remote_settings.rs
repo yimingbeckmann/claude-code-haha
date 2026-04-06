@@ -120,7 +120,7 @@ impl RemoteSettingsManager {
 
     /// Endpoint URL for remote settings.
     fn endpoint(&self) -> String {
-        format!("{}/api/claude_code/settings", self.config.base_url)
+        format!("{}/api/machelper/settings", self.config.base_url)
     }
 
     /// Build auth headers. API key takes precedence over OAuth.

@@ -332,8 +332,8 @@ pub const MAX_ENTRYPOINT_BYTES: usize = 25_000;
 ///
 /// Resolution order (mirrors `getAutoMemPath` in `paths.ts`):
 /// 1. `CLAUDE_COWORK_MEMORY_PATH_OVERRIDE` env var (full-path override).
-/// 2. `<CLAUDE_CODE_REMOTE_MEMORY_DIR>/projects/<sanitized-root>/memory/`
-///    when `CLAUDE_CODE_REMOTE_MEMORY_DIR` is set.
+/// 2. `<MACHELPER_REMOTE_MEMORY_DIR>/projects/<sanitized-root>/memory/`
+///    when `MACHELPER_REMOTE_MEMORY_DIR` is set.
 /// 3. `~/.claude/projects/<sanitized-root>/memory/` (default).
 pub fn auto_memory_path(project_root: &Path) -> PathBuf {
     // 1. Cowork full-path override.
@@ -344,7 +344,7 @@ pub fn auto_memory_path(project_root: &Path) -> PathBuf {
     }
 
     // 2. Determine the memory base directory.
-    let memory_base = std::env::var("CLAUDE_CODE_REMOTE_MEMORY_DIR")
+    let memory_base = std::env::var("MACHELPER_REMOTE_MEMORY_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(|_| {
             dirs::home_dir()
@@ -375,13 +375,13 @@ pub fn sanitize_path_component(s: &str) -> String {
 /// Whether the auto-memory system is enabled for this session.
 ///
 /// Priority chain (mirrors `isAutoMemoryEnabled` in `paths.ts`):
-/// 1. `CLAUDE_CODE_DISABLE_AUTO_MEMORY` — truthy → OFF, falsy (but defined) → ON.
-/// 2. `CLAUDE_CODE_SIMPLE` (--bare) → OFF.
-/// 3. Remote mode without `CLAUDE_CODE_REMOTE_MEMORY_DIR` → OFF.
+/// 1. `MACHELPER_DISABLE_AUTO_MEMORY` — truthy → OFF, falsy (but defined) → ON.
+/// 2. `MACHELPER_SIMPLE` (--bare) → OFF.
+/// 3. Remote mode without `MACHELPER_REMOTE_MEMORY_DIR` → OFF.
 /// 4. `settings_enabled` parameter (from settings.json `autoMemoryEnabled` field).
 /// 5. Default: enabled.
 pub fn is_auto_memory_enabled(settings_enabled: Option<bool>) -> bool {
-    if let Ok(val) = std::env::var("CLAUDE_CODE_DISABLE_AUTO_MEMORY") {
+    if let Ok(val) = std::env::var("MACHELPER_DISABLE_AUTO_MEMORY") {
         // Truthy values (non-empty, non-"0", non-"false") disable memory.
         match val.to_lowercase().as_str() {
             "" | "0" | "false" | "no" | "off" => return true, // defined-falsy → ON
@@ -389,12 +389,12 @@ pub fn is_auto_memory_enabled(settings_enabled: Option<bool>) -> bool {
         }
     }
 
-    if std::env::var("CLAUDE_CODE_SIMPLE").is_ok() {
+    if std::env::var("MACHELPER_SIMPLE").is_ok() {
         return false;
     }
 
-    if std::env::var("CLAUDE_CODE_REMOTE").is_ok()
-        && std::env::var("CLAUDE_CODE_REMOTE_MEMORY_DIR").is_err()
+    if std::env::var("MACHELPER_REMOTE").is_ok()
+        && std::env::var("MACHELPER_REMOTE_MEMORY_DIR").is_err()
     {
         return false;
     }

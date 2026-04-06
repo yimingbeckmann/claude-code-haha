@@ -17,7 +17,7 @@ members = [
 [workspace.package]
 version = "1.0.0"
 edition = "2021"
-authors = ["Claude Code Rust Port"]
+authors = ["MacHelper Rust Port"]
 license = "MIT"
 
 [workspace.dependencies]

@@ -1,4 +1,4 @@
-// ConfigTool: get or set Claude Code configuration settings at runtime.
+// ConfigTool: get or set MacHelper configuration settings at runtime.
 //
 // Reads from and persists to ~/.claude/settings.json.
 // Supported settings: model, max_tokens, verbose, permission_mode.
@@ -29,7 +29,7 @@ impl Tool for ConfigTool {
     fn name(&self) -> &str { "Config" }
 
     fn description(&self) -> &str {
-        "Get or set Claude Code configuration settings. Omit 'value' to read the current value. \
+        "Get or set MacHelper configuration settings. Omit 'value' to read the current value. \
          Supported settings: model, max_tokens, verbose, permission_mode, auto_compact. \
          Changes persist to ~/.claude/settings.json."
     }

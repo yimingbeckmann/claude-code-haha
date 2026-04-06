@@ -102,7 +102,7 @@ fn default_toggles() -> Vec<PrivacyToggle> {
             key: "usage_sharing",
             label: "Usage Sharing",
             description: "Share aggregate usage patterns (no personal data) to help \
-                          Anthropic understand how Claude Code is used.",
+                          Anthropic understand how MacHelper is used.",
             enabled: false,
         },
         PrivacyToggle {

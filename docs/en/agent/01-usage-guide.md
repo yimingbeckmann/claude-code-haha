@@ -1,6 +1,6 @@
-# Claude Code Multi-Agent System — Usage Guide
+# MacHelper Multi-Agent System — Usage Guide
 
-> Let Claude Code orchestrate multiple specialized agents to handle complex tasks in parallel.
+> Let MacHelper orchestrate multiple specialized agents to handle complex tasks in parallel.
 
 <p align="center">
 <a href="#_1-what-is-the-multi-agent-system">Multi-Agent System</a> · <a href="#_2-six-built-in-agents">Six Built-in Agents</a> · <a href="#_3-how-to-spawn-agents">Spawning Agents</a> · <a href="#_4-background-task-management">Background Tasks</a> · <a href="#_5-agent-teams-—-multi-agent-collaboration">Agent Teams</a> · <a href="#_6-custom-agents">Custom Agents</a> · <a href="#_7-permission-modes">Permission Modes</a> · <a href="#_8-quick-reference">Quick Reference</a>
@@ -12,7 +12,7 @@
 
 ## 1. What Is the Multi-Agent System?
 
-Claude Code's multi-agent system is an **intelligent task orchestration framework** that enables the primary agent to spawn multiple specialized subagents, each executing different tasks independently, then aggregating results for the user.
+MacHelper's multi-agent system is an **intelligent task orchestration framework** that enables the primary agent to spawn multiple specialized subagents, each executing different tasks independently, then aggregating results for the user.
 
 Core philosophy: **Break large tasks into specialized subtasks, execute them in parallel, and boost efficiency.**
 
@@ -29,7 +29,7 @@ Core philosophy: **Break large tasks into specialized subtasks, execute them in 
 
 ![Six Built-in Agents](./images/02-agent-types.png)
 
-Claude Code ships with 6 specialized agent types, each with a specific tool pool and intended use case:
+MacHelper ships with 6 specialized agent types, each with a specific tool pool and intended use case:
 
 ### 2.1 general-purpose (General Agent)
 
@@ -95,15 +95,15 @@ Agent({
 - **Model**: Inherited from parent
 - **Characteristics**: Always runs in the background; outputs PASS/FAIL/PARTIAL verdicts; displayed with a red badge
 
-### 2.5 claude-code-guide (Guide Agent)
+### 2.5 machelper-guide (Guide Agent)
 
-**Use case**: Answer questions about Claude Code, Agent SDK, or the Claude API.
+**Use case**: Answer questions about MacHelper, Agent SDK, or the Claude API.
 
 ```
 Agent({
   description: "Query Claude API usage",
   prompt: "How do I use the tool_use feature...",
-  subagent_type: "claude-code-guide"
+  subagent_type: "machelper-guide"
 })
 ```
 
@@ -113,7 +113,7 @@ Agent({
 
 ### 2.6 statusline-setup (Status Bar Configuration Agent)
 
-**Use case**: Configure the Claude Code status bar display.
+**Use case**: Configure the MacHelper status bar display.
 
 - **Tool pool**: Read + Edit only
 - **Model**: Sonnet
@@ -127,7 +127,7 @@ Agent({
 | Explore | Read-only | Search + Read | Haiku | Quick exploration |
 | Plan | Read-only | Search + Read | Inherited | Architecture planning |
 | verification | Read-only | Search + Read | Inherited | Independent verification |
-| claude-code-guide | Read-only | Search + Web | Haiku | Documentation guide |
+| machelper-guide | Read-only | Search + Web | Haiku | Documentation guide |
 | statusline-setup | Read/Write | Read + Edit | Sonnet | Status bar config |
 
 ---

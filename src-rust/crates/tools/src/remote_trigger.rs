@@ -28,7 +28,7 @@ impl Tool for RemoteTriggerTool {
     }
 
     fn description(&self) -> &str {
-        "Send a named event to another active Claude Code session. \
+        "Send a named event to another active MacHelper session. \
          Use this to coordinate across parallel sessions or notify a parent session of results."
     }
 

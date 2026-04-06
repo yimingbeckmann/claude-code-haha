@@ -1,4 +1,4 @@
-// cc-tui: Terminal UI using ratatui + crossterm for the Claude Code Rust port.
+// cc-tui: Terminal UI using ratatui + crossterm for the MacHelper Rust port.
 //
 // This crate provides the interactive terminal interface including:
 // - Message display with syntax highlighting
@@ -459,7 +459,7 @@ mod tests {
             .collect::<Vec<_>>()
             .join("");
 
-        assert!(rendered.contains("Claude Code"));
+        assert!(rendered.contains("MacHelper"));
         assert!(rendered.contains("hello"));
     }
 

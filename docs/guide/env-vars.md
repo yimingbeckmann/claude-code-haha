@@ -12,7 +12,7 @@
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | 否 | Opus 级别模型映射 |
 | `API_TIMEOUT_MS` | 否 | API 请求超时，默认 600000 (10min) |
 | `DISABLE_TELEMETRY` | 否 | 设为 `1` 禁用遥测 |
-| `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | 否 | 设为 `1` 禁用非必要网络请求 |
+| `MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC` | 否 | 设为 `1` 禁用非必要网络请求 |
 
 ## 配置方式
 
@@ -43,7 +43,7 @@ API_TIMEOUT_MS=3000000
 
 # 禁用遥测和非必要网络请求
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 ### 方式二：`~/.claude/settings.json`

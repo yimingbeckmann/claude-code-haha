@@ -41,7 +41,7 @@ impl OutputStyleDef {
         Self {
             name: "default".to_string(),
             label: "Default".to_string(),
-            description: "Standard Claude Code responses.".to_string(),
+            description: "Standard MacHelper responses.".to_string(),
             prompt: String::new(),
         }
     }

@@ -5,7 +5,7 @@
 ## 原理
 
 ```
-claude-code-haha ──Anthropic协议──▶ LiteLLM Proxy ──OpenAI协议──▶ 目标模型 API
+machelper ──Anthropic协议──▶ LiteLLM Proxy ──OpenAI协议──▶ 目标模型 API
                                       (协议转换)
 ```
 
@@ -120,7 +120,7 @@ ANTHROPIC_DEFAULT_HAIKU_MODEL=gpt-4o
 ANTHROPIC_DEFAULT_OPUS_MODEL=gpt-4o
 API_TIMEOUT_MS=3000000
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 #### 方式 B：通过 `~/.claude/settings.json`
@@ -136,7 +136,7 @@ CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "gpt-4o",
     "API_TIMEOUT_MS": "3000000",
     "DISABLE_TELEMETRY": "1",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+    "MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   }
 }
 ```
@@ -146,7 +146,7 @@ CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 ### 5. 启动并验证
 
 ```bash
-./bin/claude-haha
+./bin/machelper
 ```
 
 如果一切正常，你应该能看到正常的对话界面，实际调用的是你配置的目标模型。
@@ -167,7 +167,7 @@ ANTHROPIC_DEFAULT_SONNET_MODEL=openai/gpt-4o
 ANTHROPIC_DEFAULT_HAIKU_MODEL=openai/gpt-4o-mini
 ANTHROPIC_DEFAULT_OPUS_MODEL=openai/gpt-4o
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 ### MiniMax（已在 .env.example 中配置）
@@ -181,14 +181,14 @@ ANTHROPIC_DEFAULT_HAIKU_MODEL=MiniMax-M2.7-highspeed
 ANTHROPIC_DEFAULT_OPUS_MODEL=MiniMax-M2.7-highspeed
 API_TIMEOUT_MS=3000000
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 ---
 
 ## 方式三：其他代理工具
 
-社区还有一些专门为 Claude Code 做的代理工具：
+社区还有一些专门为 MacHelper 做的代理工具：
 
 | 工具 | 说明 | 链接 |
 |------|------|------|
@@ -222,7 +222,7 @@ Anthropic 的 Extended Thinking 功能是专有特性，其他模型不支持。
 建议配置以下环境变量以避免不必要的网络请求：
 ```
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 ---

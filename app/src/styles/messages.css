@@ -1,6 +1,6 @@
 /* ================================================================
    messages.css -- Comprehensive Message & Component Styles
-   Claw Code (Claude Code GUI)
+   Claw Code (MacHelper GUI)
    ================================================================
    Sections:
      1.  Animation Keyframes
@@ -400,7 +400,7 @@
    5. INLINE CODE & CODE BLOCKS
    ================================================================ */
 
-/* Inline code -- pink/red highlight like Claude Code's terminal */
+/* Inline code -- pink/red highlight like MacHelper's terminal */
 .inline-code {
   background: rgba(168, 85, 247, 0.12);
   color: var(--accent-bright);
@@ -526,7 +526,7 @@
 
 
 /* ================================================================
-   6. THINKING MESSAGES (Claude Code ∴ style)
+   6. THINKING MESSAGES (MacHelper ∴ style)
    ================================================================ */
 
 .thinking-message {
@@ -3727,7 +3727,7 @@
 }
 
 /* ══════════════════════════════════════════════════
-   Claude Code CLI — exact visual match
+   MacHelper CLI — exact visual match
    ══════════════════════════════════════════════════ */
 
 /* ── Assistant text: no card, just markdown ── */
@@ -3810,7 +3810,7 @@
 }
 
 /* ══════════════════════════════════════════════════
-   Tool display — exact Claude Code CLI format:
+   Tool display — exact MacHelper CLI format:
    ● ToolName (summary)
      ⎿  result text
    ══════════════════════════════════════════════════ */

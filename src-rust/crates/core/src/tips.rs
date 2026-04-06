@@ -1,4 +1,4 @@
-// tips.rs — Tip scheduling system for Claude Code.
+// tips.rs — Tip scheduling system for MacHelper.
 //
 // Ported from:
 //   src/services/tips/tipScheduler.ts

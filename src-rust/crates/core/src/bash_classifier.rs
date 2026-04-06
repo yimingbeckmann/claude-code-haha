@@ -1,4 +1,4 @@
-// Bash security classifier for the Claude Code Rust port.
+// Bash security classifier for the MacHelper Rust port.
 //
 // Classifies shell commands by risk level and determines whether they can be
 // auto-approved given the current permission mode.  Used by BashTool's

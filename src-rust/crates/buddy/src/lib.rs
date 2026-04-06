@@ -1,4 +1,4 @@
-/// cc-buddy: Tamagotchi/Buddy companion system for Claude Code CLI.
+/// cc-buddy: Tamagotchi/Buddy companion system for MacHelper CLI.
 ///
 /// Ported from src/buddy/ (TypeScript). All bones (species, rarity, stats,
 /// eye, hat, shiny) are deterministically derived from the user-ID via a

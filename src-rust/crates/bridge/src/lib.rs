@@ -1,6 +1,6 @@
 // cc-bridge: Remote control bridge implementation.
 //
-// The bridge connects the local Claude Code CLI to the claude.ai web UI,
+// The bridge connects the local MacHelper CLI to the claude.ai web UI,
 // enabling mobile/web-initiated sessions. This module implements:
 //
 // - Bridge configuration management (env-var and defaults)
@@ -191,14 +191,14 @@ impl BridgeConfig {
     /// Build config from environment variables.
     ///
     /// Recognised variables:
-    /// - `CLAUDE_CODE_BRIDGE_URL` — overrides `server_url` and sets `enabled = true`
-    /// - `CLAUDE_CODE_BRIDGE_TOKEN` / `CLAUDE_BRIDGE_OAUTH_TOKEN` — sets `session_token`
+    /// - `MACHELPER_BRIDGE_URL` — overrides `server_url` and sets `enabled = true`
+    /// - `MACHELPER_BRIDGE_TOKEN` / `CLAUDE_BRIDGE_OAUTH_TOKEN` — sets `session_token`
     /// - `CLAUDE_BRIDGE_BASE_URL` — alternative URL override (ant-only dev override)
     pub fn from_env() -> Self {
         let mut config = Self::default();
 
         // URL override (sets enabled implicitly)
-        if let Ok(url) = std::env::var("CLAUDE_CODE_BRIDGE_URL")
+        if let Ok(url) = std::env::var("MACHELPER_BRIDGE_URL")
             .or_else(|_| std::env::var("CLAUDE_BRIDGE_BASE_URL"))
         {
             if !url.is_empty() {
@@ -208,7 +208,7 @@ impl BridgeConfig {
         }
 
         // Token override
-        if let Ok(token) = std::env::var("CLAUDE_CODE_BRIDGE_TOKEN")
+        if let Ok(token) = std::env::var("MACHELPER_BRIDGE_TOKEN")
             .or_else(|_| std::env::var("CLAUDE_BRIDGE_OAUTH_TOKEN"))
         {
             if !token.is_empty() {
@@ -408,7 +408,7 @@ impl BridgeSession {
         let http = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(30))
             .user_agent(format!(
-                "claude-code-rust/{}",
+                "machelper-rust/{}",
                 env!("CARGO_PKG_VERSION")
             ))
             .build()
@@ -442,7 +442,7 @@ impl BridgeSession {
 
     /// Register this bridge session with the CCR server.
     ///
-    /// POST `/api/claude_code/sessions` — mirrors the TypeScript
+    /// POST `/api/machelper/sessions` — mirrors the TypeScript
     /// `registerBridgeEnvironment` call in `bridgeApi.ts`.
     pub async fn register(&mut self) -> anyhow::Result<()> {
         let token = self
@@ -452,7 +452,7 @@ impl BridgeSession {
             .ok_or_else(|| anyhow::anyhow!("Bridge register: no session token"))?;
 
         let url = format!(
-            "{}/api/claude_code/sessions",
+            "{}/api/machelper/sessions",
             self.config.server_url
         );
 
@@ -494,7 +494,7 @@ impl BridgeSession {
 
     /// Deregister the session on clean shutdown.
     ///
-    /// DELETE `/api/claude_code/sessions/{id}` — best-effort; errors are
+    /// DELETE `/api/machelper/sessions/{id}` — best-effort; errors are
     /// logged and swallowed so they don't block process exit.
     pub async fn deregister(&self) {
         let Some(token) = self.config.session_token.as_deref() else {
@@ -502,7 +502,7 @@ impl BridgeSession {
         };
 
         let url = format!(
-            "{}/api/claude_code/sessions/{}",
+            "{}/api/machelper/sessions/{}",
             self.config.server_url, self.session_id
         );
 
@@ -541,7 +541,7 @@ impl BridgeSession {
 
     /// Long-poll for incoming messages from the web UI.
     ///
-    /// GET `/api/claude_code/sessions/{id}/poll`
+    /// GET `/api/machelper/sessions/{id}/poll`
     ///
     /// - `200` → JSON array of [`BridgeMessage`]; may be empty.
     /// - `204` → No messages; returns empty vec.
@@ -554,7 +554,7 @@ impl BridgeSession {
             .ok_or_else(|| anyhow::anyhow!("Poll: no token"))?;
 
         let url = format!(
-            "{}/api/claude_code/sessions/{}/poll",
+            "{}/api/machelper/sessions/{}/poll",
             self.config.server_url, self.session_id
         );
 
@@ -595,7 +595,7 @@ impl BridgeSession {
 
     /// Batch-upload outgoing events to the web UI.
     ///
-    /// POST `/api/claude_code/sessions/{id}/events`
+    /// POST `/api/machelper/sessions/{id}/events`
     async fn upload_events(&self, events: Vec<BridgeEvent>) -> anyhow::Result<()> {
         if events.is_empty() {
             return Ok(());
@@ -608,7 +608,7 @@ impl BridgeSession {
             .ok_or_else(|| anyhow::anyhow!("Upload: no token"))?;
 
         let url = format!(
-            "{}/api/claude_code/sessions/{}/events",
+            "{}/api/machelper/sessions/{}/events",
             self.config.server_url, self.session_id
         );
 
@@ -778,7 +778,7 @@ impl BridgeManager {
     pub fn new(config: BridgeConfig) -> anyhow::Result<Self> {
         let http = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(30))
-            .user_agent(format!("claude-code-rust/{}", env!("CARGO_PKG_VERSION")))
+            .user_agent(format!("machelper-rust/{}", env!("CARGO_PKG_VERSION")))
             .build()
             .context("BridgeManager: failed to build HTTP client")?;
         Ok(Self { config, http })
@@ -824,7 +824,7 @@ pub async fn start_bridge(
 )> {
     let http = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(30))
-        .user_agent(format!("claude-code-rust/{}", env!("CARGO_PKG_VERSION")))
+        .user_agent(format!("machelper-rust/{}", env!("CARGO_PKG_VERSION")))
         .build()
         .context("start_bridge: failed to build HTTP client")?;
 

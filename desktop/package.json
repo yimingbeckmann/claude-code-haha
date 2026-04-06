@@ -44,8 +44,8 @@
         "to": "backend"
       },
       {
-        "from": "claude-code-runtime",
-        "to": "claude-code-runtime",
+        "from": "machelper-runtime",
+        "to": "machelper-runtime",
         "filter": ["**/*"]
       }
     ],

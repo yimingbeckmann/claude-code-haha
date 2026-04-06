@@ -1,4 +1,4 @@
-// session_storage.rs — JSONL transcript persistence for the Rust port of Claude Code.
+// session_storage.rs — JSONL transcript persistence for the Rust port of MacHelper.
 //
 // File layout:  ~/.claude/projects/{base64url(project_root)}/{session_id}.jsonl
 //
@@ -128,7 +128,7 @@ pub struct TranscriptMessage {
     #[serde(default = "default_user_type")]
     pub user_type: String,
 
-    /// Version of the Claude Code binary, mirrors `MACRO.VERSION`.
+    /// Version of the MacHelper binary, mirrors `MACRO.VERSION`.
     #[serde(default)]
     pub version: String,
 

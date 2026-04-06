@@ -1,4 +1,4 @@
-# Claude Code — Tools System
+# MacHelper — Tools System
 
 ## Table of Contents
 
@@ -264,7 +264,7 @@ Includes (conditionally):
 function getTools(permissionContext: ToolPermissionContext): Tool[]
 ```
 
-- If `CLAUDE_CODE_SIMPLE` env var is set: returns only `[BashTool, FileReadTool, FileEditTool]`
+- If `MACHELPER_SIMPLE` env var is set: returns only `[BashTool, FileReadTool, FileEditTool]`
 - Calls `getAllBaseTools()`, filters with `filterToolsByDenyRules()`
 - In REPL mode: hides `REPL_ONLY_TOOLS` (Bash, Read, Write, Edit, Glob, Grep, NotebookEdit, Agent)
 
@@ -564,7 +564,7 @@ class MaxFileReadTokenExceededError extends Error
 | `command` | `string` | Yes | Shell command to execute |
 | `timeout` | `number` | No | Timeout in milliseconds (max varies by context) |
 | `description` | `string` | No | Human-readable description of what the command does |
-| `run_in_background` | `boolean` | No | Launch as background task; omitted from schema when `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=true` |
+| `run_in_background` | `boolean` | No | Launch as background task; omitted from schema when `MACHELPER_DISABLE_BACKGROUND_TASKS=true` |
 | `dangerouslyDisableSandbox` | `boolean` | No | Override sandbox mode |
 | `_simulatedSedEdit` | internal | — | Never in model-facing schema; used for sed edit simulation |
 
@@ -644,7 +644,7 @@ Windows-native PowerShell execution tool, mirroring BashTool's interface.
 | `command` | `string` | Yes | PowerShell command to execute |
 | `timeout` | `number` | No | Optional timeout in milliseconds (`max getMaxTimeoutMs()`) |
 | `description` | `string` | No | Description of what the command does |
-| `run_in_background` | `boolean` | No | Background execution; omitted when `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=true` |
+| `run_in_background` | `boolean` | No | Background execution; omitted when `MACHELPER_DISABLE_BACKGROUND_TASKS=true` |
 | `dangerouslyDisableSandbox` | `boolean` | No | Override sandbox mode |
 
 **Output Schema:**
@@ -1914,7 +1914,7 @@ type Progress  // Re-export of SkillToolProgress
 const REPL_TOOL_NAME = 'REPL'
 
 function isReplModeEnabled(): boolean
-// true when: CLAUDE_CODE_REPL not falsy AND (CLAUDE_REPL_MODE=1 OR (USER_TYPE='ant' AND CLAUDE_CODE_ENTRYPOINT='cli'))
+// true when: MACHELPER_REPL not falsy AND (CLAUDE_REPL_MODE=1 OR (USER_TYPE='ant' AND MACHELPER_ENTRYPOINT='cli'))
 // SDK entrypoints default to REPL mode OFF
 
 const REPL_ONLY_TOOLS = new Set([

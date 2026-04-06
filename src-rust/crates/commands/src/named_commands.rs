@@ -105,7 +105,7 @@ pub struct AddDirCommand;
 
 impl NamedCommand for AddDirCommand {
     fn name(&self) -> &str { "add-dir" }
-    fn description(&self) -> &str { "Add a directory to Claude Code's allowed workspace paths" }
+    fn description(&self) -> &str { "Add a directory to MacHelper's allowed workspace paths" }
     fn usage(&self) -> &str { "claude add-dir <path>" }
 
     fn execute_named(&self, args: &[&str], _ctx: &CommandContext) -> CommandResult {
@@ -421,7 +421,7 @@ pub struct PassesCommand;
 
 impl NamedCommand for PassesCommand {
     fn name(&self) -> &str { "passes" }
-    fn description(&self) -> &str { "Share a free week of Claude Code with friends" }
+    fn description(&self) -> &str { "Share a free week of MacHelper with friends" }
     fn usage(&self) -> &str { "claude passes" }
 
     fn execute_named(&self, _args: &[&str], _ctx: &CommandContext) -> CommandResult {
@@ -509,7 +509,7 @@ impl NamedCommand for IdeCommand {
         if ides.is_empty() {
             CommandResult::Message(
                 "No IDE connections detected.\n\
-                 To connect an IDE, install the Claude Code extension in VS Code or JetBrains.".to_string()
+                 To connect an IDE, install the MacHelper extension in VS Code or JetBrains.".to_string()
             )
         } else {
             CommandResult::Message(format!(
@@ -610,7 +610,7 @@ impl NamedCommand for DesktopCommand {
                 "https://claude.ai/download/windows",
                 "1. Download and install Claude Desktop\n\
                  2. Open Claude Desktop and sign in with the same account\n\
-                 3. Your Claude Code sessions will sync automatically"
+                 3. Your MacHelper sessions will sync automatically"
             )
         } else if cfg!(target_os = "macos") {
             (
@@ -618,14 +618,14 @@ impl NamedCommand for DesktopCommand {
                 "https://claude.ai/download/mac",
                 "1. Download and install Claude Desktop\n\
                  2. Open Claude Desktop and sign in with the same account\n\
-                 3. Your Claude Code sessions will sync automatically"
+                 3. Your MacHelper sessions will sync automatically"
             )
         } else {
             (
                 "Linux",
                 "https://claude.ai/download",
                 "Claude Desktop is currently available for Windows and macOS.\n\
-                 On Linux, use Claude Code CLI or the web app at https://claude.ai"
+                 On Linux, use MacHelper CLI or the web app at https://claude.ai"
             )
         };
 
@@ -679,12 +679,12 @@ impl NamedCommand for InstallGithubAppCommand {
 
     fn execute_named(&self, _args: &[&str], _ctx: &CommandContext) -> CommandResult {
         CommandResult::Message(
-            "To install the Claude Code GitHub App:\n\
-             1. Visit https://github.com/apps/claude-code-app and click Install\n\
+            "To install the MacHelper GitHub App:\n\
+             1. Visit https://github.com/apps/machelper-app and click Install\n\
              2. Select the repositories to enable\n\
              3. Add your ANTHROPIC_API_KEY to repository secrets\n\n\
-             The app enables Claude Code in GitHub Actions workflows.\n\
-             Docs: https://docs.anthropic.com/claude-code/github-actions"
+             The app enables MacHelper in GitHub Actions workflows.\n\
+             Docs: https://docs.anthropic.com/machelper/github-actions"
                 .to_string(),
         )
     }
@@ -698,7 +698,7 @@ pub struct RemoteSetupCommand;
 
 impl NamedCommand for RemoteSetupCommand {
     fn name(&self) -> &str { "remote-setup" }
-    fn description(&self) -> &str { "Check and configure a remote Claude Code environment" }
+    fn description(&self) -> &str { "Check and configure a remote MacHelper environment" }
     fn usage(&self) -> &str { "claude remote-setup" }
 
     fn execute_named(&self, _args: &[&str], _ctx: &CommandContext) -> CommandResult {
@@ -760,7 +760,7 @@ impl NamedCommand for RemoteSetupCommand {
              {}",
             steps.join("\n"),
             if all_ok {
-                "\u{2713} All checks passed. Claude Code is ready for remote use.\nStart a session: claude --bridge"
+                "\u{2713} All checks passed. MacHelper is ready for remote use.\nStart a session: claude --bridge"
             } else {
                 "\u{2717} Some checks failed. Fix the issues above and run 'claude remote-setup' again."
             }
@@ -776,7 +776,7 @@ pub struct StickersCommand;
 
 impl NamedCommand for StickersCommand {
     fn name(&self) -> &str { "stickers" }
-    fn description(&self) -> &str { "Open the Claude Code sticker page in your browser" }
+    fn description(&self) -> &str { "Open the MacHelper sticker page in your browser" }
     fn usage(&self) -> &str { "claude stickers" }
 
     fn execute_named(&self, _args: &[&str], _ctx: &CommandContext) -> CommandResult {

@@ -1,6 +1,6 @@
-// claude-code CLI entry point
+// machelper CLI entry point
 //
-// This is the main binary for the Claude Code Rust port. It:
+// This is the main binary for the MacHelper Rust port. It:
 // 1. Parses CLI arguments with clap (mirrors cli.tsx + main.tsx flags)
 // 2. Loads configuration from settings.json + env vars
 // 3. Builds system/user context (git status, CLAUDE.md)
@@ -89,7 +89,7 @@ impl Tool for McpToolWrapper {
 #[command(
     name = "claude",
     version = APP_VERSION,
-    about = "Claude Code - AI-powered coding assistant",
+    about = "MacHelper - AI-powered coding assistant",
     long_about = None,
 )]
 struct Cli {
@@ -304,7 +304,7 @@ async fn main() -> anyhow::Result<()> {
         .clone()
         .unwrap_or_else(|| std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")));
 
-    debug!(cwd = %cwd.display(), "Starting Claude Code");
+    debug!(cwd = %cwd.display(), "Starting MacHelper");
 
     // Load settings from disk
     let settings = Settings::load().await.unwrap_or_default();

@@ -12,7 +12,7 @@
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | No | Opus-tier model mapping |
 | `API_TIMEOUT_MS` | No | API request timeout, default `600000` (10min) |
 | `DISABLE_TELEMETRY` | No | Set to `1` to disable telemetry |
-| `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | No | Set to `1` to disable non-essential network traffic |
+| `MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC` | No | Set to `1` to disable non-essential network traffic |
 
 ## Configuration Methods
 
@@ -43,7 +43,7 @@ API_TIMEOUT_MS=3000000
 
 # Disable telemetry and non-essential network traffic
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 ### Option 2: `~/.claude/settings.json`

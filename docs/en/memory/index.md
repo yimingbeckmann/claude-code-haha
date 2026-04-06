@@ -1,4 +1,4 @@
-# Claude Code Memory System Documentation
+# MacHelper Memory System Documentation
 
 > Complete usage guide and technical implementation documentation for the memory system
 
@@ -16,7 +16,7 @@ A comprehensive user-facing manual covering:
 - **Management operations**: Forgetting, ignoring, manual editing, disabling, custom directories
 - **Lifecycle**: From learning to injection, freshness management
 
-**Target audience**: All Claude Code users
+**Target audience**: All MacHelper users
 
 ---
 
@@ -55,7 +55,7 @@ Claude's "dreaming" mechanism -- a deep dive into background silent memory conso
 
 ## Illustrations
 
-All illustrations use a dark background (#1a1a2e) + Anthropic brand copper-orange (#D97757) style, consistent with the official Claude Code documentation.
+All illustrations use a dark background (#1a1a2e) + Anthropic brand copper-orange (#D97757) style, consistent with the official MacHelper documentation.
 
 | Image | Description | Size |
 |-------|-------------|------|
@@ -113,7 +113,7 @@ All illustrations use a dark background (#1a1a2e) + Anthropic brand copper-orang
 
 ## Related Resources
 
-- [Claude Code Haha Home](/en/)
+- [MacHelper Haha Home](/en/)
 - [Memory system source code](https://github.com/NanmiCoder/cc-haha/tree/main/src/memdir/)
 - [Auto-extraction service](https://github.com/NanmiCoder/cc-haha/tree/main/src/services/extractMemories/)
 - [AutoDream service](https://github.com/NanmiCoder/cc-haha/tree/main/src/services/autoDream/)

@@ -626,7 +626,7 @@ export default function AppShell() {
     setMessages(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
   }, []);
 
-  // Generate a short title from user message (like Claude Code)
+  // Generate a short title from user message (like MacHelper)
   const generateTitle = useCallback((userText: string): string => {
     const text = userText.trim();
     // If it starts with /, it's a command

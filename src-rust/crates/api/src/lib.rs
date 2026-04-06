@@ -1,4 +1,4 @@
-// cc-api: Anthropic API client with streaming SSE support for the Claude Code
+// cc-api: Anthropic API client with streaming SSE support for the MacHelper
 // Rust port.
 //
 // Handles:

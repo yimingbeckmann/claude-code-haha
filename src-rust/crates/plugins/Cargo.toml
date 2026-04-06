@@ -4,7 +4,7 @@ version.workspace = true
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Plugin runtime for the Claude Code CLI Rust port"
+description = "Plugin runtime for the MacHelper CLI Rust port"
 
 [dependencies]
 cc-core = { workspace = true }

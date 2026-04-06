@@ -471,7 +471,7 @@ impl Default for PromptInputState {
 // Rendering
 // ---------------------------------------------------------------------------
 
-/// Render the prompt input widget in the same low-chrome style as Claude Code:
+/// Render the prompt input widget in the same low-chrome style as MacHelper:
 /// one live input row plus an accent underline. Suggestions are rendered by the
 /// footer, not as a boxed dropdown here.
 pub fn render_prompt_input(

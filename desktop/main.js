@@ -260,14 +260,14 @@ function setupPTY() {
   if (!bunBin) { console.error("bun not found at:", bunPaths); return; }
 
   // Use the runtime dir resolved at startup (ensureRuntimeDir)
-  const runtimeDir = process.env.CLAUDE_RUNTIME_DIR || path.join(process.env.HOME || "", "Applications", "claw-code", "claude-code-runtime");
+  const runtimeDir = process.env.CLAUDE_RUNTIME_DIR || path.join(process.env.HOME || "", "Applications", "claw-code", "machelper-runtime");
 
   const cfg = readConfig();
   const extraPaths = [`${HOME_DIR}/.bun/bin`, "/opt/homebrew/bin", "/usr/local/bin"];
-  // Strip ALL CLAUDE_CODE_* and SDK vars from Electron's env to prevent interference
+  // Strip ALL MACHELPER_* and SDK vars from Electron's env to prevent interference
   const env = { ...process.env };
   for (const key of Object.keys(env)) {
-    if (key.startsWith("CLAUDE_CODE_") || key.startsWith("CLAUDE_AGENT_") ||
+    if (key.startsWith("MACHELPER_") || key.startsWith("CLAUDE_AGENT_") ||
         key === "CLAUDECODE" || key === "OPERON_SANDBOXED_NETWORK" ||
         key === "DEFAULT_LLM_MODEL" || key === "ENABLE_TOOL_SEARCH" ||
         key === "MCP_CONNECTION_NONBLOCKING" || key === "DISABLE_AUTOUPDATER" ||
@@ -282,8 +282,8 @@ function setupPTY() {
   Object.assign(env, {
     PATH: [...extraPaths, process.env.PATH || ""].join(":"),
     DISABLE_TELEMETRY: "1",
-    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1",
-    CLAUDE_CODE_REMOTE: "1",
+    MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC: "1",
+    MACHELPER_REMOTE: "1",
     TERM: "xterm-256color",
     COLORTERM: "truecolor",
   });
@@ -293,9 +293,9 @@ function setupPTY() {
 
   // Pass --model to keep CLI tab consistent with GUI tab
   const savedModel = cfg.model || "claude-sonnet-4-6";
-  // Use bash to run bin/claude-haha — same path as terminal which works
+  // Use bash to run bin/machelper — same path as terminal which works
   const shellBin = "/bin/bash";
-  const ptyArgs = ["-c", `exec "${runtimeDir}/bin/claude-haha" --dangerously-skip-permissions --model ${savedModel}`];
+  const ptyArgs = ["-c", `exec "${runtimeDir}/bin/machelper" --dangerously-skip-permissions --model ${savedModel}`];
 
   console.log("Spawning PTY with bash in", runtimeDir, "model:", savedModel);
   fs.writeFileSync("/tmp/pty-debug.json", JSON.stringify({ env, args: ptyArgs, cwd: runtimeDir, shell: shellBin }, null, 2));
@@ -615,7 +615,7 @@ function updateTrayMenu() {
 // ─── CLI launcher ────────────────────────────────────────────
 function launchCLI() {
   const cfg = readConfig();
-  const cliDir = process.env.CLAUDE_RUNTIME_DIR || path.join(process.env.HOME || "", "Applications", "claw-code", "claude-code-runtime");
+  const cliDir = process.env.CLAUDE_RUNTIME_DIR || path.join(process.env.HOME || "", "Applications", "claw-code", "machelper-runtime");
 
   // Find bun
   const bunPaths = [
@@ -652,7 +652,7 @@ function launchCLI() {
 // (userData) and restore _modules -> node_modules there.
 function ensureRuntimeDir() {
   // Source runtime (development checkout) — always preferred if it has node_modules
-  const srcRuntime = path.join(process.env.HOME || "/Users/yiming", "Applications", "claw-code", "claude-code-runtime");
+  const srcRuntime = path.join(process.env.HOME || "/Users/yiming", "Applications", "claw-code", "machelper-runtime");
   if (fs.existsSync(path.join(srcRuntime, "node_modules"))) {
     console.log("Using source runtime:", srcRuntime);
     return srcRuntime;
@@ -660,14 +660,14 @@ function ensureRuntimeDir() {
 
   // Bundled runtime — copy to writable userData location
   const bundledRT = isDev
-    ? path.join(__dirname, "..", "claude-code-runtime")
-    : path.join(process.resourcesPath, "claude-code-runtime");
+    ? path.join(__dirname, "..", "machelper-runtime")
+    : path.join(process.resourcesPath, "machelper-runtime");
   if (!fs.existsSync(bundledRT)) {
     console.error("No runtime found at", bundledRT);
     return bundledRT;
   }
 
-  const writableRT = path.join(userDataPath, "claude-code-runtime");
+  const writableRT = path.join(userDataPath, "machelper-runtime");
   const writableNM = path.join(writableRT, "node_modules");
 
   // If writable copy already has node_modules, use it

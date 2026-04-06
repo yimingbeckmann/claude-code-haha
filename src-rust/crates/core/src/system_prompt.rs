@@ -122,7 +122,7 @@ impl OutputStyle {
 // System prompt prefix variants
 // ---------------------------------------------------------------------------
 
-/// Which entrypoint context Claude Code is running in.
+/// Which entrypoint context MacHelper is running in.
 /// Determines the opening attribution line of the system prompt.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum SystemPromptPrefix {
@@ -144,7 +144,7 @@ pub enum SystemPromptPrefix {
 impl SystemPromptPrefix {
     /// Detect from environment variables, mirroring `getCLISyspromptPrefix`.
     pub fn detect(is_non_interactive: bool, has_append_system_prompt: bool) -> Self {
-        // Vertex: always uses the default "Claude Code" prefix.
+        // Vertex: always uses the default "MacHelper" prefix.
         if std::env::var("ANTHROPIC_VERTEX_PROJECT_ID").is_ok()
             || std::env::var("CLOUD_ML_PROJECT_ID").is_ok()
         {
@@ -155,7 +155,7 @@ impl SystemPromptPrefix {
             return Self::Bedrock;
         }
 
-        if std::env::var("CLAUDE_CODE_REMOTE").is_ok() {
+        if std::env::var("MACHELPER_REMOTE").is_ok() {
             return Self::Remote;
         }
 
@@ -174,10 +174,10 @@ impl SystemPromptPrefix {
     pub fn attribution_text(self) -> &'static str {
         match self {
             Self::Cli | Self::Vertex | Self::Bedrock | Self::Remote => {
-                "You are Claude Code, Anthropic's official CLI for Claude."
+                "You are MacHelper, your macOS automation coworker."
             }
             Self::SdkPreset => {
-                "You are Claude Code, Anthropic's official CLI for Claude, \
+                "You are MacHelper, your macOS automation coworker, \
                 running within the Claude Agent SDK."
             }
             Self::Sdk => {
@@ -329,7 +329,7 @@ pub fn build_system_prompt(opts: &SystemPromptOptions) -> String {
 const CORE_CAPABILITIES: &str = r#"
 ## Capabilities
 
-You have access to powerful tools for software engineering tasks:
+You have access to powerful tools for macOS automation tasks:
 - **Read/Write files**: Read any file, write new files, edit existing files with precise diffs
 - **Execute commands**: Run bash commands, PowerShell scripts, background processes
 - **Search**: Glob patterns, regex grep, web search, file content search
@@ -420,7 +420,7 @@ mod tests {
     #[test]
     fn test_default_prompt_contains_attribution() {
         let prompt = build_system_prompt(&default_opts());
-        assert!(prompt.contains("Claude Code"), "Default prompt must contain attribution");
+        assert!(prompt.contains("MacHelper"), "Default prompt must contain attribution");
     }
 
     #[test]

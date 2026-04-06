@@ -1,5 +1,5 @@
 // cc-core: Core types, error handling, configuration, settings, and constants
-// for the Claude Code CLI Rust port.
+// for the MacHelper CLI Rust port.
 //
 // All sub-modules are defined inline below.
 
@@ -57,7 +57,7 @@ pub use permissions::{
 pub mod error {
     use thiserror::Error;
 
-    /// The unified error type for the Claude Code Rust port.
+    /// The unified error type for the MacHelper Rust port.
     #[derive(Error, Debug)]
     pub enum ClaudeError {
         #[error("API error: {0}")]
@@ -2308,16 +2308,16 @@ pub mod oauth {
     pub const MANUAL_REDIRECT_URL: &str =
         "https://platform.claude.com/oauth/code/callback";
     pub const CLAUDEAI_SUCCESS_URL: &str =
-        "https://platform.claude.com/oauth/code/success?app=claude-code";
+        "https://platform.claude.com/oauth/code/success?app=machelper";
     pub const CONSOLE_SUCCESS_URL: &str = "https://platform.claude.com/buy_credits\
-        ?returnUrl=/oauth/code/success%3Fapp%3Dclaude-code";
+        ?returnUrl=/oauth/code/success%3Fapp%3Dmachelper";
 
     /// All scopes requested during login (union of Console + Claude.ai scopes).
     pub const ALL_SCOPES: &[&str] = &[
         "org:create_api_key",
         "user:profile",
         "user:inference",
-        "user:sessions:claude_code",
+        "user:sessions:machelper",
         "user:mcp_servers",
         "user:file_upload",
     ];

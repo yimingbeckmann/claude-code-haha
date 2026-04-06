@@ -24,7 +24,7 @@ pub const CONSOLE_SCOPE: &str = "org:create_api_key";
 pub const CLAUDE_AI_OAUTH_SCOPES: &[&str] = &[
     CLAUDE_AI_PROFILE_SCOPE,
     CLAUDE_AI_INFERENCE_SCOPE,
-    "user:sessions:claude_code",
+    "user:sessions:machelper",
     "user:mcp_servers",
     "user:file_upload",
 ];
@@ -39,7 +39,7 @@ pub const ALL_OAUTH_SCOPES: &[&str] = &[
     CONSOLE_SCOPE,
     CLAUDE_AI_PROFILE_SCOPE,
     CLAUDE_AI_INFERENCE_SCOPE,
-    "user:sessions:claude_code",
+    "user:sessions:machelper",
     "user:mcp_servers",
     "user:file_upload",
 ];
@@ -86,8 +86,8 @@ pub const PROD_OAUTH: OAuthConfig = OAuthConfig {
     token_url: "https://platform.claude.com/v1/oauth/token",
     api_key_url: "https://api.anthropic.com/api/oauth/claude_cli/create_api_key",
     roles_url: "https://api.anthropic.com/api/oauth/claude_cli/roles",
-    console_success_url: "https://platform.claude.com/buy_credits?returnUrl=/oauth/code/success%3Fapp%3Dclaude-code",
-    claudeai_success_url: "https://platform.claude.com/oauth/code/success?app=claude-code",
+    console_success_url: "https://platform.claude.com/buy_credits?returnUrl=/oauth/code/success%3Fapp%3Dmachelper",
+    claudeai_success_url: "https://platform.claude.com/oauth/code/success?app=machelper",
     manual_redirect_url: "https://platform.claude.com/oauth/code/callback",
     client_id: "9d1c250a-e61b-44d9-88ed-5944d1962f5e",
     oauth_file_suffix: "",
@@ -107,8 +107,8 @@ pub const STAGING_OAUTH: OAuthConfig = OAuthConfig {
     token_url: "https://platform.staging.ant.dev/v1/oauth/token",
     api_key_url: "https://api-staging.anthropic.com/api/oauth/claude_cli/create_api_key",
     roles_url: "https://api-staging.anthropic.com/api/oauth/claude_cli/roles",
-    console_success_url: "https://platform.staging.ant.dev/buy_credits?returnUrl=/oauth/code/success%3Fapp%3Dclaude-code",
-    claudeai_success_url: "https://platform.staging.ant.dev/oauth/code/success?app=claude-code",
+    console_success_url: "https://platform.staging.ant.dev/buy_credits?returnUrl=/oauth/code/success%3Fapp%3Dmachelper",
+    claudeai_success_url: "https://platform.staging.ant.dev/oauth/code/success?app=machelper",
     manual_redirect_url: "https://platform.staging.ant.dev/oauth/code/callback",
     client_id: "22422756-60c9-4084-8eb7-27705fd5cf9a",
     oauth_file_suffix: "-staging-oauth",
@@ -118,7 +118,7 @@ pub const STAGING_OAUTH: OAuthConfig = OAuthConfig {
 
 /// Client-ID Metadata Document URL for MCP OAuth (CIMD / SEP-991).
 pub const MCP_CLIENT_METADATA_URL: &str =
-    "https://claude.ai/oauth/claude-code-client-metadata";
+    "https://claude.ai/oauth/machelper-client-metadata";
 
 // ---------------------------------------------------------------------------
 // Config selection

@@ -1,4 +1,4 @@
-# Claude Code — Bridge Protocol, CLI Framework & Remote Systems
+# MacHelper — Bridge Protocol, CLI Framework & Remote Systems
 
 ## Table of Contents
 
@@ -33,7 +33,7 @@
 
 ## 1. Bridge System Overview
 
-The "Bridge" (Remote Control) system allows a local Claude Code CLI session to be driven from the claude.ai web application. It creates a bidirectional communication channel between the running CLI process and the cloud backend (CCR — Cloud Code Runner).
+The "Bridge" (Remote Control) system allows a local MacHelper CLI session to be driven from the claude.ai web application. It creates a bidirectional communication channel between the running CLI process and the cloud backend (CCR — Cloud Code Runner).
 
 ### Architecture: Two Bridge Variants
 
@@ -116,7 +116,7 @@ type WorkSecret = {
     git_info?: { type: string; repo: string; ref?: string; token?: string }
   }>
   auth: Array<{ type: string; token: string }>
-  claude_code_args?: Record<string, string> | null
+  machelper_args?: Record<string, string> | null
   mcp_config?: unknown | null
   environment_variables?: Record<string, string> | null
   use_code_sessions?: boolean              // Server-driven CCR v2 selector
@@ -138,7 +138,7 @@ type BridgeConfig = {
   verbose: boolean
   sandbox: boolean
   bridgeId: string               // Client-generated UUID identifying this bridge instance
-  workerType: string             // Sent as metadata.worker_type (e.g. 'claude_code')
+  workerType: string             // Sent as metadata.worker_type (e.g. 'machelper')
   environmentId: string          // Client-generated UUID for idempotent registration
   reuseEnvironmentId?: string    // Backend-issued ID to reuse on re-register
   apiBaseUrl: string
@@ -161,7 +161,7 @@ type SpawnMode = 'single-session' | 'worktree' | 'same-dir'
 ### BridgeWorkerType
 
 ```typescript
-type BridgeWorkerType = 'claude_code' | 'claude_code_assistant'
+type BridgeWorkerType = 'machelper' | 'machelper_assistant'
 ```
 
 ### SessionActivity
@@ -420,7 +420,7 @@ Returns `true` when `feature('CCR_AUTO_CONNECT')` and `tengu_cobalt_harbor` gate
 
 #### `isCcrMirrorEnabled(): boolean`
 
-Returns `true` when `feature('CCR_MIRROR')` and either `CLAUDE_CODE_CCR_MIRROR` env var is truthy or `tengu_ccr_mirror` gate is enabled.
+Returns `true` when `feature('CCR_MIRROR')` and either `MACHELPER_CCR_MIRROR` env var is truthy or `tengu_ccr_mirror` gate is enabled.
 
 ---
 
@@ -843,8 +843,8 @@ getTransportForUrl(url, headers, sessionId, refreshHeaders): Transport
 ```
 
 Priority:
-1. `SSETransport` — when `CLAUDE_CODE_USE_CCR_V2` env is truthy
-2. `HybridTransport` — when URL is `ws(s)://` AND `CLAUDE_CODE_POST_FOR_SESSION_INGRESS_V2` env is truthy
+1. `SSETransport` — when `MACHELPER_USE_CCR_V2` env is truthy
+2. `HybridTransport` — when URL is `ws(s)://` AND `MACHELPER_POST_FOR_SESSION_INGRESS_V2` env is truthy
 3. `WebSocketTransport` — default for `ws(s)://`
 4. Throws for unsupported protocols
 
@@ -1486,7 +1486,7 @@ enrollTrustedDevice(): Promise<void>
 
 **Token precedence:** `CLAUDE_TRUSTED_DEVICE_TOKEN` env var > keychain.
 
-**Enrollment:** `POST /api/auth/trusted_devices` with display name `"Claude Code on {hostname()} · {platform}"`. Must be called within 10 minutes of login. Best-effort — never throws. On success, persists to keychain and clears memo cache.
+**Enrollment:** `POST /api/auth/trusted_devices` with display name `"MacHelper on {hostname()} · {platform}"`. Must be called within 10 minutes of login. Best-effort — never throws. On success, persists to keychain and clears memo cache.
 
 ### codeSessionApi.ts
 
@@ -1559,11 +1559,11 @@ authLogout(): Promise<void>
 3. Calls `storeOAuthAccountInfo()`
 4. `saveOAuthTokensIfNeeded()` + `clearOAuthTokenCache()`
 5. `fetchAndStoreUserRoles()` (best-effort)
-6. For claude.ai auth: `fetchAndStoreClaudeCodeFirstTokenDate()` (best-effort)
+6. For claude.ai auth: `fetchAndStoreMacHelperFirstTokenDate()` (best-effort)
 7. For Console auth: `createAndStoreApiKey()` (required — throws if fails)
 8. `clearAuthRelatedCaches()`
 
-**`authLogin()`** fast path: When `CLAUDE_CODE_OAUTH_REFRESH_TOKEN` env var is set, exchanges directly via `refreshOAuthToken()`, skipping browser OAuth flow. Requires `CLAUDE_CODE_OAUTH_SCOPES` env var (space-separated scopes).
+**`authLogin()`** fast path: When `MACHELPER_OAUTH_REFRESH_TOKEN` env var is set, exchanges directly via `refreshOAuthToken()`, skipping browser OAuth flow. Requires `MACHELPER_OAUTH_SCOPES` env var (space-separated scopes).
 
 **`authStatus()`** JSON output fields:
 ```json
@@ -1648,8 +1648,8 @@ Bidirectional streaming for SDK mode. Extends `StructuredIO`.
 
 **Constructor behavior:**
 1. Creates `PassThrough` input stream.
-2. Reads `CLAUDE_CODE_SESSION_ACCESS_TOKEN` for initial auth headers.
-3. Reads `CLAUDE_CODE_ENVIRONMENT_RUNNER_VERSION` for `x-environment-runner-version` header.
+2. Reads `MACHELPER_SESSION_ACCESS_TOKEN` for initial auth headers.
+3. Reads `MACHELPER_ENVIRONMENT_RUNNER_VERSION` for `x-environment-runner-version` header.
 4. Creates `refreshHeaders` closure that re-reads the token dynamically on reconnects.
 5. Calls `getTransportForUrl()` to get transport (WS, Hybrid, or SSE).
 
@@ -1866,13 +1866,13 @@ Lazy-loads `App` and `REPL` components and renders them wrapped in the React tre
 | `CLAUDE_BRIDGE_OAUTH_TOKEN` | Ant-only: override OAuth token for bridge |
 | `CLAUDE_BRIDGE_BASE_URL` | Ant-only: override API base URL |
 | `CLAUDE_TRUSTED_DEVICE_TOKEN` | Override trusted device token from env |
-| `CLAUDE_CODE_USE_CCR_V2` | Use SSETransport + CCRClient for all sessions |
-| `CLAUDE_CODE_POST_FOR_SESSION_INGRESS_V2` | Use HybridTransport (WS reads + POST writes) |
-| `CLAUDE_CODE_CCR_MIRROR` | Enable CCR mirror mode |
-| `CLAUDE_CODE_SESSION_ACCESS_TOKEN` | Session ingress auth token |
-| `CLAUDE_CODE_ENVIRONMENT_RUNNER_VERSION` | Sent as `x-environment-runner-version` header |
-| `CLAUDE_CODE_OAUTH_REFRESH_TOKEN` | Fast-path login via token exchange |
-| `CLAUDE_CODE_OAUTH_SCOPES` | Required when `CLAUDE_CODE_OAUTH_REFRESH_TOKEN` is set |
+| `MACHELPER_USE_CCR_V2` | Use SSETransport + CCRClient for all sessions |
+| `MACHELPER_POST_FOR_SESSION_INGRESS_V2` | Use HybridTransport (WS reads + POST writes) |
+| `MACHELPER_CCR_MIRROR` | Enable CCR mirror mode |
+| `MACHELPER_SESSION_ACCESS_TOKEN` | Session ingress auth token |
+| `MACHELPER_ENVIRONMENT_RUNNER_VERSION` | Sent as `x-environment-runner-version` header |
+| `MACHELPER_OAUTH_REFRESH_TOKEN` | Fast-path login via token exchange |
+| `MACHELPER_OAUTH_SCOPES` | Required when `MACHELPER_OAUTH_REFRESH_TOKEN` is set |
 
 ---
 
@@ -1899,7 +1899,7 @@ Register a bridge environment.
   "branch": "main",
   "git_repo_url": "https://github.com/owner/repo",
   "max_sessions": 4,
-  "metadata": { "worker_type": "claude_code" },
+  "metadata": { "worker_type": "machelper" },
   "environment_id": "<backend-issued-id>"   // Optional: for re-registration
 }
 ```
@@ -2109,7 +2109,7 @@ Enroll device for elevated security sessions.
 
 **Request:**
 ```json
-{ "display_name": "Claude Code on hostname · darwin" }
+{ "display_name": "MacHelper on hostname · darwin" }
 ```
 
 **Response:**
@@ -2230,4 +2230,4 @@ All NDJSON-format messages (used in child process stdio) must escape `U+2028` an
 
 ---
 
-*Document generated from source analysis of Claude Code codebase, 2026-03-31.*
+*Document generated from source analysis of MacHelper codebase, 2026-03-31.*

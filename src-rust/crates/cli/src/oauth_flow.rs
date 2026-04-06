@@ -1,4 +1,4 @@
-// OAuth 2.0 PKCE login flow for the Claude Code CLI.
+// OAuth 2.0 PKCE login flow for the MacHelper CLI.
 //
 // Implements the same flow as the TypeScript OAuthService + authLogin():
 // 1. Generate PKCE code_verifier / code_challenge / state

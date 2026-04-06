@@ -1,4 +1,4 @@
-# Claude Code — Utilities
+# MacHelper — Utilities
 
 This document covers the entire `src/utils/` directory (564 files across 36 subdirectories) plus `src/interactiveHelpers.tsx` and `src/ink.ts`.
 
@@ -160,7 +160,7 @@ export type ExecOptions = {
 }
 
 export async function findSuitableShell(): Promise<string>
-// Priority: CLAUDE_CODE_SHELL env > $SHELL > zsh > bash
+// Priority: MACHELPER_SHELL env > $SHELL > zsh > bash
 
 export const getShellConfig: typeof getShellConfigImpl  // memoized
 export const getPsProvider: () => Promise<ShellProvider>  // memoized
@@ -814,7 +814,7 @@ export function isIgnoredByGitignore(path: string, cwd: string): boolean
 Git diff parsing and formatting utilities.
 
 ### `gitSettings.ts`
-Git configuration utilities for Claude Code settings.
+Git configuration utilities for MacHelper settings.
 
 ### `ghPrStatus.ts`
 GitHub PR status checking via `gh` CLI.
@@ -841,7 +841,7 @@ Git worktree management utilities.
 Feature flag check for worktree mode.
 
 ### `commitAttribution.ts`
-Adds Claude Code attribution to git commits.
+Adds MacHelper attribution to git commits.
 
 ---
 
@@ -910,7 +910,7 @@ Search within session transcripts.
 Handles resuming sessions across different project directories.
 
 ### `concurrentSessions.ts`
-Manages multiple concurrent Claude Code sessions.
+Manages multiple concurrent MacHelper sessions.
 
 ### `cwd.ts`
 ```typescript
@@ -1623,7 +1623,7 @@ export async function teleportToRemote(
   options: TeleportOptions,
   root: Root
 ): Promise<TeleportResult>
-// Launches a remote Claude Code session via CCR
+// Launches a remote MacHelper session via CCR
 ```
 
 ---
@@ -1715,7 +1715,7 @@ Type-safe tagged ID types (prevents mixing SessionId, AgentId, etc.).
 Native binary installation utilities.
 
 ### `localInstaller.ts`
-Installs Claude Code to local paths.
+Installs MacHelper to local paths.
 
 ### `autoUpdater.ts`
 Auto-update checking and installation.
@@ -1825,7 +1825,7 @@ Auto-update checking and installation.
 ### Config & Meta
 | File | Purpose |
 |------|---------|
-| `claudeCodeHints.ts` | Context-sensitive hints for users |
+| `macHelperHints.ts` | Context-sensitive hints for users |
 | `claudeDesktop.ts` | Claude Desktop app integration |
 | `exampleCommands.ts` | Example slash commands for help |
 | `releaseNotes.ts` | Release notes loading and display |
@@ -1958,7 +1958,7 @@ export async function exitWithMessage(
 
 ## 33. `ink.ts` (Top-Level Module)
 
-The public API for the Ink terminal rendering framework used throughout Claude Code.
+The public API for the Ink terminal rendering framework used throughout MacHelper.
 
 **Purpose:** Wraps the internal `ink/root.ts` with a `ThemeProvider` so every render is automatically themed.
 
@@ -2028,7 +2028,7 @@ Key behaviors:
 - **Pipe rearrangement**: When a command contains `|` and needs stdin redirect, calls `rearrangePipeCommand()` to apply redirect to first pipe segment only.
 - **Tmux isolation**: Lazily initializes Claude's isolated tmux socket when `hasTmuxToolBeenUsed()` or the command contains `tmux`.
 - **Windows compatibility**: Rewrites `2>nul` to `/dev/null` and converts paths via `windowsPathToPosixPath`.
-- **`CLAUDE_CODE_SHELL_PREFIX`**: Wraps the assembled command string in a custom prefix for shell environment wrappers.
+- **`MACHELPER_SHELL_PREFIX`**: Wraps the assembled command string in a custom prefix for shell environment wrappers.
 
 ### `shell/powershellProvider.ts`
 Factory: `createPowerShellProvider(shellPath): ShellProvider`

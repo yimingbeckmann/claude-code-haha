@@ -115,8 +115,8 @@ const enSidebar = [
 ]
 
 export default defineConfig({
-  title: 'Claude Code Haha',
-  description: '基于 Claude Code 泄露源码修复的本地可运行版本，支持接入任意 Anthropic 兼容 API',
+  title: 'MacHelper Haha',
+  description: '基于 MacHelper 泄露源码修复的本地可运行版本，支持接入任意 Anthropic 兼容 API',
   lastUpdated: true,
   base: '/',
 
@@ -147,7 +147,7 @@ export default defineConfig({
     en: {
       label: 'English',
       lang: 'en-US',
-      description: 'A locally runnable version repaired from the leaked Claude Code source, with support for any Anthropic-compatible API endpoint.',
+      description: 'A locally runnable version repaired from the leaked MacHelper source, with support for any Anthropic-compatible API endpoint.',
       themeConfig: {
         editLink: {
           pattern: 'https://github.com/NanmiCoder/cc-haha/edit/main/docs/:path',
@@ -175,7 +175,7 @@ export default defineConfig({
     ],
     footer: {
       message: 'Released under the MIT License.',
-      copyright: 'Copyright 2026 Claude Code Haha Contributors',
+      copyright: 'Copyright 2026 MacHelper Haha Contributors',
     },
   },
 })

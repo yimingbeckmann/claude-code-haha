@@ -49,7 +49,7 @@ pub struct TeamMemoryEntry {
     pub checksum: String,
 }
 
-/// Server response shape for GET `/api/claude_code/team_memory`.
+/// Server response shape for GET `/api/machelper/team_memory`.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TeamMemoryData {
     pub entries: Vec<TeamMemoryEntry>,
@@ -139,7 +139,7 @@ impl TeamMemorySync {
     pub async fn pull(&self, state: &mut SyncState) -> Result<()> {
         let client = reqwest::Client::new();
         let url = format!(
-            "{}/api/claude_code/team_memory?repo={}",
+            "{}/api/machelper/team_memory?repo={}",
             self.api_base,
             urlencoding::encode(&self.repo),
         );
@@ -293,7 +293,7 @@ impl TeamMemorySync {
     ) -> Result<()> {
         let client = reqwest::Client::new();
         let url = format!(
-            "{}/api/claude_code/team_memory?repo={}",
+            "{}/api/machelper/team_memory?repo={}",
             self.api_base,
             urlencoding::encode(&self.repo),
         );

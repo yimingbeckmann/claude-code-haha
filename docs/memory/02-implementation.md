@@ -1,4 +1,4 @@
-# Claude Code 记忆系统 — 实现原理
+# MacHelper 记忆系统 — 实现原理
 
 > 从系统提示词注入到后台自动提取，拆解记忆系统的每一个技术细节。
 
@@ -82,8 +82,8 @@ export const getAutoMemPath = memoize(
 `isAutoMemoryEnabled()` 的判断链：
 
 ```
-CLAUDE_CODE_DISABLE_AUTO_MEMORY=1  → 关闭
-CLAUDE_CODE_SIMPLE (--bare)        → 关闭
+MACHELPER_DISABLE_AUTO_MEMORY=1  → 关闭
+MACHELPER_SIMPLE (--bare)        → 关闭
 远程模式 且 无 REMOTE_MEMORY_DIR   → 关闭
 settings.json autoMemoryEnabled    → 跟随设置
 默认                               → 开启
@@ -270,7 +270,7 @@ function hasMemoryWritesSince(messages, sinceUuid): boolean {
 ### Sonnet 选择器的提示词
 
 ```
-你正在选择对 Claude Code 处理用户查询有用的记忆。
+你正在选择对 MacHelper 处理用户查询有用的记忆。
 你将收到用户查询和可用记忆文件列表（含文件名和描述）。
 
 返回最多 5 个明确有用的记忆文件名。
@@ -369,8 +369,8 @@ async function scanMemoryFiles(memoryDir, signal): Promise<MemoryHeader[]> {
 ### 同步 API
 
 ```
-GET  /api/claude_code/team_memory?repo={owner/repo}  ← 拉取
-PUT  /api/claude_code/team_memory?repo={owner/repo}  ← 推送
+GET  /api/machelper/team_memory?repo={owner/repo}  ← 拉取
+PUT  /api/machelper/team_memory?repo={owner/repo}  ← 推送
 ```
 
 ### 同步语义

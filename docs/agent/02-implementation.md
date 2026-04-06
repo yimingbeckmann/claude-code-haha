@@ -1,4 +1,4 @@
-# Claude Code 多 Agent 系统 — 实现原理
+# MacHelper 多 Agent 系统 — 实现原理
 
 > 深入剖析多 Agent 编排的架构设计、生成流程、上下文传递和协作机制。
 
@@ -12,7 +12,7 @@
 
 ## 一、架构总览
 
-Claude Code 的多 Agent 系统由以下核心模块组成：
+MacHelper 的多 Agent 系统由以下核心模块组成：
 
 ### 5 大核心模块
 
@@ -323,7 +323,7 @@ Agent System Prompt        ← agentDefinition.getSystemPrompt()
   ↓                          - 其他：替换默认
 Custom System Prompt       ← --system-prompt 参数
   ↓
-Default System Prompt      ← Claude Code 标准提示词
+Default System Prompt      ← MacHelper 标准提示词
   ↓
 Append System Prompt       ← 追加到末尾
 ```
@@ -380,7 +380,7 @@ export type SubagentContextOverrides = {
 **优先级链**：
 
 ```
-CLAUDE_CODE_SUBAGENT_MODEL 环境变量  ← 最高
+MACHELPER_SUBAGENT_MODEL 环境变量  ← 最高
   ↓
 Agent({ model: 'opus' }) 参数       ← 工具指定
   ↓

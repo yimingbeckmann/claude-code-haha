@@ -1,6 +1,6 @@
-# Claude Code — Constants, Types & Configuration
+# MacHelper — Constants, Types & Configuration
 
-This document exhaustively catalogs every constant, type, interface, and configuration value defined across the `constants/` directory, key root-level files (`Tool.ts`, `Task.ts`), and the `types/` directory of the Claude Code CLI codebase.
+This document exhaustively catalogs every constant, type, interface, and configuration value defined across the `constants/` directory, key root-level files (`Tool.ts`, `Task.ts`), and the `types/` directory of the MacHelper CLI codebase.
 
 ---
 
@@ -82,7 +82,7 @@ This document exhaustively catalogs every constant, type, interface, and configu
 
 | Constant | Value | Description |
 |---|---|---|
-| `CLAUDE_CODE_20250219_BETA_HEADER` | `'claude-code-20250219'` | Core Claude Code beta header. |
+| `MACHELPER_20250219_BETA_HEADER` | `'machelper-20250219'` | Core MacHelper beta header. |
 | `INTERLEAVED_THINKING_BETA_HEADER` | `'interleaved-thinking-2025-05-14'` | Enables interleaved thinking (extended reasoning within tool use). |
 | `CONTEXT_1M_BETA_HEADER` | `'context-1m-2025-08-07'` | Enables 1M token context window. |
 | `CONTEXT_MANAGEMENT_BETA_HEADER` | `'context-management-2025-06-27'` | Context management features. |
@@ -115,7 +115,7 @@ Members:
 Betas allowed on Vertex `countTokens` API. Other betas cause 400 errors.
 
 Members:
-- `CLAUDE_CODE_20250219_BETA_HEADER` (`'claude-code-20250219'`)
+- `MACHELPER_20250219_BETA_HEADER` (`'machelper-20250219'`)
 - `INTERLEAVED_THINKING_BETA_HEADER` (`'interleaved-thinking-2025-05-14'`)
 - `CONTEXT_MANAGEMENT_BETA_HEADER` (`'context-management-2025-06-27'`)
 
@@ -128,13 +128,13 @@ Members:
 ### Functions
 
 **`getLocalISODate(): string`**
-Returns the current date in ISO format (`YYYY-MM-DD`) using the local timezone. Respects the `CLAUDE_CODE_OVERRIDE_DATE` environment variable for ant-only date overrides (testing/debugging).
+Returns the current date in ISO format (`YYYY-MM-DD`) using the local timezone. Respects the `MACHELPER_OVERRIDE_DATE` environment variable for ant-only date overrides (testing/debugging).
 
 **`getSessionStartDate`** — memoized version of `getLocalISODate`
 Captures the date once at session start for prompt-cache stability. Used in simple mode (`--bare`) to avoid busting the cached prefix at midnight. Exported as a memoized constant so subsequent calls return the same value.
 
 **`getLocalMonthYear(): string`**
-Returns `"Month YYYY"` (e.g., `"February 2026"`) in the user's local timezone. Changes monthly, not daily — used in tool prompts to minimize cache busting. Respects `CLAUDE_CODE_OVERRIDE_DATE`.
+Returns `"Month YYYY"` (e.g., `"February 2026"`) in the user's local timezone. Changes monthly, not daily — used in tool prompts to minimize cache busting. Respects `MACHELPER_OVERRIDE_DATE`.
 
 ---
 
@@ -290,26 +290,26 @@ Detects binary content by inspecting up to 8192 bytes (`BINARY_CHECK_SIZE`):
 
 | Constant | Value | Description |
 |---|---|---|
-| `PR_TITLE` | `'Add Claude Code GitHub Workflow'` | Title of the PR created when installing the GitHub app workflow. |
-| `GITHUB_ACTION_SETUP_DOCS_URL` | `'https://github.com/anthropics/claude-code-action/blob/main/docs/setup.md'` | Link to setup documentation. |
+| `PR_TITLE` | `'Add MacHelper GitHub Workflow'` | Title of the PR created when installing the GitHub app workflow. |
+| `GITHUB_ACTION_SETUP_DOCS_URL` | `'https://github.com/anthropics/machelper-action/blob/main/docs/setup.md'` | Link to setup documentation. |
 
 ### Template Constants
 
 **`WORKFLOW_CONTENT`** — `string`
-A complete GitHub Actions YAML workflow file (`name: Claude Code`) that:
+A complete GitHub Actions YAML workflow file (`name: MacHelper`) that:
 - Triggers on: `issue_comment` (created), `pull_request_review_comment` (created), `issues` (opened, assigned), `pull_request_review` (submitted).
 - Condition: Only runs when `@claude` is mentioned in the relevant event body.
 - Runs on: `ubuntu-latest`.
 - Required permissions: `contents: read`, `pull-requests: read`, `issues: read`, `id-token: write`, `actions: read`.
-- Steps: `actions/checkout@v4` (depth 1), then `anthropics/claude-code-action@v1` with `anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}`.
+- Steps: `actions/checkout@v4` (depth 1), then `anthropics/machelper-action@v1` with `anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}`.
 
 **`PR_BODY`** — `string`
-Markdown body for the installation PR. Explains what Claude Code is, how the workflow functions, security considerations (API key as secret, write-access restriction, Actions run history), and how to configure additional allowed tools.
+Markdown body for the installation PR. Explains what MacHelper is, how the workflow functions, security considerations (API key as secret, write-access restriction, Actions run history), and how to configure additional allowed tools.
 
 **`CODE_REVIEW_PLUGIN_WORKFLOW_CONTENT`** — `string`
-A GitHub Actions YAML workflow for automated code review (`name: Claude Code Review`):
+A GitHub Actions YAML workflow for automated code review (`name: MacHelper Review`):
 - Triggers on: `pull_request` events (opened, synchronize, ready_for_review, reopened).
-- Uses `anthropics/claude-code-action@v1` with the `code-review@claude-code-plugins` plugin from the `https://github.com/anthropics/claude-code.git` marketplace.
+- Uses `anthropics/machelper-action@v1` with the `code-review@machelper-plugins` plugin from the `https://github.com/anthropics/machelper.git` marketplace.
 - Runs the `/code-review:code-review` command on the PR.
 
 ---
@@ -361,7 +361,7 @@ Implemented as a lazy function (not a constant) so `ENABLE_GROWTHBOOK_DEV` from 
 **`CONSOLE_OAUTH_SCOPES`** — `readonly ['org:create_api_key', 'user:profile']`
 OAuth scopes for Console (API key creation via Console).
 
-**`CLAUDE_AI_OAUTH_SCOPES`** — `readonly ['user:profile', 'user:inference', 'user:sessions:claude_code', 'user:mcp_servers', 'user:file_upload']`
+**`CLAUDE_AI_OAUTH_SCOPES`** — `readonly ['user:profile', 'user:inference', 'user:sessions:machelper', 'user:mcp_servers', 'user:file_upload']`
 OAuth scopes for Claude.ai subscribers (Pro/Max/Team/Enterprise).
 
 **`ALL_OAUTH_SCOPES`** — `string[]`
@@ -399,8 +399,8 @@ type OauthConfig = {
 | `TOKEN_URL` | `'https://platform.claude.com/v1/oauth/token'` |
 | `API_KEY_URL` | `'https://api.anthropic.com/api/oauth/claude_cli/create_api_key'` |
 | `ROLES_URL` | `'https://api.anthropic.com/api/oauth/claude_cli/roles'` |
-| `CONSOLE_SUCCESS_URL` | `'https://platform.claude.com/buy_credits?returnUrl=/oauth/code/success%3Fapp%3Dclaude-code'` |
-| `CLAUDEAI_SUCCESS_URL` | `'https://platform.claude.com/oauth/code/success?app=claude-code'` |
+| `CONSOLE_SUCCESS_URL` | `'https://platform.claude.com/buy_credits?returnUrl=/oauth/code/success%3Fapp%3Dmachelper'` |
+| `CLAUDEAI_SUCCESS_URL` | `'https://platform.claude.com/oauth/code/success?app=machelper'` |
 | `MANUAL_REDIRECT_URL` | `'https://platform.claude.com/oauth/code/callback'` |
 | `CLIENT_ID` | `'9d1c250a-e61b-44d9-88ed-5944d1962f5e'` |
 | `OAUTH_FILE_SUFFIX` | `''` (no suffix for production) |
@@ -443,20 +443,20 @@ Local `MCP_PROXY_PATH`: `'/v1/toolbox/shttp/mcp/{server_id}'`
 'https://claude-staging.fedstart.com'
 ```
 
-Only these base URLs are permitted for `CLAUDE_CODE_CUSTOM_OAUTH_URL` to prevent OAuth tokens from being sent to arbitrary endpoints.
+Only these base URLs are permitted for `MACHELPER_CUSTOM_OAUTH_URL` to prevent OAuth tokens from being sent to arbitrary endpoints.
 
 ### MCP Client Metadata
 
 | Constant | Value |
 |---|---|
-| `MCP_CLIENT_METADATA_URL` | `'https://claude.ai/oauth/claude-code-client-metadata'` |
+| `MCP_CLIENT_METADATA_URL` | `'https://claude.ai/oauth/machelper-client-metadata'` |
 
 Used as `client_id` for MCP OAuth (CIMD/SEP-991) when the auth server advertises `client_id_metadata_document_supported: true`.
 
 ### Functions
 
 **`getOauthConfig(): OauthConfig`**
-Returns the appropriate OAuth configuration based on environment type (`prod`/`staging`/`local`). Applies `CLAUDE_CODE_CUSTOM_OAUTH_URL` override if set (validated against allowlist). Applies `CLAUDE_CODE_OAUTH_CLIENT_ID` override if set.
+Returns the appropriate OAuth configuration based on environment type (`prod`/`staging`/`local`). Applies `MACHELPER_CUSTOM_OAUTH_URL` override if set (validated against allowlist). Applies `MACHELPER_OAUTH_CLIENT_ID` override if set.
 
 **`fileSuffixForOauthConfig(): string`**
 Returns the file suffix for OAuth credential storage files: `''` for prod, `'-staging-oauth'` for staging, `'-local-oauth'` for local, `'-custom-oauth'` for custom OAuth URL.
@@ -492,7 +492,7 @@ type OutputStyles = {
 
 ### Built-In Output Styles (`OUTPUT_STYLE_CONFIG`)
 
-**`default`:** `null` — No customization; standard Claude Code behavior.
+**`default`:** `null` — No customization; standard MacHelper behavior.
 
 **`Explanatory`:**
 - Source: `'built-in'`
@@ -530,7 +530,7 @@ Clears the memoization cache for `getAllOutputStyles`. Called on `/clear` and `/
 
 | Constant | Value | Description |
 |---|---|---|
-| `PRODUCT_URL` | `'https://claude.com/claude-code'` | Main product landing page. |
+| `PRODUCT_URL` | `'https://claude.com/machelper'` | Main product landing page. |
 | `CLAUDE_AI_BASE_URL` | `'https://claude.ai'` | Claude AI base URL for remote sessions. |
 | `CLAUDE_AI_STAGING_BASE_URL` | `'https://claude-ai.staging.ant.dev'` | Staging environment base URL. |
 | `CLAUDE_AI_LOCAL_BASE_URL` | `'http://localhost:4000'` | Local development base URL. |
@@ -554,13 +554,13 @@ Returns the full URL to view a remote session at `${baseUrl}/code/${compatId}`. 
 ## 14. System Prompts
 
 **File:** `constants/prompts.ts`
-**Purpose:** Core system prompt generation for all Claude Code session types.
+**Purpose:** Core system prompt generation for all MacHelper session types.
 
 ### URL Constants
 
 | Constant | Value | Description |
 |---|---|---|
-| `CLAUDE_CODE_DOCS_MAP_URL` | `'https://code.claude.com/docs/en/claude_code_docs_map.md'` | URL for Claude Code documentation map. |
+| `MACHELPER_DOCS_MAP_URL` | `'https://code.claude.com/docs/en/machelper_docs_map.md'` | URL for MacHelper documentation map. |
 | `SYSTEM_PROMPT_DYNAMIC_BOUNDARY` | `'__SYSTEM_PROMPT_DYNAMIC_BOUNDARY__'` | Boundary marker separating static (cross-org cacheable) content from dynamic content. Everything BEFORE this in the system prompt array can use `scope: 'global'`. |
 
 ### Model Configuration (Internal)
@@ -589,8 +589,8 @@ These are internal constants used within the prompts but not exported:
 
 ```typescript
 type CLISyspromptPrefix =
-  | "You are Claude Code, Anthropic's official CLI for Claude."
-  | "You are Claude Code, Anthropic's official CLI for Claude, running within the Claude Agent SDK."
+  | "You are MacHelper, your macOS automation coworker."
+  | "You are MacHelper, your macOS automation coworker, running within the Claude Agent SDK."
   | "You are a Claude agent, built on Anthropic's Claude Agent SDK."
 ```
 
@@ -598,7 +598,7 @@ type CLISyspromptPrefix =
 
 **`getCLISyspromptPrefix(options?): CLISyspromptPrefix`** — Selection logic:
 - Vertex AI → always `DEFAULT_PREFIX`
-- Non-interactive with `appendSystemPrompt` → `AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX`
+- Non-interactive with `appendSystemPrompt` → `AGENT_SDK_MACHELPER_PRESET_PREFIX`
 - Non-interactive without → `AGENT_SDK_PREFIX`
 - Interactive → `DEFAULT_PREFIX`
 
@@ -607,7 +607,7 @@ type CLISyspromptPrefix =
 **`DEFAULT_AGENT_PROMPT`** — `string`
 
 ```
-You are an agent for Claude Code, Anthropic's official CLI for Claude. Given the user's
+You are an agent for MacHelper, your macOS automation coworker. Given the user's
 message, you should use the tools available to complete the task. Complete the task fully—
 don't gold-plate, but don't leave it half-done. When you complete the task, respond with
 a concise report covering what was done and any key findings — the caller will relay this
@@ -678,13 +678,13 @@ later in your response, as the original tool result may be cleared later.
 ### Key Functions
 
 **`getSystemPrompt(tools, model, additionalWorkingDirectories?, mcpClients?): Promise<string[]>`**
-Main entry point for system prompt generation. Returns `['You are Claude Code...\nCWD: ...\nDate: ...']` when `CLAUDE_CODE_SIMPLE=1`.
+Main entry point for system prompt generation. Returns `['You are MacHelper...\nCWD: ...\nDate: ...']` when `MACHELPER_SIMPLE=1`.
 
 **`computeEnvInfo(modelId, additionalWorkingDirectories?): Promise<string>`**
 Generates the `<env>` block in legacy format for subagent system prompts.
 
 **`computeSimpleEnvInfo(modelId, additionalWorkingDirectories?): Promise<string>`**
-Generates the `# Environment` section for main system prompts (includes worktree warning, model IDs reference, Claude Code availability info, Fast Mode note).
+Generates the `# Environment` section for main system prompts (includes worktree warning, model IDs reference, MacHelper availability info, Fast Mode note).
 
 **`enhanceSystemPromptWithEnvDetails(existingSystemPrompt, model, ...): Promise<string[]>`**
 Enhances an existing system prompt (from `--system-prompt`) with notes and environment info for subagents. Notes include:
@@ -732,8 +732,8 @@ Returns spinner verbs respecting user configuration from settings:
 
 Three possible prefix values (exported via `CLI_SYSPROMPT_PREFIXES` set):
 
-1. `DEFAULT_PREFIX`: `"You are Claude Code, Anthropic's official CLI for Claude."` — Used for interactive sessions and Vertex AI.
-2. `AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX`: `"You are Claude Code, Anthropic's official CLI for Claude, running within the Claude Agent SDK."` — Non-interactive with `appendSystemPrompt`.
+1. `DEFAULT_PREFIX`: `"You are MacHelper, your macOS automation coworker."` — Used for interactive sessions and Vertex AI.
+2. `AGENT_SDK_MACHELPER_PRESET_PREFIX`: `"You are MacHelper, your macOS automation coworker, running within the Claude Agent SDK."` — Non-interactive with `appendSystemPrompt`.
 3. `AGENT_SDK_PREFIX`: `"You are a Claude agent, built on Anthropic's Claude Agent SDK."` — Non-interactive without `appendSystemPrompt`.
 
 ### Attribution Header
@@ -746,11 +746,11 @@ x-anthropic-billing-header: cc_version=<VERSION>.<fingerprint>; cc_entrypoint=<e
 ```
 
 - `cc_version`: `${MACRO.VERSION}.${fingerprint}` — identifies the build version.
-- `cc_entrypoint`: from `CLAUDE_CODE_ENTRYPOINT` env var (default `'unknown'`).
+- `cc_entrypoint`: from `MACHELPER_ENTRYPOINT` env var (default `'unknown'`).
 - `cch=00000`: Native client attestation placeholder (only when `NATIVE_CLIENT_ATTESTATION` feature enabled). Bun's HTTP stack overwrites the zeros with a computed hash before transmission.
 - `cc_workload`: Turn-scoped workload hint for API routing (absent = interactive default).
 
-Enabled by default. Can be disabled via `CLAUDE_CODE_ATTRIBUTION_HEADER=false` or GrowthBook killswitch `tengu_attribution_header`.
+Enabled by default. Can be disabled via `MACHELPER_ATTRIBUTION_HEADER=false` or GrowthBook killswitch `tengu_attribution_header`.
 
 ---
 
@@ -1728,7 +1728,7 @@ type PluginLoadResult = {
 type SerializedMessage = Message & {
   cwd: string
   userType: string
-  entrypoint?: string   // CLAUDE_CODE_ENTRYPOINT value
+  entrypoint?: string   // MACHELPER_ENTRYPOINT value
   sessionId: string
   timestamp: string
   version: string

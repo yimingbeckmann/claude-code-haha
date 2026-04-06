@@ -2,10 +2,10 @@
 //
 // Port of src/services/settingsSync/index.ts
 //
-// Syncs user settings and CLAUDE.md memory files between a local Claude Code
+// Syncs user settings and CLAUDE.md memory files between a local MacHelper
 // installation and claude.ai via:
 //   - Upload (interactive CLI, fire-and-forget at startup)
-//   - Download (CCR / CLAUDE_CODE_REMOTE=1, blocking before plugin load)
+//   - Download (CCR / MACHELPER_REMOTE=1, blocking before plugin load)
 //
 // Authentication requires OAuth (Bearer token).  API-key-only users are
 // skipped silently — the TypeScript side gates on `isUsingOAuth()`.
@@ -60,7 +60,7 @@ struct UserSyncContent {
     entries: HashMap<String, String>,
 }
 
-/// Full GET /api/claude_code/user_settings response.
+/// Full GET /api/machelper/user_settings response.
 #[derive(Debug, Deserialize)]
 struct UserSyncData {
     #[allow(dead_code)]
@@ -126,7 +126,7 @@ impl SettingsSyncManager {
     }
 
     fn endpoint(&self) -> String {
-        format!("{}/api/claude_code/user_settings", self.base_url)
+        format!("{}/api/machelper/user_settings", self.base_url)
     }
 
     #[allow(dead_code)]

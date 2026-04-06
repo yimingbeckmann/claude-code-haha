@@ -1,4 +1,4 @@
-// cc-tools: All tool implementations for the Claude Code Rust port.
+// cc-tools: All tool implementations for the MacHelper Rust port.
 //
 // Each tool maps to a capability the LLM can invoke: running shell commands,
 // reading/writing/editing files, searching codebases, fetching web pages, etc.

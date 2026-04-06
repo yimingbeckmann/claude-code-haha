@@ -1,4 +1,4 @@
-# Claude Code — Master Architecture Overview
+# MacHelper — Master Architecture Overview
 
 > **Repository:** `X:\Bigger-Projects\Claude-Code`
 > **Primary Language:** TypeScript/TSX (~1,902 files, ~800K+ LOC)
@@ -9,9 +9,9 @@
 
 ---
 
-## 1. What Is Claude Code?
+## 1. What Is MacHelper?
 
-Claude Code is an AI-powered CLI tool and coding assistant. It is a full-featured interactive terminal application that:
+MacHelper is an AI-powered CLI tool and coding assistant. It is a full-featured interactive terminal application that:
 
 - Embeds a Claude AI model as an agentic coding assistant
 - Runs in the terminal using a custom React-based TUI (Terminal User Interface)
@@ -82,7 +82,7 @@ Claude-Code/
 │   ├── utils/                    # Utility functions (~564 files)
 │   └── voice/                    # Voice integration
 │
-├── claude-code-rust/             # Rust port (in-progress, 47 files)
+├── machelper-rust/             # Rust port (in-progress, 47 files)
 │   ├── Cargo.toml                # Workspace manifest
 │   ├── tools/                    # 27 files — tool implementations
 │   ├── query/                    # 5 files — query system
@@ -256,7 +256,7 @@ The core loop that:
 
 ## 7. Permission Model
 
-Claude Code uses a layered permission system:
+MacHelper uses a layered permission system:
 
 1. **Automatic** — Read-only operations, info queries
 2. **Ask Once** — Prompt user, remember for session
@@ -331,4 +331,4 @@ Current defaults (as of source): `claude-sonnet-4-6` and `claude-opus-4-6`
 
 ---
 
-*Generated from source analysis of the Claude Code codebase. ~1,902 TypeScript/TSX files, ~800K+ lines of code.*
+*Generated from source analysis of the MacHelper codebase. ~1,902 TypeScript/TSX files, ~800K+ lines of code.*

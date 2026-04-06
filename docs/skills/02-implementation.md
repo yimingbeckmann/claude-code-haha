@@ -1,4 +1,4 @@
-# Claude Code Skills 系统 — 实现原理
+# MacHelper Skills 系统 — 实现原理
 
 > 深度剖析 Skills 如何被发现、加载、注入、执行和管理。
 

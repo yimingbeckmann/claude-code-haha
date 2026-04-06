@@ -1,4 +1,4 @@
-# Claude Code Skills System -- Implementation Details
+# MacHelper Skills System -- Implementation Details
 
 > A deep dive into how Skills are discovered, loaded, injected, executed, and managed.
 

@@ -96,7 +96,7 @@ function toolSummary(toolName: string, use: UIMessage): string {
     return `"${pat}"${dir}`;
   }
   if (cat === "agent") {
-    // CLI format: subagent_type(description) — e.g. "claude-code-guide(Explain how it works)"
+    // CLI format: subagent_type(description) — e.g. "machelper-guide(Explain how it works)"
     const desc = trunc(String(p.description || p.prompt || ""), 60);
     return desc;
   }
@@ -503,7 +503,7 @@ function SingleToolLine({ pair, expandedIds, toggleExpand, nested }: {
           <span className="cc-dot cc-dot-ok">●</span>
         )}
         {isAgent ? (
-          /* CLI format: claude-code-guide(Explain how Tensor Code works) */
+          /* CLI format: machelper-guide(Explain how Tensor Code works) */
           <>
             <span className="cc-tool-name">{name}</span>
             {summary && <span className="cc-tool-summary">({summary})</span>}

@@ -1,5 +1,5 @@
 /**
- * Bridge server that wraps the claude-code runtime as an HTTP API.
+ * Bridge server that wraps the machelper runtime as an HTTP API.
  * Spawns ONE persistent CLI process per session using --input-format stream-json
  * so that conversation history is maintained across messages.
  * Exposes REST + SSE endpoints for the React GUI.
@@ -32,7 +32,7 @@ function findBun() {
 const BUN = findBun();
 // Read env vars lazily — they are set by main.js ensureRuntimeDir() after require() time
 function getRuntimeDir() {
-  return process.env.CLAUDE_RUNTIME_DIR || path.join(__dirname, "..", "claude-code-runtime");
+  return process.env.CLAUDE_RUNTIME_DIR || path.join(__dirname, "..", "machelper-runtime");
 }
 function getWorkspace() {
   return process.env.WORKSPACE_ROOT || process.env.HOME || "/tmp";
@@ -83,8 +83,8 @@ function spawnCLI(session) {
     HOME: process.env.HOME,
     PATH: process.env.PATH,
     DISABLE_TELEMETRY: "1",
-    CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1",
-    CLAUDE_CODE_REMOTE: "1",  // unlock tool_progress events with elapsed time during bash runs
+    MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC: "1",
+    MACHELPER_REMOTE: "1",  // unlock tool_progress events with elapsed time during bash runs
   };
   // Remove inherited empty API keys so CLI uses OAuth from ~/.claude.json
   delete env.ANTHROPIC_API_KEY;

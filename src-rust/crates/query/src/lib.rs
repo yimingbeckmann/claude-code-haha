@@ -637,7 +637,7 @@ pub async fn run_query_loop(
         // compact / context-collapse instead. This fires on every streaming turn
         // so it can act before a prompt-too-long error is returned by the API.
         //
-        // Feature gate check: CLAUDE_CODE_FEATURE_REACTIVE_COMPACT=1
+        // Feature gate check: MACHELPER_FEATURE_REACTIVE_COMPACT=1
         let reactive_compact_enabled =
             cc_core::feature_gates::is_feature_enabled("reactive_compact");
 
@@ -1071,12 +1071,12 @@ mod tests {
     #[test]
     fn test_system_prompt_default_when_empty() {
         // The default prompt (no custom system prompt set) should include the
-        // Claude Code attribution and standard sections.
+        // MacHelper attribution and standard sections.
         let cfg = make_config(None, None);
         let prompt = build_system_prompt(&cfg);
         if let SystemPrompt::Text(text) = prompt {
             assert!(
-                text.contains("Claude Code") || text.contains("Claude agent"),
+                text.contains("MacHelper") || text.contains("Claude agent"),
                 "Default prompt should contain attribution: {}",
                 text
             );
@@ -1101,7 +1101,7 @@ mod tests {
                 "Custom prompt text should appear in the output"
             );
             assert!(
-                text.contains("Claude Code") || text.contains("Claude agent"),
+                text.contains("MacHelper") || text.contains("Claude agent"),
                 "Default attribution should still be present"
             );
         } else {

@@ -1,7 +1,7 @@
-# Claude Code Haha
+# MacHelper Haha
 
 <p align="center">
-  <img src="docs/images/banner.jpg" alt="Claude Code Haha Banner" width="800">
+  <img src="docs/images/banner.jpg" alt="MacHelper Haha Banner" width="800">
 </p>
 
 <div align="center">
@@ -17,7 +17,7 @@
 
 </div>
 
-A **locally runnable version** repaired from the leaked Claude Code source, with support for any Anthropic-compatible API endpoint such as MiniMax and OpenRouter.
+A **locally runnable version** repaired from the leaked MacHelper source, with support for any Anthropic-compatible API endpoint such as MiniMax and OpenRouter.
 
 > The original leaked source does not run as-is. This repository fixes multiple blocking issues in the startup path so the full Ink TUI can work locally.
 
@@ -29,7 +29,7 @@ A **locally runnable version** repaired from the leaked Claude Code source, with
 
 ## Features
 
-- Full Ink TUI experience (matching the official Claude Code interface)
+- Full Ink TUI experience (matching the official MacHelper interface)
 - `--print` headless mode for scripts and CI
 - MCP server, plugin, and Skills support
 - Custom API endpoint and model support ([Third-Party Models Guide](docs/en/guide/third-party-models.md))
@@ -37,7 +37,7 @@ A **locally runnable version** repaired from the leaked Claude Code source, with
 - **Multi-Agent System** (agent orchestration, parallel tasks, Teams collaboration) — [Usage Guide](docs/agent/01-usage-guide.md) | [Implementation](docs/agent/02-implementation.md)
 - **Skills System** (extensible capability plugins, custom workflows) — [Usage Guide](docs/skills/01-usage-guide.md) | [Implementation](docs/skills/02-implementation.md)
 - **Computer Use desktop control** — [Guide](docs/en/features/computer-use.md) | [Architecture](docs/en/features/computer-use-architecture.md)
-- Fallback Recovery CLI mode (`CLAUDE_CODE_FORCE_RECOVERY_CLI=1 ./bin/claude-haha`)
+- Fallback Recovery CLI mode (`MACHELPER_FORCE_RECOVERY_CLI=1 ./bin/machelper`)
 
 ---
 
@@ -90,9 +90,9 @@ cp .env.example .env
 #### macOS / Linux
 
 ```bash
-./bin/claude-haha                          # Interactive TUI mode
-./bin/claude-haha -p "your prompt here"    # Headless mode
-./bin/claude-haha --help                   # Show all options
+./bin/machelper                          # Interactive TUI mode
+./bin/machelper -p "your prompt here"    # Headless mode
+./bin/machelper --help                   # Show all options
 ```
 
 #### Windows
@@ -104,7 +104,7 @@ cp .env.example .env
 bun --env-file=.env ./src/entrypoints/cli.tsx
 
 # Or run inside Git Bash
-./bin/claude-haha
+./bin/machelper
 ```
 
 ### 4. Global Usage (Optional)
@@ -112,7 +112,7 @@ bun --env-file=.env ./src/entrypoints/cli.tsx
 Add `bin/` to your PATH to run from any directory. See [Global Usage Guide](docs/en/guide/global-usage.md):
 
 ```bash
-export PATH="$HOME/path/to/claude-code-haha/bin:$PATH"
+export PATH="$HOME/path/to/machelper/bin:$PATH"
 ```
 
 ---
@@ -140,7 +140,7 @@ export PATH="$HOME/path/to/claude-code-haha/bin:$PATH"
 | [Multi-Agent System](docs/agent/01-usage-guide.md) | Agent orchestration, parallel tasks and Teams collaboration |
 | [Skills System](docs/skills/01-usage-guide.md) | Extensible capability plugins, custom workflows and conditional activation |
 | [Computer Use](docs/en/features/computer-use.md) | Desktop control (screenshots, mouse, keyboard) — [Architecture](docs/en/features/computer-use-architecture.md) |
-| [Global Usage](docs/en/guide/global-usage.md) | Run claude-haha from any directory |
+| [Global Usage](docs/en/guide/global-usage.md) | Run machelper from any directory |
 | [FAQ](docs/en/guide/faq.md) | Common error troubleshooting |
 | [Source Fixes](docs/en/reference/fixes.md) | Fixes compared with the original leaked source |
 | [Project Structure](docs/en/reference/project-structure.md) | Code directory structure |
@@ -149,4 +149,4 @@ export PATH="$HOME/path/to/claude-code-haha/bin:$PATH"
 
 ## Disclaimer
 
-This repository is based on the Claude Code source leaked from the Anthropic npm registry on 2026-03-31. All original source code copyrights belong to [Anthropic](https://www.anthropic.com). It is provided for learning and research purposes only.
+This repository is based on the MacHelper source leaked from the Anthropic npm registry on 2026-03-31. All original source code copyrights belong to [Anthropic](https://www.anthropic.com). It is provided for learning and research purposes only.

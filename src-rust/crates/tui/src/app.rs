@@ -388,8 +388,8 @@ impl App {
             voice_recorder: {
                 // Check whether voice input has been enabled via the /voice command
                 // (stored in ~/.claude/ui-settings.json).  We also accept
-                // CLAUDE_CODE_VOICE_ENABLED=1 as an override for easier testing.
-                let voice_on = std::env::var("CLAUDE_CODE_VOICE_ENABLED")
+                // MACHELPER_VOICE_ENABLED=1 as an override for easier testing.
+                let voice_on = std::env::var("MACHELPER_VOICE_ENABLED")
                     .map(|v| v == "1" || v.eq_ignore_ascii_case("true"))
                     .unwrap_or(false)
                     || {

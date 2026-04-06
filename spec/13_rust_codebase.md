@@ -1,13 +1,13 @@
-# Claude Code — Rust Codebase
+# MacHelper — Rust Codebase
 
 ## Overview
 
-The Rust codebase at `claude-code-rust/` is a **complete standalone rewrite** of the TypeScript Claude Code CLI in async Rust. It is not an FFI binding layer, not a partial port, and shares no runtime code with the TypeScript implementation. It re-implements the same tool names and semantics, permission model, CLAUDE.md discovery, auto-compact logic, MCP (Model Context Protocol) client, bridge protocol, and cron scheduler — all in async Rust using the Tokio runtime.
+The Rust codebase at `machelper-rust/` is a **complete standalone rewrite** of the TypeScript MacHelper CLI in async Rust. It is not an FFI binding layer, not a partial port, and shares no runtime code with the TypeScript implementation. It re-implements the same tool names and semantics, permission model, CLAUDE.md discovery, auto-compact logic, MCP (Model Context Protocol) client, bridge protocol, and cron scheduler — all in async Rust using the Tokio runtime.
 
 ### Architecture
 
 ```
-claude-code-rust/
+machelper-rust/
 ├── Cargo.toml                  # Workspace root
 └── crates/
     ├── core/       (cc-core)       # Shared types, config, permissions, history, hooks
@@ -18,7 +18,7 @@ claude-code-rust/
     ├── commands/   (cc-commands)   # Slash command implementations
     ├── mcp/        (cc-mcp)        # MCP (Model Context Protocol) client
     ├── bridge/     (cc-bridge)     # Bridge to claude.ai web UI
-    └── cli/        (claude-code)   # Binary entry point
+    └── cli/        (machelper)   # Binary entry point
 ```
 
 **Dependency flow:**
@@ -40,7 +40,7 @@ cli → query → tools → core
 
 ## Workspace Root: `Cargo.toml`
 
-**Path:** `claude-code-rust/Cargo.toml`
+**Path:** `machelper-rust/Cargo.toml`
 
 Cargo workspace with `resolver = "2"`, edition `2021`, version `1.0.0` across all member crates.
 
@@ -55,7 +55,7 @@ Cargo workspace with `resolver = "2"`, edition `2021`, version `1.0.0` across al
 | `crates/commands` | `cc-commands` | Library |
 | `crates/mcp` | `cc-mcp` | Library |
 | `crates/bridge` | `cc-bridge` | Library |
-| `crates/cli` | `claude-code` | Binary (`[[bin]] name = "claude"`) |
+| `crates/cli` | `machelper` | Binary (`[[bin]] name = "claude"`) |
 
 ### Key Shared Dependencies
 
@@ -1309,7 +1309,7 @@ Manages multiple named MCP server connections.
 
 **Path:** `crates/bridge/src/lib.rs`
 
-Implements the bridge protocol connecting the local Claude Code CLI to the claude.ai web UI. Enables remote control of the CLI from a browser session.
+Implements the bridge protocol connecting the local MacHelper CLI to the claude.ai web UI. Enables remote control of the CLI from a browser session.
 
 ### Configuration
 
@@ -1385,7 +1385,7 @@ Implements the bridge protocol connecting the local Claude Code CLI to the claud
 
 ---
 
-## Crate: `claude-code` (CLI Binary)
+## Crate: `machelper` (CLI Binary)
 
 **Path:** `crates/cli/src/main.rs`
 
@@ -1476,7 +1476,7 @@ Interactive TUI REPL:
 ### System Prompt (`system_prompt.txt`)
 
 Embedded in binary at compile time. Content:
-> You are Claude Code, an AI coding assistant by Anthropic.
+> You are MacHelper, an AI coding assistant by Anthropic.
 
 Guidelines:
 - Read files before editing them
@@ -1490,7 +1490,7 @@ Guidelines:
 
 ### Relationship to TypeScript
 
-`claude-code` CLI corresponds to `src/entrypoints/cli.tsx` (the main TypeScript CLI entry point), `src/main.tsx`, `src/screens/REPL.tsx`, and `src/cli/` directory. The CLI flag names and behaviors are preserved, including `--print`, `--output-format`, `--permission-mode`, and `--resume`.
+`machelper` CLI corresponds to `src/entrypoints/cli.tsx` (the main TypeScript CLI entry point), `src/main.tsx`, `src/screens/REPL.tsx`, and `src/cli/` directory. The CLI flag names and behaviors are preserved, including `--print`, `--output-format`, `--permission-mode`, and `--resume`.
 
 ---
 

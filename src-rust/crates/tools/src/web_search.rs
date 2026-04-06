@@ -146,7 +146,7 @@ async fn search_duckduckgo(query: &str, num_results: usize) -> ToolResult {
 
     let resp = match client
         .get(&url)
-        .header("User-Agent", "Claude Code/1.0")
+        .header("User-Agent", "MacHelper/1.0")
         .send()
         .await
     {

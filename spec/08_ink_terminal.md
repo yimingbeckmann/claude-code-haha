@@ -1,8 +1,8 @@
-# Claude Code — Ink Terminal Rendering System
+# MacHelper — Ink Terminal Rendering System
 
 ## Overview
 
-The ink directory contains a complete, custom terminal UI framework built on top of React. It is a heavily modified and extended fork of the open-source Ink library, tuned for Claude Code's requirements: fullscreen alternate-screen rendering, hardware-accelerated scroll, text selection, search highlighting, mouse tracking, bidirectional text, and fine-grained performance instrumentation.
+The ink directory contains a complete, custom terminal UI framework built on top of React. It is a heavily modified and extended fork of the open-source Ink library, tuned for MacHelper's requirements: fullscreen alternate-screen rendering, hardware-accelerated scroll, text selection, search highlighting, mouse tracking, bidirectional text, and fine-grained performance instrumentation.
 
 The system can be summarized as a pipeline:
 
@@ -235,7 +235,7 @@ type DOMElement = {
   stickyScroll?: boolean
   scrollAnchor?: { el: DOMElement; offset: number }
   focusManager?: FocusManager    // Only on ink-root
-  debugOwnerChain?: string[]     // CLAUDE_CODE_DEBUG_REPAINTS mode
+  debugOwnerChain?: string[]     // MACHELPER_DEBUG_REPAINTS mode
   yogaNode?: LayoutNode
   style: Styles
   parentNode: DOMElement | undefined
@@ -309,14 +309,14 @@ createReconciler<
 
 **Event handler separation:** Event handler props are stored in `node._eventHandlers` rather than `node.attributes`. This prevents handler identity changes from marking the node dirty and defeating the blit optimization.
 
-**`getOwnerChain(fiber)`:** Walks the React fiber's `_debugOwner` / `return` chain to collect component names. Used for `CLAUDE_CODE_DEBUG_REPAINTS` mode to attribute flicker to source components.
+**`getOwnerChain(fiber)`:** Walks the React fiber's `_debugOwner` / `return` chain to collect component names. Used for `MACHELPER_DEBUG_REPAINTS` mode to attribute flicker to source components.
 
 **Profiling exports:**
 - `recordYogaMs(ms)` / `getLastYogaMs()` — yoga layout timing
 - `markCommitStart()` / `getLastCommitMs()` — React commit timing
 - `resetProfileCounters()`
 - `dispatcher` — the `Dispatcher` instance (event dispatch)
-- `isDebugRepaintsEnabled()` — reads `CLAUDE_CODE_DEBUG_REPAINTS` env var once
+- `isDebugRepaintsEnabled()` — reads `MACHELPER_DEBUG_REPAINTS` env var once
 
 ---
 
@@ -863,7 +863,7 @@ Utility functions: `defaultStyle()`, `stylesEqual(a, b)`, `colorsEqual(a, b)`.
 - `getClipboardPath()` — `'native' | 'tmux-buffer' | 'osc52'` without side effects
 - `tmuxLoadBuffer(text)` — async: runs `tmux load-buffer [-w] -`
 - `tabStatus({indicator, status, statusColor})` / `CLEAR_TAB_STATUS` — OSC 21337 tab chrome
-- `supportsTabStatus()` — detects iTerm2 / Claude Code terminal from env
+- `supportsTabStatus()` — detects iTerm2 / MacHelper terminal from env
 - `CLEAR_ITERM2_PROGRESS` — clears iTerm2 progress bar
 
 **Clipboard path decision:**
@@ -1423,7 +1423,7 @@ Internal hook for wiring search query to the Ink instance's `setSearchHighlight`
 
 **Color level management:**
 - `boostChalkLevelForXtermJs()` — upgrades chalk to level 3 (truecolor) when `TERM_PROGRAM=vscode` and chalk detected level 2
-- `clampChalkLevelForTmux()` — downgrades to level 2 (256-color) inside tmux to avoid truecolor passthrough bugs; skipped when `CLAUDE_CODE_TMUX_TRUECOLOR=1`
+- `clampChalkLevelForTmux()` — downgrades to level 2 (256-color) inside tmux to avoid truecolor passthrough bugs; skipped when `MACHELPER_TMUX_TRUECOLOR=1`
 
 ### `/x/Bigger-Projects/Claude-Code/src/ink/get-max-width.ts`
 

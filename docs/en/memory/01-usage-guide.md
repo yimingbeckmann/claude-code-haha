@@ -1,6 +1,6 @@
-# Claude Code Memory System — Usage Guide
+# MacHelper Memory System — Usage Guide
 
-> Let Claude Code remember who you are, what you prefer, and what's happening in your project across sessions.
+> Let MacHelper remember who you are, what you prefer, and what's happening in your project across sessions.
 
 <p align="center">
 <a href="#_1-what-is-the-memory-system">Memory System</a> · <a href="#_2-four-memory-types">Four Memory Types</a> · <a href="#_3-how-to-trigger-memory-saving">Trigger Saving</a> · <a href="#_4-where-are-memories-stored">Storage Location</a> · <a href="#_5-how-to-manage-memories">Manage Memories</a> · <a href="#_6-memory-lifecycle">Lifecycle</a> · <a href="#_7-quick-reference">Quick Reference</a>
@@ -12,7 +12,7 @@
 
 ## 1. What Is the Memory System?
 
-Claude Code's memory system is a **file-based persistent knowledge store** that allows Claude to continuously build understanding of you and your project across multiple conversations.
+MacHelper's memory system is a **file-based persistent knowledge store** that allows Claude to continuously build understanding of you and your project across multiple conversations.
 
 Core principle: **Only remember things that cannot be inferred from the code itself.**
 
@@ -29,7 +29,7 @@ Core principle: **Only remember things that cannot be inferred from the code its
 
 ![Four Memory Types](./images/02-memory-types.png)
 
-Claude Code strictly categorizes memories into four types:
+MacHelper strictly categorizes memories into four types:
 
 ### 2.1 User (User Profile)
 
@@ -199,9 +199,9 @@ Directly edit files under `~/.claude/projects/{hash}/memory/`, or use the `/memo
 
 | Method | How |
 |--------|-----|
-| Environment variable | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` |
+| Environment variable | `MACHELPER_DISABLE_AUTO_MEMORY=1` |
 | Settings file | Set `"autoMemoryEnabled": false` in `settings.json` |
-| Bare mode | Start with `--bare` / `CLAUDE_CODE_SIMPLE=1` |
+| Bare mode | Start with `--bare` / `MACHELPER_SIMPLE=1` |
 
 ### Custom Memory Directory
 
@@ -245,7 +245,7 @@ New information learned during conversation
 
 ### AutoDream -- "Dreaming" to Organize Memories
 
-Claude Code has a hidden **AutoDream** feature, analogous to how the human brain organizes memories during sleep. When the following conditions are met, Claude silently launches a "dreaming" sub-agent in the background:
+MacHelper has a hidden **AutoDream** feature, analogous to how the human brain organizes memories during sleep. When the following conditions are met, Claude silently launches a "dreaming" sub-agent in the background:
 
 - At least **>= 24 hours** since the last consolidation
 - At least **>= 5 sessions** accumulated in the interim
@@ -271,7 +271,7 @@ For a detailed technical analysis, see [AutoDream Memory Consolidation](./03-aut
 | Edit memories | `/memory` command |
 | Review and organize | `/remember` command |
 | Ignore memories | "Ignore memories" / "Don't use memories" |
-| Disable auto-memory | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` |
+| Disable auto-memory | `MACHELPER_DISABLE_AUTO_MEMORY=1` |
 | Disable AutoDream | Set `"autoDreamEnabled": false` in `settings.json` |
 | Manually consolidate memories | `/dream` command |
 | View memory directory | `~/.claude/projects/{hash}/memory/` |

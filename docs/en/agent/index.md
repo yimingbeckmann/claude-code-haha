@@ -1,4 +1,4 @@
-# Claude Code Multi-Agent System Documentation
+# MacHelper Multi-Agent System Documentation
 
 > Complete guide and technical reference for multi-agent orchestration
 
@@ -11,13 +11,13 @@
 A comprehensive user-facing manual covering:
 
 - **Agent Tool**: Parameter reference, spawn methods, background execution
-- **Six Built-in Agents**: general-purpose, Explore, Plan, verification, claude-code-guide, statusline-setup
+- **Six Built-in Agents**: general-purpose, Explore, Plan, verification, machelper-guide, statusline-setup
 - **Background Tasks**: Asynchronous execution, progress tracking, completion notifications
 - **Agent Teams**: Team creation, member collaboration, message communication
 - **Worktree Isolation**: Independent environments, branch management, secure contexts
 - **Custom Agents**: Definition format, tool pool configuration, system prompts
 
-**Target Audience**: All Claude Code users
+**Target Audience**: All MacHelper users
 
 ---
 
@@ -40,7 +40,7 @@ A deep technical reference for developers covering:
 
 ### [03-agent-framework.md](./03-agent-framework.md) — Agent Framework Deep Dive
 
-Deconstructing the architecture behind Claude Code's agent framework from source code, covering:
+Deconstructing the architecture behind MacHelper's agent framework from source code, covering:
 
 - **Core Agent Loop**: AsyncGenerator state machine, five-phase while(true) loop
 - **System Prompt Engineering**: Layered construction, cache boundary, CLAUDE.md loading
@@ -50,7 +50,7 @@ Deconstructing the architecture behind Claude Code's agent framework from source
 - **Permission & Security Model**: Layered permission model, rule pattern matching
 - **Fault Recovery Mechanisms**: 6 built-in recovery strategies, model fallback
 - **Comparison with LangChain/ReAct**: Architecture paradigm differences, why not ReAct
-- **Why Claude Code Is So Good**: 7 core design principles
+- **Why MacHelper Is So Good**: 7 core design principles
 
 **Target Audience**: Architects studying AI agent design, AI application developers, technical researchers
 
@@ -58,7 +58,7 @@ Deconstructing the architecture behind Claude Code's agent framework from source
 
 ## Illustration Notes
 
-All diagrams use a dark background (#1a1a2e) with Anthropic brand copper-orange (#D97757), consistent with Claude Code's official documentation style.
+All diagrams use a dark background (#1a1a2e) with Anthropic brand copper-orange (#D97757), consistent with MacHelper's official documentation style.
 
 | Image | Description | Document |
 |-------|-------------|----------|
@@ -121,7 +121,7 @@ All diagrams use a dark background (#1a1a2e) with Anthropic brand copper-orange 
 
 ## Related Resources
 
-- [Claude Code Haha Home](/)
+- [MacHelper Haha Home](/)
 - [Memory System Documentation](/en/memory/01-usage-guide)
 - [Agent Tool Source Code](https://github.com/NanmiCoder/cc-haha/tree/main/src/tools/AgentTool/)
 - [Swarm Infrastructure](https://github.com/NanmiCoder/cc-haha/tree/main/src/utils/swarm/)

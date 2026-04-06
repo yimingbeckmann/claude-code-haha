@@ -1,4 +1,4 @@
-# Claude Code 记忆系统文档
+# MacHelper 记忆系统文档
 
 > 完整的记忆系统使用指南和实现原理文档
 
@@ -16,7 +16,7 @@
 - **管理操作**：遗忘、忽略、手动编辑、禁用、自定义目录
 - **生命周期**：从学习到注入，新鲜度管理
 
-**适合人群**：所有 Claude Code 用户
+**适合人群**：所有 MacHelper 用户
 
 ---
 
@@ -55,7 +55,7 @@ Claude 的"做梦"机制——后台静默整合记忆的深度解析，涵盖�
 
 ## 🖼️ 配图说明
 
-所有配图采用深色背景（#1a1a2e）+ Anthropic 品牌橙铜色（#D97757）风格，与 Claude Code 官方文档一致。
+所有配图采用深色背景（#1a1a2e）+ Anthropic 品牌橙铜色（#D97757）风格，与 MacHelper 官方文档一致。
 
 | 图片 | 说明 | 尺寸 |
 |------|------|------|
@@ -113,7 +113,7 @@ Claude 的"做梦"机制——后台静默整合记忆的深度解析，涵盖�
 
 ## 🔗 相关资源
 
-- [Claude Code Haha 主页](/)
+- [MacHelper Haha 主页](/)
 - [记忆系统源码](https://github.com/NanmiCoder/cc-haha/tree/main/src/memdir/)
 - [自动提取服务](https://github.com/NanmiCoder/cc-haha/tree/main/src/services/extractMemories/)
 - [AutoDream 服务](https://github.com/NanmiCoder/cc-haha/tree/main/src/services/autoDream/)

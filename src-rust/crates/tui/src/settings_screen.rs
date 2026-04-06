@@ -212,7 +212,7 @@ pub fn render_settings_screen(frame: &mut Frame, screen: &SettingsScreen, area: 
     // Outer border
     let outer_block = Block::default()
         .borders(Borders::ALL)
-        .title(" Settings — Claude Code ")
+        .title(" Settings — MacHelper ")
         .border_style(Style::default().fg(Color::Cyan));
     frame.render_widget(outer_block, popup);
 
@@ -474,7 +474,7 @@ fn build_privacy_lines(screen: &SettingsScreen) -> Vec<Line<'static>> {
     // Telemetry
     let telemetry = screen.settings_snapshot.config.verbose; // placeholder — verbose is closest bool
     privacy_toggle_lines(&mut lines, "Telemetry", false,
-        "Sends anonymised usage statistics to help improve Claude Code.");
+        "Sends anonymised usage statistics to help improve MacHelper.");
 
     // Usage sharing
     privacy_toggle_lines(&mut lines, "Usage Sharing", false,

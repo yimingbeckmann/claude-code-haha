@@ -233,7 +233,7 @@ pub fn render_help_overlay(frame: &mut Frame, overlay: &HelpOverlay, area: Rect)
 
     let block = Block::default()
         .borders(Borders::ALL)
-        .title(" Help — Claude Code ")
+        .title(" Help — MacHelper ")
         .border_style(Style::default().fg(Color::Cyan));
 
     let para = Paragraph::new(lines)

@@ -1,4 +1,4 @@
-# Claude Code 多 Agent 系统文档
+# MacHelper 多 Agent 系统文档
 
 > 完整的多 Agent 编排使用指南和实现原理文档
 
@@ -11,13 +11,13 @@
 面向用户的完整使用手册，涵盖：
 
 - **Agent 工具**：参数详解、生成方式、后台运行
-- **六种内置 Agent**：general-purpose、Explore、Plan、verification、claude-code-guide、statusline-setup
+- **六种内置 Agent**：general-purpose、Explore、Plan、verification、machelper-guide、statusline-setup
 - **后台任务**：异步执行、进度追踪、完成通知
 - **Agent Teams**：团队创建、成员协作、消息通信
 - **Worktree 隔离**：独立环境、分支管理、安全上下文
 - **自定义 Agent**：定义格式、工具池配置、系统提示词
 
-**适合人群**：所有 Claude Code 用户
+**适合人群**：所有 MacHelper 用户
 
 ---
 
@@ -40,7 +40,7 @@
 
 ### [03-agent-framework.md](./03-agent-framework.md) — Agent 框架深度解析
 
-从源码视角剖析 Claude Code 底层 Agent 架构的设计哲学，涵盖：
+从源码视角剖析 MacHelper 底层 Agent 架构的设计哲学，涵盖：
 
 - **核心 Agent 循环**：AsyncGenerator 状态机、五阶段 while(true) 循环
 - **系统提示词工程**：分层构建、缓存边界、CLAUDE.md 加载机制
@@ -50,7 +50,7 @@
 - **权限与安全体系**：分层权限模型、规则模式匹配
 - **故障恢复机制**：6 种内置恢复策略、模型降级
 - **与 LangChain/ReAct 对比**：架构范式差异、为什么不用 ReAct
-- **为什么 Claude Code 能做到这么好**：7 大核心设计原则
+- **为什么 MacHelper 能做到这么好**：7 大核心设计原则
 
 **适合人群**：想理解 AI Agent 框架设计的架构师、AI 应用开发者、技术研究者
 
@@ -58,7 +58,7 @@
 
 ## 🖼️ 配图说明
 
-所有配图采用深色背景（#1a1a2e）+ Anthropic 品牌橙铜色（#D97757）风格，与 Claude Code 官方文档一致。
+所有配图采用深色背景（#1a1a2e）+ Anthropic 品牌橙铜色（#D97757）风格，与 MacHelper 官方文档一致。
 
 | 图片 | 说明 | 所属文档 |
 |------|------|----------|
@@ -121,7 +121,7 @@
 
 ## 🔗 相关资源
 
-- [Claude Code Haha 主页](/)
+- [MacHelper Haha 主页](/)
 - [记忆系统文档](/memory/01-usage-guide)
 - [Agent Tool 源码](https://github.com/NanmiCoder/cc-haha/tree/main/src/tools/AgentTool/)
 - [Swarm 基础设施](https://github.com/NanmiCoder/cc-haha/tree/main/src/utils/swarm/)

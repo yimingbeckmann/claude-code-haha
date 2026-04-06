@@ -1,7 +1,7 @@
 # Computer Use Guide
 
 
-> **Modified Version**: This feature is a **heavily modified version** of the Computer Use (internal codename "Chicago") found in the leaked Claude Code source. The official implementation relies on Anthropic's private native modules (`@ant/computer-use-swift`, `@ant/computer-use-input`) that are not publicly available. We **replaced the entire underlying operation layer** with a Python bridge (`pyautogui` + `mss` + `pyobjc`), enabling anyone to run Computer Use on macOS.
+> **Modified Version**: This feature is a **heavily modified version** of the Computer Use (internal codename "Chicago") found in the leaked MacHelper source. The official implementation relies on Anthropic's private native modules (`@ant/computer-use-swift`, `@ant/computer-use-input`) that are not publicly available. We **replaced the entire underlying operation layer** with a Python bridge (`pyautogui` + `mss` + `pyobjc`), enabling anyone to run Computer Use on macOS.
 
 ---
 
@@ -131,7 +131,7 @@ Add your terminal app as well. You may need to **restart your terminal** after g
 ### 4. Start
 
 ```bash
-./bin/claude-haha
+./bin/machelper
 ```
 
 ### 5. Use
@@ -175,7 +175,7 @@ Just ask in natural language:
 
 ### Gate Bypass
 
-The official Claude Code gates Computer Use behind three layers:
+The official MacHelper gates Computer Use behind three layers:
 
 | Layer | Original Mechanism | Our Approach |
 |-------|-------------------|--------------|
@@ -196,9 +196,9 @@ On first invocation, the bridge automatically:
 
 ## Approaches We Tried
 
-### Approach 1: Extract native .node modules from Claude Code binary ❌
+### Approach 1: Extract native .node modules from MacHelper binary ❌
 
-Extracted `computer-use-swift.node` and `computer-use-input.node` from the installed Claude Code Mach-O binary. Synchronous methods worked, but async Swift methods (screenshot) hung due to N-API async incompatibility between Bun versions.
+Extracted `computer-use-swift.node` and `computer-use-input.node` from the installed MacHelper Mach-O binary. Synchronous methods worked, but async Swift methods (screenshot) hung due to N-API async incompatibility between Bun versions.
 
 ### Approach 2: Create empty stub packages ❌
 
@@ -228,7 +228,7 @@ Replaced all native module calls with Python subprocess calls via `callPythonHel
 | [wimi321/macos-computer-use-skill](https://github.com/wimi321/macos-computer-use-skill) | MIT | Python bridge architecture, `mac_helper.py` runtime, executor adaptation |
 | [domdomegg/computer-use-mcp](https://github.com/domdomegg/computer-use-mcp) | MIT | Independent Computer Use MCP server (nut.js based), used as reference |
 | [paoloanzn/free-code](https://github.com/paoloanzn/free-code) | - | Feature flag system analysis |
-| [oboard/claude-code-rev](https://github.com/oboard/claude-code-rev) | - | Early leaked source restoration, stub package reference |
+| [oboard/machelper-rev](https://github.com/oboard/machelper-rev) | - | Early leaked source restoration, stub package reference |
 
 ### Underlying Libraries
 

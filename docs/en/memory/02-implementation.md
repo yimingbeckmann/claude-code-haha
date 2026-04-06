@@ -1,4 +1,4 @@
-# Claude Code Memory System — Implementation Details
+# MacHelper Memory System — Implementation Details
 
 > From system prompt injection to background auto-extraction, dissecting every technical detail of the memory system.
 
@@ -82,8 +82,8 @@ export const getAutoMemPath = memoize(
 The `isAutoMemoryEnabled()` check chain:
 
 ```
-CLAUDE_CODE_DISABLE_AUTO_MEMORY=1  -> Disabled
-CLAUDE_CODE_SIMPLE (--bare)        -> Disabled
+MACHELPER_DISABLE_AUTO_MEMORY=1  -> Disabled
+MACHELPER_SIMPLE (--bare)        -> Disabled
 Remote mode without REMOTE_MEMORY_DIR -> Disabled
 settings.json autoMemoryEnabled    -> Follows setting
 Default                            -> Enabled
@@ -270,7 +270,7 @@ Each time the user sends a query, `findRelevantMemories()` is triggered:
 ### Sonnet Selector Prompt
 
 ```
-You are selecting memories useful for Claude Code to handle the user's query.
+You are selecting memories useful for MacHelper to handle the user's query.
 You'll receive the user's query and a list of available memory files (with filenames and descriptions).
 
 Return at most 5 memory filenames that are clearly useful.
@@ -369,8 +369,8 @@ When the `TEAMMEM` feature flag is enabled:
 ### Sync API
 
 ```
-GET  /api/claude_code/team_memory?repo={owner/repo}  <- Pull
-PUT  /api/claude_code/team_memory?repo={owner/repo}  <- Push
+GET  /api/machelper/team_memory?repo={owner/repo}  <- Pull
+PUT  /api/machelper/team_memory?repo={owner/repo}  <- Push
 ```
 
 ### Sync Semantics

@@ -1,6 +1,6 @@
-# Claude Code 多 Agent 系统 — 使用指南
+# MacHelper 多 Agent 系统 — 使用指南
 
-> 让 Claude Code 同时调度多个专业代理，并行处理复杂任务。
+> 让 MacHelper 同时调度多个专业代理，并行处理复杂任务。
 
 <p align="center">
 <a href="#一、什么是多-agent-系统">多 Agent 系统</a> · <a href="#二、六种内置-agent">六种内置 Agent</a> · <a href="#三、如何生成-agent">如何生成 Agent</a> · <a href="#四、后台任务管理">后台任务管理</a> · <a href="#五、agent-teams-—-多代理协作">Agent Teams</a> · <a href="#六、自定义-agent">自定义 Agent</a> · <a href="#七、权限模式">权限模式</a> · <a href="#八、快速参考">快速参考</a>
@@ -12,7 +12,7 @@
 
 ## 一、什么是多 Agent 系统？
 
-Claude Code 的多 Agent 系统是一套**智能任务编排框架**，让主代理能够生成多个专业化的子代理（Subagent），各自独立执行不同的任务，最终将结果汇总给用户。
+MacHelper 的多 Agent 系统是一套**智能任务编排框架**，让主代理能够生成多个专业化的子代理（Subagent），各自独立执行不同的任务，最终将结果汇总给用户。
 
 核心理念：**把大任务拆分为多个专业小任务，并行执行，提高效率。**
 
@@ -29,7 +29,7 @@ Claude Code 的多 Agent 系统是一套**智能任务编排框架**，让主代
 
 ![六种内置 Agent](./images/02-agent-types.png)
 
-Claude Code 内置了 6 种专业代理，每种都有特定的工具池和适用场景：
+MacHelper 内置了 6 种专业代理，每种都有特定的工具池和适用场景：
 
 ### 1. general-purpose（通用代理）
 
@@ -95,15 +95,15 @@ Agent({
 - **模型**：继承父代理
 - **特点**：始终在后台运行，输出 PASS/FAIL/PARTIAL 判定，红色标识
 
-### 5. claude-code-guide（指南代理）
+### 5. machelper-guide（指南代理）
 
-**适用场景**：回答关于 Claude Code、Agent SDK、Claude API 的问题。
+**适用场景**：回答关于 MacHelper、Agent SDK、Claude API 的问题。
 
 ```
 Agent({
   description: "查询 Claude API 用法",
   prompt: "如何使用 tool_use 功能...",
-  subagent_type: "claude-code-guide"
+  subagent_type: "machelper-guide"
 })
 ```
 
@@ -113,7 +113,7 @@ Agent({
 
 ### 6. statusline-setup（状态栏配置代理）
 
-**适用场景**：配置 Claude Code 状态栏显示。
+**适用场景**：配置 MacHelper 状态栏显示。
 
 - **工具池**：仅 Read + Edit
 - **模型**：Sonnet
@@ -127,7 +127,7 @@ Agent({
 | Explore | 只读 | 搜索+读取 | Haiku | 快速探索 |
 | Plan | 只读 | 搜索+读取 | 继承 | 架构规划 |
 | verification | 只读 | 搜索+读取 | 继承 | 独立验证 |
-| claude-code-guide | 只读 | 搜索+网络 | Haiku | 文档指南 |
+| machelper-guide | 只读 | 搜索+网络 | Haiku | 文档指南 |
 | statusline-setup | 读写 | Read+Edit | Sonnet | 状态栏配置 |
 
 ---

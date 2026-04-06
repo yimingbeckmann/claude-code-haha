@@ -423,7 +423,7 @@ fn render_welcome_box(frame: &mut Frame, app: &App, area: Rect) {
     if area.height < box_height + 1 || box_width < 30 {
         // Too small: fall back to a single line
         let line = Line::from(vec![
-            Span::styled("Claude Code ", Style::default().fg(CLAUDE_ORANGE).add_modifier(Modifier::BOLD)),
+            Span::styled("MacHelper ", Style::default().fg(CLAUDE_ORANGE).add_modifier(Modifier::BOLD)),
             Span::styled(format!("v{}", APP_VERSION), Style::default().fg(Color::DarkGray)),
         ]);
         frame.render_widget(Paragraph::new(vec![line]), area);
@@ -431,13 +431,13 @@ fn render_welcome_box(frame: &mut Frame, app: &App, area: Rect) {
     }
     let box_area = Rect { x: area.x, y: area.y, width: box_width, height: box_height };
 
-    // Outer orange rounded border with title "Claude Code vX.Y"
+    // Outer orange rounded border with title "MacHelper vX.Y"
     let outer_block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Rounded)
         .border_style(Style::default().fg(CLAUDE_ORANGE))
         .title(Line::from(vec![
-            Span::styled(" Claude Code ", Style::default().fg(CLAUDE_ORANGE).add_modifier(Modifier::BOLD)),
+            Span::styled(" MacHelper ", Style::default().fg(CLAUDE_ORANGE).add_modifier(Modifier::BOLD)),
             Span::styled(format!("v{} ", APP_VERSION), Style::default().fg(Color::DarkGray)),
         ]));
     frame.render_widget(outer_block, box_area);
@@ -749,7 +749,7 @@ fn render_status_row(frame: &mut Frame, app: &App, area: Rect) {
 // Keybinding hints footer
 // -----------------------------------------------------------------------
 
-/// Single footer line matching real Claude Code:
+/// Single footer line matching real MacHelper:
 ///   Left:  "? for shortcuts" (dimmed)  â€” or streaming/mode context
 ///   Right: "â— high Â· /effort" (effort indicator + model)
 fn render_footer(frame: &mut Frame, app: &App, area: Rect) {

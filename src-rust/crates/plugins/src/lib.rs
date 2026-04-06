@@ -1,4 +1,4 @@
-// cc-plugins: Plugin runtime for the Claude Code CLI Rust port.
+// cc-plugins: Plugin runtime for the MacHelper CLI Rust port.
 //
 // This crate handles plugin discovery, manifest parsing, hook registration,
 // and the /plugin + /reload-plugins command definitions.

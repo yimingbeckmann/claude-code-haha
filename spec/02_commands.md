@@ -1,6 +1,6 @@
-# Claude Code — Commands Reference
+# MacHelper — Commands Reference
 
-This document is an exhaustive reference for every slash command in the Claude Code CLI, derived directly from the source in `src/commands/` and the top-level registry in `src/commands.ts`.
+This document is an exhaustive reference for every slash command in the MacHelper CLI, derived directly from the source in `src/commands/` and the top-level registry in `src/commands.ts`.
 
 ---
 
@@ -120,7 +120,7 @@ This document is an exhaustive reference for every slash command in the Claude C
 
 ## 1. Command System Architecture
 
-All slash commands in Claude Code share a unified `Command` interface defined in `src/types/command.ts` and re-exported from `src/commands.ts`. The command registry is loaded lazily (memoized) in `commands.ts` and is assembled from several sources:
+All slash commands in MacHelper share a unified `Command` interface defined in `src/types/command.ts` and re-exported from `src/commands.ts`. The command registry is loaded lazily (memoized) in `commands.ts` and is assembled from several sources:
 
 ```
 Priority order in getCommands():
@@ -514,7 +514,7 @@ The implementation (`chrome.tsx`, ~23KB) renders a settings panel for managing t
 **Description:** Clear conversation history and free up context. Starts a fresh session.
 
 **Core function (`clearConversation`):**
-1. Executes `SessionEnd` hooks (bounded by `CLAUDE_CODE_SESSIONEND_HOOKS_TIMEOUT_MS`, default 1.5s).
+1. Executes `SessionEnd` hooks (bounded by `MACHELPER_SESSIONEND_HOOKS_TIMEOUT_MS`, default 1.5s).
 2. Emits `tengu_cache_eviction_hint` analytics event.
 3. Identifies background tasks to preserve (tasks with `isBackgrounded !== false`).
 4. Clears messages: `setMessages(() => [])`.
@@ -790,7 +790,7 @@ export function createMovedToPluginCommand(options: {
 
 **Type:** `local-jsx`
 **Syntax:** `/doctor`
-**Description:** Run diagnostics on the Claude Code installation: API key validity, model access, MCP connectivity, LSP status, plugin health, etc.
+**Description:** Run diagnostics on the MacHelper installation: API key validity, model access, MCP connectivity, LSP status, plugin health, etc.
 
 **Gate:** `isEnabled: () => !isEnvTruthy(process.env.DISABLE_DOCTOR_COMMAND)`
 
@@ -820,7 +820,7 @@ export function createMovedToPluginCommand(options: {
 - Calls `toPersistableEffort()` — some levels are session-only.
 - Persists persistable values to `userSettings.effortLevel`.
 - Logs `tengu_effort_command` analytics event.
-- If `CLAUDE_CODE_EFFORT_LEVEL` env var is set and conflicts with the requested value, warns the user.
+- If `MACHELPER_EFFORT_LEVEL` env var is set and conflicts with the requested value, warns the user.
 
 **`immediate`:** Dynamically set by `shouldInferenceConfigCommandBeImmediate()`.
 
@@ -919,10 +919,10 @@ The implementation (~31KB) handles multiple formats, clipboard copy, and file ou
 **Type:** `local-jsx`
 **Syntax:** `/feedback [report]`
 **Aliases:** `bug`
-**Description:** Submit feedback or bug reports about Claude Code.
+**Description:** Submit feedback or bug reports about MacHelper.
 
 **Gate:** Disabled when:
-- `CLAUDE_CODE_USE_BEDROCK`, `CLAUDE_CODE_USE_VERTEX`, `CLAUDE_CODE_USE_FOUNDRY` are set
+- `MACHELPER_USE_BEDROCK`, `MACHELPER_USE_VERTEX`, `MACHELPER_USE_FOUNDRY` are set
 - `DISABLE_FEEDBACK_COMMAND` or `DISABLE_BUG_COMMAND` set
 - `isEssentialTrafficOnly()` is true
 - `USER_TYPE === 'ant'`
@@ -1013,7 +1013,7 @@ The implementation (~31KB) handles multiple formats, clipboard copy, and file ou
 
 **Old prompt (`OLD_INIT_PROMPT`):** Analyzes the codebase and creates a minimal CLAUDE.md with commands, architecture overview.
 
-**New prompt (`NEW_INIT_PROMPT`, enabled by `NEW_INIT` flag or `CLAUDE_CODE_NEW_INIT=1`):** Multi-phase interactive setup:
+**New prompt (`NEW_INIT_PROMPT`, enabled by `NEW_INIT` flag or `MACHELPER_NEW_INIT=1`):** Multi-phase interactive setup:
 - Phase 1: Ask what to set up (project CLAUDE.md, personal CLAUDE.local.md, skills, hooks)
 - Phase 2: Explore codebase (manifest files, README, CI config, existing CLAUDE.md, linter config, git worktrees)
 - Phase 3: Fill in gaps via `AskUserQuestion`
@@ -1058,7 +1058,7 @@ The implementation (~31KB) handles multiple formats, clipboard copy, and file ou
 
 **Type:** `prompt`
 **Syntax:** `/insights`
-**Description:** Generate an AI-powered report analyzing Claude Code usage sessions.
+**Description:** Generate an AI-powered report analyzing MacHelper usage sessions.
 
 **Implementation note:** This is a 113KB module (~3200 lines) that includes HTML rendering and diff utilities. It is registered in `commands.ts` as a lazy shim that dynamically imports the real module only when invoked, to avoid startup overhead.
 
@@ -1277,7 +1277,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local-jsx`
 **Syntax:** `/model [model]`
-**Description:** Set the AI model for Claude Code. Description dynamically shows the currently selected model.
+**Description:** Set the AI model for MacHelper. Description dynamically shows the currently selected model.
 
 **`immediate`:** Set by `shouldInferenceConfigCommandBeImmediate()`.
 
@@ -1317,7 +1317,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local-jsx`
 **Syntax:** `/passes`
-**Description:** Share a free week of Claude Code with friends (referral passes). Optionally shows "earn extra usage" if referrer rewards are available.
+**Description:** Share a free week of MacHelper with friends (referral passes). Optionally shows "earn extra usage" if referrer rewards are available.
 
 **Gate:** Hidden unless `checkCachedPassesEligibility().eligible && hasCache`.
 
@@ -1374,7 +1374,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 **Type:** `local-jsx`
 **Syntax:** `/plugin [subcommand] [args]`
 **Aliases:** `plugins`, `marketplace`
-**Description:** Manage Claude Code plugins (install, uninstall, enable, disable, browse marketplace).
+**Description:** Manage MacHelper plugins (install, uninstall, enable, disable, browse marketplace).
 
 **Properties:** `immediate: true`
 
@@ -1420,7 +1420,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 **Syntax:** `/pr-comments [PR number or args]`
 **Description:** Get comments from a GitHub pull request. Uses `gh` CLI to fetch PR-level and code review comments.
 
-**Plugin migration:** For `USER_TYPE === 'ant'`, directs to `pr-comments@claude-code-marketplace`. For external users, runs the embedded prompt.
+**Plugin migration:** For `USER_TYPE === 'ant'`, directs to `pr-comments@machelper-marketplace`. For external users, runs the embedded prompt.
 
 **Fallback prompt logic:**
 1. `gh pr view --json number,headRepository` to get PR info.
@@ -1460,7 +1460,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local`
 **Syntax:** `/release-notes`
-**Description:** Display the changelog for Claude Code.
+**Description:** Display the changelog for MacHelper.
 
 **`supportsNonInteractive: true`**
 
@@ -1510,7 +1510,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local-jsx`
 **Name:** `web-setup`
-**Description:** Set up Claude Code on the web (connects GitHub account).
+**Description:** Set up MacHelper on the web (connects GitHub account).
 
 **Gate:**
 - `availability: ['claude-ai']`
@@ -1586,7 +1586,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local-jsx`
 **Syntax:** `/ultrareview`
-**Description:** Deep automated bug-finding review running in Claude Code on the web (~10–20 min). Finds and verifies bugs in the current branch.
+**Description:** Deep automated bug-finding review running in MacHelper on the web (~10–20 min). Finds and verifies bugs in the current branch.
 
 **Gate:** `isEnabled: () => isUltrareviewEnabled()` — checks GrowthBook `tengu_review_bughunter_config.enabled`.
 
@@ -1632,7 +1632,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 **Syntax:** `/security-review`
 **Description:** Complete a security-focused review of pending branch changes.
 
-**Plugin migration:** Directs `USER_TYPE === 'ant'` users to `security-review@claude-code-marketplace`.
+**Plugin migration:** Directs `USER_TYPE === 'ant'` users to `security-review@machelper-marketplace`.
 
 **Fallback prompt:** Large SECURITY_REVIEW_MARKDOWN with:
 - Allowed tools: `Bash(git diff:*)`, `Bash(git status:*)`, `Bash(git log:*)`, `Bash(git show:*)`, `Bash(git remote show:*)`, `Read`, `Glob`, `Grep`, `LS`, `Task`
@@ -1683,7 +1683,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local-jsx`
 **Syntax:** `/stats`
-**Description:** Show Claude Code usage statistics and activity (sessions, token usage, costs over time).
+**Description:** Show MacHelper usage statistics and activity (sessions, token usage, costs over time).
 
 ---
 
@@ -1693,7 +1693,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local-jsx`
 **Syntax:** `/status`
-**Description:** Show comprehensive Claude Code status: version, model, account, API connectivity, tool statuses.
+**Description:** Show comprehensive MacHelper status: version, model, account, API connectivity, tool statuses.
 
 **Properties:** `immediate: true`
 
@@ -1705,7 +1705,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `prompt`
 **Syntax:** `/statusline [description]`
-**Description:** Set up Claude Code's status line UI. Launches a specialized `statusline-setup` subagent.
+**Description:** Set up MacHelper's status line UI. Launches a specialized `statusline-setup` subagent.
 
 **Allowed tools:** `AgentTool`, `Read(~/**)`, `Edit(~/.claude/settings.json)`
 
@@ -1721,7 +1721,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local`
 **Syntax:** `/stickers`
-**Description:** Open the Claude Code sticker ordering page at `https://www.stickermule.com/claudecode`.
+**Description:** Open the MacHelper sticker ordering page at `https://www.stickermule.com/claudecode`.
 
 **Gate:** `supportsNonInteractive: false`
 
@@ -1799,7 +1799,7 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local-jsx`
 **Syntax:** `/think-back`
-**Description:** "Your 2025 Claude Code Year in Review" — a year-in-review animation.
+**Description:** "Your 2025 MacHelper Year in Review" — a year-in-review animation.
 
 **Gate:** `isEnabled: () => checkStatsigFeatureGate_CACHED_MAY_BE_STALE('tengu_thinkback')`
 
@@ -1824,14 +1824,14 @@ claude mcp add <name> <commandOrUrl> [args...]
 
 **Type:** `local-jsx`
 **Syntax:** `/ultraplan [seed plan]`
-**Description:** Run an extended multi-agent planning session on Claude Code on the web (CCR). Explores the codebase, creates a comprehensive implementation plan, and enters plan-approval mode.
+**Description:** Run an extended multi-agent planning session on MacHelper on the web (CCR). Explores the codebase, creates a comprehensive implementation plan, and enters plan-approval mode.
 
 **Feature gate:** `ULTRAPLAN` bundle flag required.
 
 **Constants:**
 ```typescript
 const ULTRAPLAN_TIMEOUT_MS = 30 * 60 * 1000  // 30 min
-export const CCR_TERMS_URL = 'https://code.claude.com/docs/en/claude-code-on-the-web'
+export const CCR_TERMS_URL = 'https://code.claude.com/docs/en/machelper-on-the-web'
 ```
 
 **Model:** From GrowthBook `tengu_ultraplan_model` (defaults to `ALL_MODEL_CONFIGS.opus46.firstParty`).
@@ -2021,13 +2021,13 @@ Commands without `availability` are shown to all users.
 | `DISABLE_BUG_COMMAND` | Disables `/feedback` alias |
 | `DISABLE_UPGRADE_COMMAND` | Disables `/upgrade` |
 | `DISABLE_EXTRA_USAGE_COMMAND` | Disables `/extra-usage` |
-| `CLAUDE_CODE_USE_BEDROCK` | Disables `/feedback` |
-| `CLAUDE_CODE_USE_VERTEX` | Disables `/feedback` |
-| `CLAUDE_CODE_USE_FOUNDRY` | Disables `/feedback` |
+| `MACHELPER_USE_BEDROCK` | Disables `/feedback` |
+| `MACHELPER_USE_VERTEX` | Disables `/feedback` |
+| `MACHELPER_USE_FOUNDRY` | Disables `/feedback` |
 | `USER_TYPE=ant` | Enables internal-only commands |
 | `IS_DEMO=1` | Suppresses internal-only commands even for ant users |
-| `CLAUDE_CODE_NEW_INIT=1` | Enables new multi-phase `/init` prompt |
-| `CLAUDE_CODE_ENABLE_XAA=1` | Enables `--xaa` flag in `claude mcp add` |
+| `MACHELPER_NEW_INIT=1` | Enables new multi-phase `/init` prompt |
+| `MACHELPER_ENABLE_XAA=1` | Enables `--xaa` flag in `claude mcp add` |
 | `MCP_CLIENT_SECRET` | OAuth client secret for `claude mcp add --client-secret` |
 | `MCP_XAA_IDP_CLIENT_SECRET` | IdP client secret for `claude mcp xaa setup --client-secret` |
 | `ULTRAPLAN_PROMPT_FILE` | Override ultraplan prompt (ant builds only) |

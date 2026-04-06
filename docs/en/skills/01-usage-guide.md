@@ -1,6 +1,6 @@
-# Claude Code Skills System -- Usage Guide
+# MacHelper Skills System -- Usage Guide
 
-> Skills are the extensible capability engine of Claude Code, allowing you to define custom automated workflows using Markdown files.
+> Skills are the extensible capability engine of MacHelper, allowing you to define custom automated workflows using Markdown files.
 
 <p align="center">
 <a href="#_1-what-are-skills">What Are Skills</a> · <a href="#_2-six-skill-sources">Six Sources</a> · <a href="#_3-skill-definition-format">Definition Format</a> · <a href="#_4-invocation-methods">Invocation</a> · <a href="#_5-execution-context">Execution Context</a> · <a href="#_6-conditional-activation">Conditional Activation</a> · <a href="#_7-permission-control">Permissions</a> · <a href="#_8-quick-reference">Quick Reference</a>
@@ -12,7 +12,7 @@
 
 ## 1. What Are Skills?
 
-Skills are Claude Code's **extensible capability plugin system**. Each Skill is a Markdown file (with YAML frontmatter) that defines a specialized prompt and behavioral configuration, enabling Claude to execute professional workflows in specific scenarios.
+Skills are MacHelper's **extensible capability plugin system**. Each Skill is a Markdown file (with YAML frontmatter) that defines a specialized prompt and behavioral configuration, enabling Claude to execute professional workflows in specific scenarios.
 
 Core capabilities:
 
@@ -31,7 +31,7 @@ Core capabilities:
 
 ![Skill Source Types](./images/02-skill-sources.png)
 
-Claude Code loads Skills from 6 different sources, ordered by priority from highest to lowest:
+MacHelper loads Skills from 6 different sources, ordered by priority from highest to lowest:
 
 ### 1. Bundled (Built-in Skills)
 

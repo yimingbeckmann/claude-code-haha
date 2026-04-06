@@ -11,7 +11,7 @@
 // EffortLevel enum
 // ---------------------------------------------------------------------------
 
-/// The four named effort levels supported by Claude Code.
+/// The four named effort levels supported by MacHelper.
 ///
 /// Matches the `EffortLevel` type from `src/entrypoints/sdk/runtimeTypes.ts`
 /// / `src/utils/effort.ts`.

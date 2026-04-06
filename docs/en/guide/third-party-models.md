@@ -5,7 +5,7 @@ This project communicates with LLMs via the Anthropic protocol. By using a proto
 ## How It Works
 
 ```
-claude-code-haha ──Anthropic protocol──▶ LiteLLM Proxy ──OpenAI protocol──▶ Target Model API
+machelper ──Anthropic protocol──▶ LiteLLM Proxy ──OpenAI protocol──▶ Target Model API
                                           (translation)
 ```
 
@@ -120,7 +120,7 @@ ANTHROPIC_DEFAULT_HAIKU_MODEL=gpt-4o
 ANTHROPIC_DEFAULT_OPUS_MODEL=gpt-4o
 API_TIMEOUT_MS=3000000
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 #### Method B: Via `~/.claude/settings.json`
@@ -136,7 +136,7 @@ CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "gpt-4o",
     "API_TIMEOUT_MS": "3000000",
     "DISABLE_TELEMETRY": "1",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+    "MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   }
 }
 ```
@@ -146,7 +146,7 @@ CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 ### 5. Start and Verify
 
 ```bash
-./bin/claude-haha
+./bin/machelper
 ```
 
 If everything is configured correctly, you should see the normal chat interface, with your configured target model handling the requests.
@@ -167,7 +167,7 @@ ANTHROPIC_DEFAULT_SONNET_MODEL=openai/gpt-4o
 ANTHROPIC_DEFAULT_HAIKU_MODEL=openai/gpt-4o-mini
 ANTHROPIC_DEFAULT_OPUS_MODEL=openai/gpt-4o
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 ### MiniMax (pre-configured in .env.example)
@@ -181,14 +181,14 @@ ANTHROPIC_DEFAULT_HAIKU_MODEL=MiniMax-M2.7-highspeed
 ANTHROPIC_DEFAULT_OPUS_MODEL=MiniMax-M2.7-highspeed
 API_TIMEOUT_MS=3000000
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 ---
 
 ## Option 3: Other Proxy Tools
 
-The community has built several proxy tools specifically for Claude Code:
+The community has built several proxy tools specifically for MacHelper:
 
 | Tool | Description | Link |
 |------|-------------|------|
@@ -222,7 +222,7 @@ This project heavily uses tool calling (tool_use). LiteLLM automatically transla
 Configure these environment variables to avoid unnecessary network requests:
 ```
 DISABLE_TELEMETRY=1
-CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+MACHELPER_DISABLE_NONESSENTIAL_TRAFFIC=1
 ```
 
 ---

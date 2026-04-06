@@ -1,6 +1,6 @@
-# Claude Code 记忆系统 — 使用指南
+# MacHelper 记忆系统 — 使用指南
 
-> 让 Claude Code 跨会话记住你是谁、你偏好什么、项目正在发生什么。
+> 让 MacHelper 跨会话记住你是谁、你偏好什么、项目正在发生什么。
 
 <p align="center">
 <a href="#一、什么是记忆系统">记忆系统</a> · <a href="#二、四种记忆类型">四种记忆类型</a> · <a href="#三、如何触发记忆保存">触发保存</a> · <a href="#四、记忆存储在哪里">存储位置</a> · <a href="#五、如何管理记忆">管理记忆</a> · <a href="#六、记忆的生命周期">生命周期</a> · <a href="#七、快速参考">快速参考</a>
@@ -12,7 +12,7 @@
 
 ## 一、什么是记忆系统？
 
-Claude Code 的记忆系统是一套**基于文件的持久化知识库**，让 Claude 能够跨越多次对话，持续积累对你和你的项目的理解。
+MacHelper 的记忆系统是一套**基于文件的持久化知识库**，让 Claude 能够跨越多次对话，持续积累对你和你的项目的理解。
 
 核心理念：**只记住无法从代码中推断出来的东西。**
 
@@ -29,7 +29,7 @@ Claude Code 的记忆系统是一套**基于文件的持久化知识库**，让 
 
 ![四种记忆类型](./images/02-memory-types.png)
 
-Claude Code 将记忆严格分为四类：
+MacHelper 将记忆严格分为四类：
 
 ### 1. User（用户画像）
 
@@ -199,9 +199,9 @@ Claude：[本次对话中不使用任何记忆内容]
 
 | 方法 | 做法 |
 |------|------|
-| 环境变量 | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` |
+| 环境变量 | `MACHELPER_DISABLE_AUTO_MEMORY=1` |
 | 设置文件 | `settings.json` 中 `"autoMemoryEnabled": false` |
-| 精简模式 | `--bare` 启动 / `CLAUDE_CODE_SIMPLE=1` |
+| 精简模式 | `--bare` 启动 / `MACHELPER_SIMPLE=1` |
 
 ### 自定义记忆目录
 
@@ -245,7 +245,7 @@ Claude：[本次对话中不使用任何记忆内容]
 
 ### AutoDream —— "做梦"整理记忆
 
-Claude Code 有一个隐藏的 **AutoDream** 功能，类比人类睡眠时大脑整理记忆的过程。当满足以下条件时，Claude 会在后台静默启动一个"做梦"子智能体：
+MacHelper 有一个隐藏的 **AutoDream** 功能，类比人类睡眠时大脑整理记忆的过程。当满足以下条件时，Claude 会在后台静默启动一个"做梦"子智能体：
 
 - 距上次整合 **>= 24 小时**
 - 期间积累了 **>= 5 个会话**
@@ -271,7 +271,7 @@ Claude Code 有一个隐藏的 **AutoDream** 功能，类比人类睡眠时大�
 | 编辑记忆 | `/memory` 命令 |
 | 审查和整理 | `/remember` 命令 |
 | 忽略记忆 | "忽略记忆" / "不要用记忆" |
-| 禁用自动记忆 | `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` |
+| 禁用自动记忆 | `MACHELPER_DISABLE_AUTO_MEMORY=1` |
 | 禁用 AutoDream | `settings.json` 中 `"autoDreamEnabled": false` |
 | 手动整合记忆 | `/dream` 命令 |
 | 查看记忆目录 | `~/.claude/projects/{hash}/memory/` |

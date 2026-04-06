@@ -1,4 +1,4 @@
-# Claude Code Multi-Agent System — Implementation Details
+# MacHelper Multi-Agent System — Implementation Details
 
 > A deep dive into the architecture, spawn flow, context passing, and collaboration mechanisms of multi-agent orchestration.
 
@@ -12,7 +12,7 @@
 
 ## 1. Architecture Overview
 
-Claude Code's multi-agent system consists of the following core modules:
+MacHelper's multi-agent system consists of the following core modules:
 
 ### 5 Core Modules
 
@@ -327,7 +327,7 @@ Agent System Prompt        ← agentDefinition.getSystemPrompt()
   ↓                          - otherwise: replaces default
 Custom System Prompt       ← --system-prompt argument
   ↓
-Default System Prompt      ← Standard Claude Code prompt
+Default System Prompt      ← Standard MacHelper prompt
   ↓
 Append System Prompt       ← Appended to the end
 ```
@@ -384,7 +384,7 @@ export type SubagentContextOverrides = {
 **Priority chain**:
 
 ```
-CLAUDE_CODE_SUBAGENT_MODEL env var  ← Highest
+MACHELPER_SUBAGENT_MODEL env var  ← Highest
   ↓
 Agent({ model: 'opus' }) parameter  ← Specified via tool
   ↓
