@@ -45,7 +45,7 @@ export const CONSOLE_OAUTH_SCOPES = [
 export const CLAUDE_AI_OAUTH_SCOPES = [
   CLAUDE_AI_PROFILE_SCOPE,
   CLAUDE_AI_INFERENCE_SCOPE,
-  'user:sessions:machelper',
+  'user:sessions:claude_code',
   'user:mcp_servers',
   'user:file_upload',
 ] as const

@@ -144,7 +144,7 @@ export async function authLogin({
       process.stderr.write(
         'MACHELPER_OAUTH_SCOPES is required when using MACHELPER_OAUTH_REFRESH_TOKEN.\n' +
           'Set it to the space-separated scopes the refresh token was issued with\n' +
-          '(e.g. "user:inference" or "user:profile user:inference user:sessions:machelper user:mcp_servers").\n',
+          '(e.g. "user:inference" or "user:profile user:inference user:sessions:claude_code user:mcp_servers").\n',
       )
       process.exit(1)
     }
