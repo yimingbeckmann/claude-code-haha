@@ -17,12 +17,12 @@ function getDefaultEditDescription(): string {
     process.env.USER_TYPE === 'ant'
       ? `\n- Use the smallest old_string that's clearly unique — usually 2-4 adjacent lines is sufficient. Avoid including 10+ lines of context when less uniquely identifies the target.`
       : ''
-  return `Performs exact string replacements in files.
+  return `Performs exact string replacements in any text file on the Mac: config files, plist XML, shell scripts, markdown notes, .env files, CSV/JSON data files, text documents, and similar.
 
 Usage:${getPreReadInstruction()}
 - When editing text from Read tool output, ensure you preserve the exact indentation (tabs/spaces) as it appears AFTER the line number prefix. The line number prefix format is: ${prefixFormat}. Everything after that is the actual file content to match. Never include any part of the line number prefix in the old_string or new_string.
-- ALWAYS prefer editing existing files in the codebase. NEVER write new files unless explicitly required.
+- ALWAYS prefer editing an existing file over creating a new one. Do not use this tool to create new files — use the Write tool for that.
 - Only use emojis if the user explicitly requests it. Avoid adding emojis to files unless asked.
 - The edit will FAIL if \`old_string\` is not unique in the file. Either provide a larger string with more surrounding context to make it unique or use \`replace_all\` to change every instance of \`old_string\`.${minimalUniquenessHint}
-- Use \`replace_all\` for replacing and renaming strings across the file. This parameter is useful if you want to rename a variable for instance.`
+- Use \`replace_all\` for replacing and renaming strings across the file. Useful for things like changing every occurrence of a path, hostname, key name, or value across a config or notes file.`
 }

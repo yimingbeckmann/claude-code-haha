@@ -16,7 +16,8 @@ import {
   logEvent,
 } from '../services/analytics/index.js'
 import { GREP_TOOL_NAME } from '../tools/GrepTool/prompt.js'
-import { isReplModeEnabled } from '../tools/REPLTool/constants.js'
+// REPLTool removed in MacHelper; REPL mode is never enabled.
+const isReplModeEnabled = () => false
 import { logForDebugging } from '../utils/debug.js'
 import { hasEmbeddedSearchTools } from '../utils/embeddedTools.js'
 import { isEnvTruthy } from '../utils/envUtils.js'
@@ -348,10 +349,10 @@ function buildAssistantDailyLogPrompt(skipIndex = false): string {
     'Write each entry as a short timestamped bullet. Create the file (and parent directories) on first write if it does not exist. Do not rewrite or reorganize the log — it is append-only. A separate nightly process distills these logs into `MEMORY.md` and topic files.',
     '',
     '## What to log',
-    '- User corrections and preferences ("use bun, not npm"; "stop summarizing diffs")',
-    '- Facts about the user, their role, or their goals',
-    '- Project context that is not derivable from the code (deadlines, incidents, decisions and their rationale)',
-    '- Pointers to external systems (dashboards, Linear projects, Slack channels)',
+    '- User corrections and preferences ("use osascript for Mail, not MacMind clicks"; "wait 2s after launching Slack")',
+    '- Facts about the user, their role, the apps they live in, and their automation goals',
+    '- Automation-project context that is not derivable from the current Mac state (what workflow the user is building and why, recurring launchd/cron jobs, scheduled Shortcuts)',
+    '- Pointers to external resources (the user\'s calendar URL, Shortcuts gallery, MacMind API docs at http://127.0.0.1:8484/actions)',
     '- Anything the user explicitly asks you to remember',
     '',
     ...WHAT_NOT_TO_SAVE_SECTION,

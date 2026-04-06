@@ -149,10 +149,26 @@ async function _bundleWithFallback(
 // seed_bundle_file_id. --all → HEAD → squashed-root fallback chain.
 // Tracked WIP via stash create → refs/seed/stash (or baked into the
 // squashed tree); untracked not captured.
+//
+// MacHelper Mac-only mode: if teleport is disabled (via MACHELPER_DISABLE_TELEPORT
+// or MACHELPER_SIMPLE, or simply because cwd isn't a git repo), we short-circuit
+// before touching git. This keeps the export signature intact but makes the
+// call a cheap no-op returning a descriptive error.
 export async function createAndUploadGitBundle(
   config: FilesApiConfig,
   opts?: { cwd?: string; signal?: AbortSignal },
 ): Promise<BundleUploadResult> {
+  if (
+    process.env.MACHELPER_DISABLE_TELEPORT === '1' ||
+    process.env.MACHELPER_SIMPLE === '1'
+  ) {
+    logForDebugging('[gitBundle] createAndUploadGitBundle no-op: teleport disabled via env var')
+    return {
+      success: false,
+      error:
+        'Teleport is disabled in this MacHelper session (Mac-only mode). Git bundling is opt-in for code-work sessions.',
+    }
+  }
   const workdir = opts?.cwd ?? getCwd()
   const gitRoot = findGitRoot(workdir)
   if (!gitRoot) {

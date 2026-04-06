@@ -85,6 +85,82 @@ export function getAttributionRepoRoot(): string {
   return findGitRoot(cwd) ?? getOriginalCwd()
 }
 
+// --------------------------------------------------------------------------
+// Commit attribution gate (MacHelper-specific)
+// --------------------------------------------------------------------------
+// MacHelper is a general Mac automation coworker, not just a code assistant.
+// Adding a "Co-Authored-By: Claude" trailer to every git commit only makes
+// sense when the current session actually involved code work. We gate the
+// attribution footer behind:
+//   1. Env-var kill switches (MACHELPER_DISABLE_ATTRIBUTION, MACHELPER_SIMPLE)
+//   2. A session-level counter of successful in-repo file edits. When the
+//      counter is zero, no code work has happened in this session, so the
+//      footer is suppressed.
+//
+// The counter is maintained in-process (intentionally not persisted across
+// restarts — a fresh process is a fresh session). FileEditTool (and friends)
+// should call incrementCodeEditCounter() on successful edits that land inside
+// a git repo; that wiring is out of scope for this file.
+// --------------------------------------------------------------------------
+
+let codeEditCounter = 0
+
+/**
+ * Bump the session-level code-edit counter. Intended to be called by
+ * FileEditTool (and other file-mutating tools) on a successful edit whose
+ * target lives inside a git repo. Not wired in yet; exposed so the caller
+ * side can be updated independently.
+ */
+export function incrementCodeEditCounter(): void {
+  codeEditCounter++
+}
+
+/**
+ * Read the current session-level code-edit counter. Exported mainly for
+ * tests and for callers that want to check session state without triggering
+ * the full gate logic.
+ */
+export function getCodeEditCounter(): number {
+  return codeEditCounter
+}
+
+/**
+ * Reset the session-level code-edit counter. Exported for tests and for
+ * session-boundary callers that want to explicitly restart code-work tracking.
+ */
+export function resetCodeEditCounter(): void {
+  codeEditCounter = 0
+}
+
+/**
+ * Decide whether the current commit should receive MacHelper's
+ * "Co-Authored-By: Claude" attribution trailer.
+ *
+ * Returns false when:
+ *   - MACHELPER_DISABLE_ATTRIBUTION=1 is set (explicit kill switch)
+ *   - MACHELPER_SIMPLE=1 is set (simple / non-code-work mode)
+ *   - No in-repo file edits have happened in this session (default for
+ *     non-code-work sessions such as pure Mac automation)
+ *
+ * Returns true otherwise — the default once a code session is underway.
+ *
+ * Callers of the attribution trailer formatter should consult this gate
+ * before applying the footer. The original trailer logic is preserved
+ * behind the gate, unchanged.
+ */
+export function shouldAttributeCommit(): boolean {
+  if (process.env.MACHELPER_DISABLE_ATTRIBUTION === '1') {
+    return false
+  }
+  if (process.env.MACHELPER_SIMPLE === '1') {
+    return false
+  }
+  if (codeEditCounter <= 0) {
+    return false
+  }
+  return true
+}
+
 // Cache for repo classification result. Primed once per process.
 // 'internal' = remote matches INTERNAL_MODEL_REPOS allowlist
 // 'external' = has a remote, not on allowlist (public/open-source repo)
@@ -835,7 +911,10 @@ export async function getStagedFiles(): Promise<string[]> {
 }
 
 // formatAttributionTrailer moved to attributionTrailer.ts for tree-shaking
-// (contains excluded strings that should not be in external builds)
+// (contains excluded strings that should not be in external builds).
+// NOTE: callers of that formatter MUST consult shouldAttributeCommit() above
+// before applying the Co-Authored-By footer — attribution is now gated on
+// code-work context (env-var kill switches + session-level edit counter).
 
 /**
  * Check if we're in a transient git state (rebase, merge, cherry-pick).

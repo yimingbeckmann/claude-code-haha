@@ -40,6 +40,50 @@ import { asSystemPrompt } from './systemPromptType.js';
 import { fetchSession, type GitRepositoryOutcome, type GitSource, getBranchFromSession, getOAuthHeaders, type SessionResource } from './teleport/api.js';
 import { fetchEnvironments } from './teleport/environments.js';
 import { createAndUploadGitBundle } from './teleport/gitBundle.js';
+
+// ---------------------------------------------------------------------------
+// MacHelper teleport gating.
+//
+// Teleport is a git-branch-based session-resume feature originally built for
+// claude-code. It assumes the cwd is a git repo with per-session branches.
+// MacHelper is retargeted as a Mac automation coworker where that assumption
+// is often false (e.g. running from ~/ or any non-repo directory).
+//
+// Rather than delete the exports (which would break importers), we gate each
+// public export behind a runtime flag and early-return a no-op when disabled.
+//
+// Disable criteria (any one is sufficient):
+//   - process.env.MACHELPER_DISABLE_TELEPORT === '1'   (explicit opt-out)
+//   - process.env.MACHELPER_SIMPLE === '1'             (simple Mac-only mode)
+//   - cwd is not inside a git work tree (auto-detect fallback)
+//
+// Teleport remains fully functional for git-repo sessions; it only no-ops in
+// Mac-only mode. Opt into teleport explicitly by running MacHelper from a git
+// working tree without the MACHELPER_DISABLE_TELEPORT / MACHELPER_SIMPLE env
+// vars set.
+// ---------------------------------------------------------------------------
+function isTeleportDisabled(): boolean {
+  if (process.env.MACHELPER_DISABLE_TELEPORT === '1') return true;
+  if (process.env.MACHELPER_SIMPLE === '1') return true;
+  // Auto-detect: if cwd is not a git repo, teleport cannot do anything useful.
+  // findGitRoot is sync, memoized, and cheap.
+  try {
+    if (findGitRoot(getCwd()) === null) return true;
+  } catch {
+    // If detection itself throws, be conservative and disable teleport.
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Thrown/returned message used when an export is called while teleport is
+ * disabled. Callers that currently expect a rejected promise will still see a
+ * descriptive error; callers that accept `null` on failure will get `null`.
+ */
+const TELEPORT_DISABLED_MESSAGE =
+  'Teleport is disabled in this MacHelper session (Mac-only mode or not in a git repo). Teleport is opt-in for code-work sessions — run MacHelper from a git working tree with MACHELPER_DISABLE_TELEPORT/MACHELPER_SIMPLE unset to enable it.';
+
 export type TeleportResult = {
   messages: Message[];
   branchName: string;
@@ -170,6 +214,10 @@ async function generateTitleAndBranch(description: string, signal: AbortSignal):
  * Untracked files are ignored because they won't be lost during branch switching
  */
 export async function validateGitState(): Promise<void> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] validateGitState no-op: teleport disabled');
+    return;
+  }
   const isClean = await getIsClean({
     ignoreUntracked: true
   });
@@ -299,6 +347,12 @@ async function getCurrentBranch(): Promise<string> {
  * @returns Processed messages ready for resume
  */
 export function processMessagesForTeleportResume(messages: Message[], error: Error | null): Message[] {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] processMessagesForTeleportResume no-op: teleport disabled');
+    // Returning the input untouched preserves the sane-shape invariant that
+    // callers may rely on (i.e. they still get a Message[]).
+    return messages;
+  }
   // Shared logic with resume for handling interruped session transcripts
   const deserializedMessages = deserializeMessages(messages);
 
@@ -316,6 +370,10 @@ export async function checkOutTeleportedSessionBranch(branch?: string): Promise<
   branchName: string;
   branchError: Error | null;
 }> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] checkOutTeleportedSessionBranch no-op: teleport disabled');
+    return { branchName: '', branchError: null };
+  }
   try {
     const currentBranch = await getCurrentBranch();
     logForDebugging(`Current branch before teleport: '${currentBranch}'`);
@@ -365,6 +423,11 @@ export type RepoValidationResult = {
  * @returns Validation result with status and repo information
  */
 export async function validateSessionRepository(sessionData: SessionResource): Promise<RepoValidationResult> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] validateSessionRepository no-op: teleport disabled');
+    // Report "no_repo_required" so callers treat it as a pass-through.
+    return { status: 'no_repo_required' };
+  }
   const currentParsed = await detectCurrentRepositoryWithHost();
   const currentRepo = currentParsed ? `${currentParsed.owner}/${currentParsed.name}` : null;
   const gitSource = sessionData.session_context.sources.find((source): source is GitSource => source.type === 'git_repository');
@@ -428,6 +491,10 @@ export async function validateSessionRepository(sessionData: SessionResource): P
  * @returns The raw session log and branch name
  */
 export async function teleportResumeCodeSession(sessionId: string, onProgress?: TeleportProgressCallback): Promise<TeleportRemoteResponse> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] teleportResumeCodeSession no-op: teleport disabled');
+    throw new TeleportOperationError(TELEPORT_DISABLED_MESSAGE, chalk.yellow(`${TELEPORT_DISABLED_MESSAGE}\n`));
+  }
   if (!isPolicyAllowed('allow_remote_sessions')) {
     throw new Error("Remote sessions are disabled by your organization's policy.");
   }
@@ -542,6 +609,10 @@ async function handleTeleportPrerequisites(root: Root, errorsToIgnore?: Set<Tele
  * @returns Promise<TeleportToRemoteResponse | null> The created session or null if creation fails
  */
 export async function teleportToRemoteWithErrorHandling(root: Root, description: string | null, signal: AbortSignal, branchName?: string): Promise<TeleportToRemoteResponse | null> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] teleportToRemoteWithErrorHandling no-op: teleport disabled');
+    return null;
+  }
   const errorsToIgnore = new Set<TeleportLocalErrorType>(['needsGitStash']);
   await handleTeleportPrerequisites(root, errorsToIgnore);
   return teleportToRemote({
@@ -563,6 +634,10 @@ export async function teleportToRemoteWithErrorHandling(root: Root, description:
  * @returns TeleportRemoteResponse with session logs as Message[]
  */
 export async function teleportFromSessionsAPI(sessionId: string, orgUUID: string, accessToken: string, onProgress?: TeleportProgressCallback, sessionData?: SessionResource): Promise<TeleportRemoteResponse> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] teleportFromSessionsAPI no-op: teleport disabled');
+    throw new TeleportOperationError(TELEPORT_DISABLED_MESSAGE, chalk.yellow(`${TELEPORT_DISABLED_MESSAGE}\n`));
+  }
   const startTime = Date.now();
   try {
     // Fetch session logs via session ingress
@@ -633,6 +708,10 @@ export type PollRemoteSessionResponse = {
 export async function pollRemoteSessionEvents(sessionId: string, afterId: string | null = null, opts?: {
   skipMetadata?: boolean;
 }): Promise<PollRemoteSessionResponse> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] pollRemoteSessionEvents no-op: teleport disabled');
+    return { newEvents: [], lastEventId: afterId };
+  }
   const accessToken = getClaudeAIOAuthTokens()?.accessToken;
   if (!accessToken) {
     throw new Error('No access token for polling');
@@ -793,6 +872,11 @@ export async function teleportToRemote(options: {
     number: number;
   };
 }): Promise<TeleportToRemoteResponse | null> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] teleportToRemote no-op: teleport disabled');
+    options.onBundleFail?.(TELEPORT_DISABLED_MESSAGE);
+    return null;
+  }
   const {
     initialMessage,
     signal
@@ -1198,6 +1282,10 @@ export async function teleportToRemote(options: {
  * reaper collects it.
  */
 export async function archiveRemoteSession(sessionId: string): Promise<void> {
+  if (isTeleportDisabled()) {
+    logForDebugging('[teleport] archiveRemoteSession no-op: teleport disabled');
+    return;
+  }
   const accessToken = getClaudeAIOAuthTokens()?.accessToken;
   if (!accessToken) return;
   const orgUUID = await getOrganizationUUID();

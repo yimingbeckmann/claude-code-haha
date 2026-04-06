@@ -140,20 +140,18 @@ async function getFrequentlyModifiedFiles(): Promise<string[]> {
 const ONE_WEEK_IN_MS = 7 * 24 * 60 * 60 * 1000
 
 export const getExampleCommandFromCache = memoize(() => {
-  const projectConfig = getCurrentProjectConfig()
-  const frequentFile = projectConfig.exampleFiles?.length
-    ? sample(projectConfig.exampleFiles)
-    : '<filepath>'
-
   const commands = [
-    'fix lint errors',
-    'fix typecheck errors',
-    `how does ${frequentFile} work?`,
-    `refactor ${frequentFile}`,
-    'how do I log an error?',
-    `edit ${frequentFile} to...`,
-    `write a test for ${frequentFile}`,
-    'create a util logging.py that...',
+    'open Safari and search for vacation destinations',
+    'schedule a meeting with Sarah tomorrow at 2pm',
+    'organize my Downloads folder by file type',
+    'read my screen and tell me what I\'m looking at',
+    'launch my morning startup apps (Mail, Calendar, Slack, Notes)',
+    'archive all Mail threads older than 30 days',
+    'take a screenshot and save to Desktop',
+    'find the wifi password for my current network',
+    'set volume to 30%',
+    'close all Safari tabs except the active one',
+    'check what\'s on my calendar today',
   ]
 
   return `Try "${sample(commands)}"`

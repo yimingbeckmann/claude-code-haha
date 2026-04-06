@@ -5,8 +5,9 @@ import { extractBashCommentLabel } from '../tools/BashTool/commentLabel.js'
 import { BASH_TOOL_NAME } from '../tools/BashTool/toolName.js'
 import { FILE_EDIT_TOOL_NAME } from '../tools/FileEditTool/constants.js'
 import { FILE_WRITE_TOOL_NAME } from '../tools/FileWriteTool/prompt.js'
-import { REPL_TOOL_NAME } from '../tools/REPLTool/constants.js'
-import { getReplPrimitiveTools } from '../tools/REPLTool/primitiveTools.js'
+// REPLTool removed in MacHelper; sentinel never matches and primitive list is empty.
+const REPL_TOOL_NAME = '__machelper_repl_removed__'
+const getReplPrimitiveTools = (): Tools => []
 import {
   type BranchAction,
   type CommitKind,

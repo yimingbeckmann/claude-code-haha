@@ -1,5 +1,5 @@
 // biome-ignore-all assist/source/organizeImports: ANT-ONLY import markers must not be reordered
-import { toolMatchesName, type Tool, type Tools } from './Tool.js'
+import type { Tool, Tools } from './Tool.js'
 import { AgentTool } from './tools/AgentTool/AgentTool.js'
 import { SkillTool } from './tools/SkillTool/SkillTool.js'
 import { BashTool } from './tools/BashTool/BashTool.js'
@@ -7,17 +7,12 @@ import { FileEditTool } from './tools/FileEditTool/FileEditTool.js'
 import { FileReadTool } from './tools/FileReadTool/FileReadTool.js'
 import { FileWriteTool } from './tools/FileWriteTool/FileWriteTool.js'
 import { GlobTool } from './tools/GlobTool/GlobTool.js'
-import { NotebookEditTool } from './tools/NotebookEditTool/NotebookEditTool.js'
 import { WebFetchTool } from './tools/WebFetchTool/WebFetchTool.js'
 import { MacMindTool } from './tools/MacMindTool/MacMindTool.js'
 import { TaskStopTool } from './tools/TaskStopTool/TaskStopTool.js'
 import { BriefTool } from './tools/BriefTool/BriefTool.js'
 // Dead code elimination: conditional import for ant-only tools
 /* eslint-disable custom-rules/no-process-env-top-level, @typescript-eslint/no-require-imports */
-const REPLTool =
-  process.env.USER_TYPE === 'ant'
-    ? require('./tools/REPLTool/REPLTool.js').REPLTool
-    : null
 const SuggestBackgroundPRTool =
   process.env.USER_TYPE === 'ant'
     ? require('./tools/SuggestBackgroundPRTool/SuggestBackgroundPRTool.js')
@@ -58,7 +53,6 @@ import { TodoWriteTool } from './tools/TodoWriteTool/TodoWriteTool.js'
 import { ExitPlanModeV2Tool } from './tools/ExitPlanModeTool/ExitPlanModeV2Tool.js'
 import { TestingPermissionTool } from './tools/testing/TestingPermissionTool.js'
 import { GrepTool } from './tools/GrepTool/GrepTool.js'
-import { TungstenTool } from './tools/TungstenTool/TungstenTool.js'
 // Lazy require to break circular dependency: tools.ts -> TeamCreateTool/TeamDeleteTool -> ... -> tools.ts
 /* eslint-disable @typescript-eslint/no-require-imports */
 const getTeamCreateTool = () =>
@@ -72,13 +66,10 @@ const getSendMessageTool = () =>
     .SendMessageTool as typeof import('./tools/SendMessageTool/SendMessageTool.js').SendMessageTool
 /* eslint-enable @typescript-eslint/no-require-imports */
 import { AskUserQuestionTool } from './tools/AskUserQuestionTool/AskUserQuestionTool.js'
-import { LSPTool } from './tools/LSPTool/LSPTool.js'
 import { ListMcpResourcesTool } from './tools/ListMcpResourcesTool/ListMcpResourcesTool.js'
 import { ReadMcpResourceTool } from './tools/ReadMcpResourceTool/ReadMcpResourceTool.js'
 import { ToolSearchTool } from './tools/ToolSearchTool/ToolSearchTool.js'
 import { EnterPlanModeTool } from './tools/EnterPlanModeTool/EnterPlanModeTool.js'
-import { EnterWorktreeTool } from './tools/EnterWorktreeTool/EnterWorktreeTool.js'
-import { ExitWorktreeTool } from './tools/ExitWorktreeTool/ExitWorktreeTool.js'
 import { ConfigTool } from './tools/ConfigTool/ConfigTool.js'
 import { TaskCreateTool } from './tools/TaskCreateTool/TaskCreateTool.js'
 import { TaskGetTool } from './tools/TaskGetTool/TaskGetTool.js'
@@ -138,23 +129,9 @@ import type { ToolPermissionContext } from './Tool.js'
 import { getDenyRuleForTool } from './utils/permissions/permissions.js'
 import { hasEmbeddedSearchTools } from './utils/embeddedTools.js'
 import { isEnvTruthy } from './utils/envUtils.js'
-import { isPowerShellToolEnabled } from './utils/shell/shellToolUtils.js'
 import { isAgentSwarmsEnabled } from './utils/agentSwarmsEnabled.js'
-import { isWorktreeModeEnabled } from './utils/worktreeModeEnabled.js'
-import {
-  REPL_TOOL_NAME,
-  REPL_ONLY_TOOLS,
-  isReplModeEnabled,
-} from './tools/REPLTool/constants.js'
-export { REPL_ONLY_TOOLS }
-/* eslint-disable @typescript-eslint/no-require-imports */
-const getPowerShellTool = () => {
-  if (!isPowerShellToolEnabled()) return null
-  return (
-    require('./tools/PowerShellTool/PowerShellTool.js') as typeof import('./tools/PowerShellTool/PowerShellTool.js')
-  ).PowerShellTool
-}
-/* eslint-enable @typescript-eslint/no-require-imports */
+// REPLTool removed in MacHelper; expose an empty set so legacy importers compile.
+export const REPL_ONLY_TOOLS: ReadonlySet<string> = new Set<string>()
 
 /**
  * Predefined tool presets that can be used with --tools flag
@@ -204,7 +181,6 @@ export function getAllBaseTools(): Tools {
     FileReadTool,
     FileEditTool,
     FileWriteTool,
-    NotebookEditTool,
     WebFetchTool,
     MacMindTool,
     TodoWriteTool,
@@ -214,7 +190,6 @@ export function getAllBaseTools(): Tools {
     SkillTool,
     EnterPlanModeTool,
     ...(process.env.USER_TYPE === 'ant' ? [ConfigTool] : []),
-    ...(process.env.USER_TYPE === 'ant' ? [TungstenTool] : []),
     ...(SuggestBackgroundPRTool ? [SuggestBackgroundPRTool] : []),
     ...(WebBrowserTool ? [WebBrowserTool] : []),
     ...(isTodoV2Enabled()
@@ -223,15 +198,12 @@ export function getAllBaseTools(): Tools {
     ...(OverflowTestTool ? [OverflowTestTool] : []),
     ...(CtxInspectTool ? [CtxInspectTool] : []),
     ...(TerminalCaptureTool ? [TerminalCaptureTool] : []),
-    ...(isEnvTruthy(process.env.ENABLE_LSP_TOOL) ? [LSPTool] : []),
-    ...(isWorktreeModeEnabled() ? [EnterWorktreeTool, ExitWorktreeTool] : []),
     getSendMessageTool(),
     ...(ListPeersTool ? [ListPeersTool] : []),
     ...(isAgentSwarmsEnabled()
       ? [getTeamCreateTool(), getTeamDeleteTool()]
       : []),
     ...(VerifyPlanExecutionTool ? [VerifyPlanExecutionTool] : []),
-    ...(process.env.USER_TYPE === 'ant' && REPLTool ? [REPLTool] : []),
     ...(WorkflowTool ? [WorkflowTool] : []),
     ...(SleepTool ? [SleepTool] : []),
     ...cronTools,
@@ -241,7 +213,6 @@ export function getAllBaseTools(): Tools {
     ...(SendUserFileTool ? [SendUserFileTool] : []),
     ...(PushNotificationTool ? [PushNotificationTool] : []),
     ...(SubscribePRTool ? [SubscribePRTool] : []),
-    ...(getPowerShellTool() ? [getPowerShellTool()] : []),
     ...(SnipTool ? [SnipTool] : []),
     ...(process.env.NODE_ENV === 'test' ? [TestingPermissionTool] : []),
     ListMcpResourcesTool,
@@ -273,19 +244,6 @@ export function filterToolsByDenyRules<
 export const getTools = (permissionContext: ToolPermissionContext): Tools => {
   // Simple mode: only Bash, Read, and Edit tools
   if (isEnvTruthy(process.env.MACHELPER_SIMPLE)) {
-    // --bare + REPL mode: REPL wraps Bash/Read/Edit/etc inside the VM, so
-    // return REPL instead of the raw primitives. Matches the non-bare path
-    // below which also hides REPL_ONLY_TOOLS when REPL is enabled.
-    if (isReplModeEnabled() && REPLTool) {
-      const replSimple: Tool[] = [REPLTool]
-      if (
-        feature('COORDINATOR_MODE') &&
-        coordinatorModeModule?.isCoordinatorMode()
-      ) {
-        replSimple.push(TaskStopTool, getSendMessageTool())
-      }
-      return filterToolsByDenyRules(replSimple, permissionContext)
-    }
     const simpleTools: Tool[] = [BashTool, FileReadTool, FileEditTool]
     // When coordinator mode is also active, include AgentTool and TaskStopTool
     // so the coordinator gets Task+TaskStop (via useMergedTools filtering) and
@@ -309,20 +267,7 @@ export const getTools = (permissionContext: ToolPermissionContext): Tools => {
   const tools = getAllBaseTools().filter(tool => !specialTools.has(tool.name))
 
   // Filter out tools that are denied by the deny rules
-  let allowedTools = filterToolsByDenyRules(tools, permissionContext)
-
-  // When REPL mode is enabled, hide primitive tools from direct use.
-  // They're still accessible inside REPL via the VM context.
-  if (isReplModeEnabled()) {
-    const replEnabled = allowedTools.some(tool =>
-      toolMatchesName(tool, REPL_TOOL_NAME),
-    )
-    if (replEnabled) {
-      allowedTools = allowedTools.filter(
-        tool => !REPL_ONLY_TOOLS.has(tool.name),
-      )
-    }
-  }
+  const allowedTools = filterToolsByDenyRules(tools, permissionContext)
 
   const isEnabled = allowedTools.map(_ => _.isEnabled())
   return allowedTools.filter((_, i) => isEnabled[i])

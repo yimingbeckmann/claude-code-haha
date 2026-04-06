@@ -215,9 +215,9 @@ export function initAutoDream(): void {
       // would be misleading there.
       const extra = `
 
-**Tool constraints for this run:** Bash is restricted to read-only commands (\`ls\`, \`find\`, \`grep\`, \`cat\`, \`stat\`, \`wc\`, \`head\`, \`tail\`, and similar). Anything that writes, redirects to a file, or modifies state will be denied. Plan your exploration with this in mind — no need to probe.
+**Tool constraints for this run:** Bash is restricted to read-only commands (\`ls\`, \`find\`, \`grep\`, \`cat\`, \`stat\`, \`wc\`, \`head\`, \`tail\`, and similar). Anything that writes, redirects to a file, or modifies state will be denied. Mac introspection is also observe-only: no clicks, keystrokes, focus changes, app launches, window moves, or any other UI mutation. You are running while the user is idle — look, don't touch.
 
-Sessions since last consolidation (${sessionIds.length}):
+Recent workflow sessions to draw signal from (${sessionIds.length}):
 ${sessionIds.map(id => `- ${id}`).join('\n')}`
       const prompt = buildConsolidationPrompt(memoryRoot, transcriptDir, extra)
 

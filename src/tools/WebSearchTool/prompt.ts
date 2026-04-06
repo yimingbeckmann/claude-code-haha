@@ -5,11 +5,12 @@ export const WEB_SEARCH_TOOL_NAME = 'WebSearch'
 export function getWebSearchPrompt(): string {
   const currentMonthYear = getLocalMonthYear()
   return `
-- Allows Claude to search the web and use the results to inform responses
+- Searches the web for any topic and uses the results to inform responses
 - Provides up-to-date information for current events and recent data
 - Returns search result information formatted as search result blocks, including links as markdown hyperlinks
 - Use this tool for accessing information beyond Claude's knowledge cutoff
 - Searches are performed automatically within a single API call
+- Great for: Mac keyboard shortcuts, macOS app features and settings, AppleScript / Shortcuts / Automator examples, MacMind-compatible automation patterns, app release notes, troubleshooting how-tos, product comparisons, or any general-purpose research
 
 CRITICAL REQUIREMENT - You MUST follow this:
   - After answering the user's question, you MUST include a "Sources:" section at the end of your response
@@ -28,7 +29,7 @@ Usage notes:
   - Web search is only available in the US
 
 IMPORTANT - Use the correct year in search queries:
-  - The current month is ${currentMonthYear}. You MUST use this year when searching for recent information, documentation, or current events.
-  - Example: If the user asks for "latest React docs", search for "React documentation" with the current year, NOT last year
+  - The current month is ${currentMonthYear}. You MUST use this year when searching for recent information, current events, or anything time-sensitive.
+  - Example: If the user asks "what's new in macOS", search with the current year appended, NOT last year
 `
 }

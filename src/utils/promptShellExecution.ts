@@ -24,26 +24,8 @@ type PromptShellTool = Tool & {
   ): Promise<{ data: ShellOut }>
 }
 
-import { isPowerShellToolEnabled } from './shell/shellToolUtils.js'
-
-// Lazy: this file is on the startup import chain (main → commands →
-// loadSkillsDir → here). A static import would load PowerShellTool.ts
-// (and transitively parser.ts, validators, etc.) at startup on all
-// platforms, defeating tools.ts's lazy require. Deferred until the
-// first skill with `shell: powershell` actually runs.
-/* eslint-disable @typescript-eslint/no-require-imports */
-const getPowerShellTool = (() => {
-  let cached: PromptShellTool | undefined
-  return (): PromptShellTool => {
-    if (!cached) {
-      cached = (
-        require('../tools/PowerShellTool/PowerShellTool.js') as typeof import('../tools/PowerShellTool/PowerShellTool.js')
-      ).PowerShellTool
-    }
-    return cached
-  }
-})()
-/* eslint-enable @typescript-eslint/no-require-imports */
+// PowerShellTool removed in MacHelper (macOS coworker); all shell routing
+// funnels through BashTool below.
 
 // Pattern for code blocks: ```! command ```
 const BLOCK_PATTERN = /```!\s*\n?([\s\S]*?)\n?```/g
@@ -74,13 +56,10 @@ export async function executeShellCommandsInPrompt(
 ): Promise<string> {
   let result = text
 
-  // Resolve the tool once. `shell === undefined` and `shell === 'bash'` both
-  // hit BashTool. PowerShell only when the runtime gate allows — a skill
-  // author's frontmatter choice doesn't override the user's opt-in/out.
-  const shellTool: PromptShellTool =
-    shell === 'powershell' && isPowerShellToolEnabled()
-      ? getPowerShellTool()
-      : BashTool
+  // PowerShellTool was removed in MacHelper; every shell routing path lands
+  // on BashTool regardless of the skill author's frontmatter choice.
+  void shell
+  const shellTool: PromptShellTool = BashTool
 
   // INLINE_PATTERN's lookbehind is ~100x slower than BLOCK_PATTERN on large
   // skill content (265µs vs 2µs @ 17KB). 93% of skills have no !` at all,

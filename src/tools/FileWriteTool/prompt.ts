@@ -8,11 +8,11 @@ function getPreReadInstruction(): string {
 }
 
 export function getWriteToolDescription(): string {
-  return `Writes a file to the local filesystem.
+  return `Writes a file to the local filesystem on the Mac. Use this for creating new files: a new config file, a new markdown note, a new shell script, a new .env file, a new CSV/JSON data file, or a new plain text document.
 
 Usage:
 - This tool will overwrite the existing file if there is one at the provided path.${getPreReadInstruction()}
-- Prefer the Edit tool for modifying existing files \u2014 it only sends the diff. Only use this tool to create new files or for complete rewrites.
+- Prefer the Edit tool for modifying existing files \u2014 it only sends the diff and is safer for targeted changes to configs, notes, and scripts. Only use this tool to create brand-new files or when a complete rewrite is genuinely needed.
 - NEVER create documentation files (*.md) or README files unless explicitly requested by the User.
 - Only use emojis if the user explicitly requests it. Avoid writing emojis to files unless asked.`
 }

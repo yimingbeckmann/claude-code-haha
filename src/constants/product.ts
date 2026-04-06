@@ -1,3 +1,11 @@
+// MacHelper product branding constants
+export const PRODUCT_NAME = 'MacHelper'
+export const PRODUCT_TAGLINE = 'Mac automation coworker'
+export const PRODUCT_DESCRIPTION =
+  'MacHelper is a Mac automation coworker powered by MacMind. It drives real Mac apps end-to-end — clicking, typing, reading screen state, and orchestrating multi-step workflows — so you can hand off real work instead of just asking for advice.'
+export const WELCOME_MESSAGE =
+  'Welcome to MacHelper — your Mac automation coworker. Tell me what you want done on your Mac and I will drive the apps for you.'
+
 export const PRODUCT_URL = 'https://claude.com/machelper'
 
 // MacHelper Remote session URLs

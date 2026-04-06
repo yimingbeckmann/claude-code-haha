@@ -13,31 +13,34 @@ export const DEFAULT_SESSION_MEMORY_TEMPLATE = `
 _A short and distinctive 5-10 word descriptive title for the session. Super info dense, no filler_
 
 # Current State
-_What is actively being worked on right now? Pending tasks not yet completed. Immediate next steps._
+_What Mac automation is actively in progress right now? Pending actions not yet completed. Immediate next steps on the user's machine._
 
 # Task specification
-_What did the user ask to build? Any design decisions or other explanatory context_
+_What did the user ask MacHelper to do on their Mac? Any decisions, preferences, or explanatory context around how the automation should behave_
 
-# Files and Functions
-_What are the important files? In short, what do they contain and why are they relevant?_
+# Mac Actions and Workflows
+_What MacMind actions, scripts, or automations have been taken on behalf of the user? What was their purpose and their outcome? Note any repeatable multi-step workflows and when to use them._
+
+# Apps and Documents Involved
+_Which applications, windows, files, and documents make up the user's workspace for this session? Include app names, open document paths/URLs, window titles, and any project/workspace roots that actions are targeting._
 
 # Workflow
-_What bash commands are usually run and in what order? How to interpret their output if not obvious?_
+_What MacMind daemon calls, shell commands, or AppleScript/JXA snippets are usually run and in what order? How to interpret their output or side effects if not obvious?_
 
 # Errors & Corrections
-_Errors encountered and how they were fixed. What did the user correct? What approaches failed and should not be tried again?_
+_Automation errors encountered and how they were resolved (permission prompts, missing accessibility access, wrong window targeted, app state mismatch, etc.). What did the user correct? What approaches failed and should not be retried?_
 
-# Codebase and System Documentation
-_What are the important system components? How do they work/fit together?_
+# System State and Mac Context
+_What is the relevant state of the Mac: UI layout, frontmost/running apps, current document state, active Spaces/displays, granted permissions (Accessibility, Automation, Screen Recording, Full Disk Access), and any environmental quirks that affect automation?_
 
 # Learnings
-_What has worked well? What has not? What to avoid? Do not duplicate items from other sections_
+_What has worked well for automating this user's Mac? What has not? What to avoid? Do not duplicate items from other sections_
 
 # Key results
-_If the user asked a specific output such as an answer to a question, a table, or other document, repeat the exact result here_
+_If the user asked for a specific output such as an answer to a question, extracted text, a table, or a generated document, repeat the exact result here_
 
 # Worklog
-_Step by step, what was attempted, done? Very terse summary for each step_
+_Step by step, what was attempted or performed on the Mac? Very terse summary for each step_
 `
 
 function getDefaultUpdatePrompt(): string {
@@ -61,11 +64,11 @@ CRITICAL RULES FOR EDITING:
 -- Do NOT add any new sections, summaries, or information outside the existing structure
 - Do NOT reference this note-taking process or instructions anywhere in the notes
 - It's OK to skip updating a section if there are no substantial new insights to add. Do not add filler content like "No info yet", just leave sections blank/unedited if appropriate.
-- Write DETAILED, INFO-DENSE content for each section - include specifics like file paths, function names, error messages, exact commands, technical details, etc.
-- For "Key results", include the complete, exact output the user requested (e.g., full table, full answer, etc.)
+- Write DETAILED, INFO-DENSE content for each section - include specifics like app names, window titles, document paths, MacMind action names and parameters, error messages, exact shell/AppleScript commands, permission states, and other technical details
+- For "Key results", include the complete, exact output the user requested (e.g., full table, full answer, extracted text, generated document, etc.)
 - Do not include information that's already in the CLAUDE.md files included in the context
 - Keep each section under ~${MAX_SECTION_LENGTH} tokens/words - if a section is approaching this limit, condense it by cycling out less important details while preserving the most critical information
-- Focus on actionable, specific information that would help someone understand or recreate the work discussed in the conversation
+- Focus on actionable, specific information that would help someone understand, resume, or re-run the Mac automation discussed in the conversation
 - IMPORTANT: Always update "Current State" to reflect the most recent work - this is critical for continuity after compaction
 
 Use the Edit tool with file_path: {{notesPath}}

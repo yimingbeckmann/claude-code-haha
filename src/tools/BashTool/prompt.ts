@@ -67,6 +67,8 @@ Before creating a pull request, run \`/simplify\` to review your changes, then t
       : ''
     return `${undercoverSection}# Git operations
 
+IMPORTANT: Most MacHelper sessions are Mac automation, not code work. Only follow git/commit/PR protocols when the user explicitly asks for code-work operations.
+
 ${skillsSection}IMPORTANT: NEVER skip hooks (--no-verify, --no-gpg-sign, etc) unless the user explicitly requests it.
 
 Use the gh command via the Bash tool for other GitHub-related tasks including working with issues, checks, and releases. If given a Github URL use the gh command to get the information needed.
@@ -78,7 +80,11 @@ Use the gh command via the Bash tool for other GitHub-related tasks including wo
   // For external users, include full inline instructions
   const { commit: commitAttribution, pr: prAttribution } = getAttributionTexts()
 
-  return `# Committing changes with git
+  return `# Git, commit, and pull request protocols
+
+IMPORTANT: Most MacHelper sessions are Mac automation, not code work. Only follow the git safety protocol, committing-changes protocol, and PR-creation protocol below when the user explicitly asks for code-work operations (e.g. "commit this", "make a PR", "stage these files"). Do NOT proactively run git/commit/PR steps during Mac automation tasks.
+
+# Committing changes with git
 
 Only create commits when requested by the user. If unclear, ask first. When the user asks you to create a new git commit, follow these steps carefully:
 
@@ -295,7 +301,7 @@ export function getSimplePrompt(): string {
     : '`find`, `grep`, `cat`, `head`, `tail`, `sed`, `awk`, or `echo`'
 
   const multipleCommandsSubitems = [
-    `If the commands are independent and can run in parallel, make multiple ${BASH_TOOL_NAME} tool calls in a single message. Example: if you need to run "git status" and "git diff", send a single message with two ${BASH_TOOL_NAME} tool calls in parallel.`,
+    `If the commands are independent and can run in parallel, make multiple ${BASH_TOOL_NAME} tool calls in a single message. Example: if you need to run "pmset -g batt" and "networksetup -getinfo Wi-Fi", send a single message with two ${BASH_TOOL_NAME} tool calls in parallel.`,
     `If the commands depend on each other and must run sequentially, use a single ${BASH_TOOL_NAME} call with '&&' to chain them together.`,
     "Use ';' only when you need to run commands sequentially but don't care if earlier commands fail.",
     'DO NOT use newlines to separate commands (newlines are ok in quoted strings).',
@@ -352,9 +358,23 @@ export function getSimplePrompt(): string {
   ]
 
   return [
-    'Executes a given bash command and returns its output.',
+    'Executes a given shell command on the user\'s Mac and returns its output. Use this for Mac CLI tools: AppleScript (osascript), system queries (defaults, pmset, networksetup, diskutil, launchctl), clipboard (pbpaste/pbcopy), file operations, and other macOS command-line utilities.',
     '',
     "The working directory persists between commands, but shell state does not. The shell environment is initialized from the user's profile (bash or zsh).",
+    '',
+    '# When to use MacAction vs Bash',
+    'For UI automation, prefer MacAction (click/type/launch/screenshot) over Bash. Use Bash for Mac CLI tools that don\'t have a MacMind equivalent — system configuration queries, low-level macOS commands, AppleScript (osascript), and file-system-adjacent commands.',
+    '',
+    'Examples of good Bash use cases on Mac:',
+    '- `osascript -e \'tell application "Safari" to activate\'` — AppleScript for app control when MacAction doesn\'t cover it',
+    '- `open -a Mail` — launch an app by name',
+    '- `pbpaste | head -50` — read the current clipboard contents',
+    '- `defaults read com.apple.finder` — inspect an app\'s preferences',
+    '- `launchctl list | grep apple` — inspect running launchd services',
+    '- `pmset -g batt` — check battery status',
+    '- `say "hello"` — text-to-speech',
+    '- `diskutil list` — list disks and partitions',
+    '- `networksetup -getinfo Wi-Fi` — inspect Wi-Fi configuration',
     '',
     `IMPORTANT: Avoid using this tool to run ${avoidCommands} commands, unless explicitly instructed or after you have verified that a dedicated tool cannot accomplish your task. Instead, use the appropriate dedicated tool as this will provide a much better experience for the user:`,
     '',

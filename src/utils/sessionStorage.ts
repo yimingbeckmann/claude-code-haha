@@ -34,7 +34,8 @@ import { builtInCommandNames } from '../commands.js'
 import { COMMAND_NAME_TAG, TICK_TAG } from '../constants/xml.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../services/analytics/growthbook.js'
 import * as sessionIngress from '../services/api/sessionIngress.js'
-import { REPL_TOOL_NAME } from '../tools/REPLTool/constants.js'
+// REPLTool removed in MacHelper; sentinel will never match a real tool.
+const REPL_TOOL_NAME = '__machelper_repl_removed__'
 import {
   type AgentId,
   asAgentId,

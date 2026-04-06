@@ -41,8 +41,10 @@ import { BASH_TOOL_NAME } from '../../tools/BashTool/toolName.js'
 import { FILE_EDIT_TOOL_NAME } from '../../tools/FileEditTool/constants.js'
 import { FILE_READ_TOOL_NAME } from '../../tools/FileReadTool/prompt.js'
 import { FILE_WRITE_TOOL_NAME } from '../../tools/FileWriteTool/prompt.js'
-import { NOTEBOOK_EDIT_TOOL_NAME } from '../../tools/NotebookEditTool/constants.js'
-import { POWERSHELL_TOOL_NAME } from '../../tools/PowerShellTool/toolName.js'
+// NotebookEditTool and PowerShellTool removed in MacHelper; use sentinel names
+// that will never match a real tool name.
+const NOTEBOOK_EDIT_TOOL_NAME = '__machelper_notebook_edit_removed__'
+const POWERSHELL_TOOL_NAME = '__machelper_powershell_removed__'
 import { parseGitCommitId } from '../../tools/shared/gitOperationTracking.js'
 import {
   isDeferredTool,

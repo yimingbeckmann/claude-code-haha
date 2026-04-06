@@ -3,7 +3,7 @@
  *
  * 1. Managed memory (eg. /etc/machelper/CLAUDE.md) - Global instructions for all users
  * 2. User memory (~/.claude/CLAUDE.md) - Private global instructions for all projects
- * 3. Project memory (CLAUDE.md, .claude/CLAUDE.md, and .claude/rules/*.md in project roots) - Instructions checked into the codebase
+ * 3. Project memory (MACHELPER.md, .claude/MACHELPER.md, and .claude/rules/*.md in project roots) - Instructions checked into the codebase
  * 4. Local memory (CLAUDE.local.md in project roots) - Private project-specific instructions
  *
  * Files are loaded in reverse order of priority, i.e. the latest files are highest priority
@@ -13,7 +13,8 @@
  * - User memory is loaded from the user's home directory
  * - Project and Local files are discovered by traversing from the current directory up to root
  * - Files closer to the current directory have higher priority (loaded later)
- * - CLAUDE.md, .claude/CLAUDE.md, and all .md files in .claude/rules/ are checked in each directory for Project memory
+ * - MACHELPER.md, .claude/MACHELPER.md, and all .md files in .claude/rules/ are checked in each directory for Project memory
+ * - For each project directory, CLAUDE.md and .claude/CLAUDE.md are used as a fallback when MACHELPER.md is absent (legacy upstream filename, preserved for users migrating from claude-code-haha forks)
  *
  * Memory @include directive:
  * - Memory files can include other files using @ notation
@@ -49,10 +50,12 @@ import { truncateEntrypointContent } from '../memdir/memdir.js'
 import { getAutoMemEntrypoint, isAutoMemoryEnabled } from '../memdir/paths.js'
 import { getFeatureValue_CACHED_MAY_BE_STALE } from '../services/analytics/growthbook.js'
 import {
+  CLAUDE_MD_FILENAME,
   getCurrentProjectConfig,
   getManagedClaudeRulesDir,
   getMemoryPath,
   getUserClaudeRulesDir,
+  MACHELPER_MD_FILENAME,
 } from './config.js'
 import { logForDebugging } from './debug.js'
 import { logForDiagnosticsNoPII } from './diagLogs.js'
@@ -685,6 +688,53 @@ export async function processMemoryFile(
 }
 
 /**
+ * Loads a project-local instruction file with MacHelper's fallback semantics:
+ *
+ *   1. Try MACHELPER.md (primary) in the given base directory.
+ *   2. If nothing was loaded (file missing or empty), fall back to CLAUDE.md
+ *      so users migrating from upstream claude-code-haha forks keep working
+ *      without renaming their project memory file.
+ *
+ * `baseJoin` is passed in so callers can target both `<dir>/MACHELPER.md` and
+ * `<dir>/.claude/MACHELPER.md` with the same fallback behaviour.
+ *
+ * Returns the array of MemoryFileInfo objects produced by processMemoryFile
+ * (possibly empty if neither file exists).
+ */
+export async function loadMachelperMdWithFallback(
+  baseJoin: (filename: string) => string,
+  type: MemoryType,
+  processedPaths: Set<string>,
+  includeExternal: boolean,
+): Promise<MemoryFileInfo[]> {
+  const primaryPath = baseJoin(MACHELPER_MD_FILENAME)
+  const primary = await processMemoryFile(
+    primaryPath,
+    type,
+    processedPaths,
+    includeExternal,
+  )
+  if (primary.length > 0) {
+    return primary
+  }
+  // Fall back to the legacy CLAUDE.md filename. processMemoryFile silently
+  // returns [] on ENOENT, so this is a no-op when neither file exists.
+  const fallbackPath = baseJoin(CLAUDE_MD_FILENAME)
+  return processMemoryFile(
+    fallbackPath,
+    type,
+    processedPaths,
+    includeExternal,
+  )
+}
+
+/**
+ * @deprecated Use loadMachelperMdWithFallback. Kept as an alias so internal
+ * callers that still reference the old name keep compiling.
+ */
+export const loadClaudeMdWithFallback = loadMachelperMdWithFallback
+
+/**
  * Processes all .md files in the .claude/rules/ directory and its subdirectories
  * @param rulesDir The path to the rules directory
  * @param type Type of memory file (User, Project, Local)
@@ -883,23 +933,22 @@ export const getMemoryFiles = memoize(
         pathInWorkingPath(dir, canonicalRoot) &&
         !pathInWorkingPath(dir, gitRoot)
 
-      // Try reading CLAUDE.md (Project) - only if projectSettings is enabled
+      // Try reading MACHELPER.md (Project) - only if projectSettings is enabled.
+      // Falls back to CLAUDE.md (legacy upstream filename) if MACHELPER.md is absent.
       if (isSettingSourceEnabled('projectSettings') && !skipProject) {
-        const projectPath = join(dir, 'CLAUDE.md')
         result.push(
-          ...(await processMemoryFile(
-            projectPath,
+          ...(await loadMachelperMdWithFallback(
+            filename => join(dir, filename),
             'Project',
             processedPaths,
             includeExternal,
           )),
         )
 
-        // Try reading .claude/CLAUDE.md (Project)
-        const dotClaudePath = join(dir, '.claude', 'CLAUDE.md')
+        // Try reading .claude/MACHELPER.md (Project), falling back to .claude/CLAUDE.md
         result.push(
-          ...(await processMemoryFile(
-            dotClaudePath,
+          ...(await loadMachelperMdWithFallback(
+            filename => join(dir, '.claude', filename),
             'Project',
             processedPaths,
             includeExternal,
@@ -940,22 +989,20 @@ export const getMemoryFiles = memoize(
     if (isEnvTruthy(process.env.MACHELPER_ADDITIONAL_DIRECTORIES_CLAUDE_MD)) {
       const additionalDirs = getAdditionalDirectoriesForClaudeMd()
       for (const dir of additionalDirs) {
-        // Try reading CLAUDE.md from the additional directory
-        const projectPath = join(dir, 'CLAUDE.md')
+        // Try reading MACHELPER.md from the additional directory (fallback CLAUDE.md)
         result.push(
-          ...(await processMemoryFile(
-            projectPath,
+          ...(await loadMachelperMdWithFallback(
+            filename => join(dir, filename),
             'Project',
             processedPaths,
             includeExternal,
           )),
         )
 
-        // Try reading .claude/CLAUDE.md from the additional directory
-        const dotClaudePath = join(dir, '.claude', 'CLAUDE.md')
+        // Try reading .claude/MACHELPER.md from the additional directory (fallback .claude/CLAUDE.md)
         result.push(
-          ...(await processMemoryFile(
-            dotClaudePath,
+          ...(await loadMachelperMdWithFallback(
+            filename => join(dir, '.claude', filename),
             'Project',
             processedPaths,
             includeExternal,
@@ -1253,21 +1300,20 @@ export async function getMemoryFilesForNestedDirectory(
 ): Promise<MemoryFileInfo[]> {
   const result: MemoryFileInfo[] = []
 
-  // Process project memory files (CLAUDE.md and .claude/CLAUDE.md)
+  // Process project memory files (MACHELPER.md and .claude/MACHELPER.md),
+  // falling back to CLAUDE.md / .claude/CLAUDE.md if the primary file is absent.
   if (isSettingSourceEnabled('projectSettings')) {
-    const projectPath = join(dir, 'CLAUDE.md')
     result.push(
-      ...(await processMemoryFile(
-        projectPath,
+      ...(await loadMachelperMdWithFallback(
+        filename => join(dir, filename),
         'Project',
         processedPaths,
         false,
       )),
     )
-    const dotClaudePath = join(dir, '.claude', 'CLAUDE.md')
     result.push(
-      ...(await processMemoryFile(
-        dotClaudePath,
+      ...(await loadMachelperMdWithFallback(
+        filename => join(dir, '.claude', filename),
         'Project',
         processedPaths,
         false,
@@ -1430,13 +1476,21 @@ export async function shouldShowClaudeMdExternalIncludesWarning(): Promise<boole
 }
 
 /**
- * Check if a file path is a memory file (CLAUDE.md, CLAUDE.local.md, or .claude/rules/*.md)
+ * Check if a file path is a memory file. Recognises:
+ *   - MACHELPER.md (primary project-local instruction file)
+ *   - CLAUDE.md (legacy upstream filename, still supported for fallback)
+ *   - CLAUDE.local.md
+ *   - any .md file under a .claude/rules/ directory
  */
 export function isMemoryFilePath(filePath: string): boolean {
   const name = basename(filePath)
 
-  // CLAUDE.md or CLAUDE.local.md anywhere
-  if (name === 'CLAUDE.md' || name === 'CLAUDE.local.md') {
+  // MACHELPER.md (primary), CLAUDE.md (fallback), or CLAUDE.local.md anywhere
+  if (
+    name === MACHELPER_MD_FILENAME ||
+    name === CLAUDE_MD_FILENAME ||
+    name === 'CLAUDE.local.md'
+  ) {
     return true
   }
 

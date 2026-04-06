@@ -34,7 +34,8 @@ import { FILE_READ_TOOL_NAME } from '../../tools/FileReadTool/prompt.js'
 import { FILE_WRITE_TOOL_NAME } from '../../tools/FileWriteTool/prompt.js'
 import { GLOB_TOOL_NAME } from '../../tools/GlobTool/prompt.js'
 import { GREP_TOOL_NAME } from '../../tools/GrepTool/prompt.js'
-import { REPL_TOOL_NAME } from '../../tools/REPLTool/constants.js'
+// REPLTool removed in MacHelper; sentinel will never match a real tool.
+const REPL_TOOL_NAME = '__machelper_repl_removed__'
 import type {
   AssistantMessage,
   Message,

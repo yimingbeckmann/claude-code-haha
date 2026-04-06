@@ -511,6 +511,218 @@ export function detectLinuxGlobPatternWarnings(): Array<{
   return warnings
 }
 
+/**
+ * MacHelper-specific health checks: MacMind daemon reachability, the four
+ * TCC permission gates (Accessibility, Automation, Screen Recording, Full
+ * Disk Access), and a cheap network probe. Emitted as {issue, fix} warnings
+ * so the existing doctor renderer can display them unchanged.
+ *
+ * All checks are best-effort and non-blocking — each has a short timeout
+ * and swallows errors. On non-macOS platforms the whole function no-ops.
+ */
+const MAC_MIND_API_BASE =
+  process.env.MACMIND_API_BASE ?? 'http://127.0.0.1:8484'
+
+const MAC_MIND_PROBE_TIMEOUT_MS = 1500
+
+type MacMindActionResponse = {
+  ok?: boolean
+  error?: string
+}
+
+async function callMacMindAction(
+  action: string,
+  input: Record<string, unknown> = {},
+): Promise<
+  | { reachable: true; ok: boolean; error?: string }
+  | { reachable: false; error: string }
+> {
+  try {
+    const res = await fetch(`${MAC_MIND_API_BASE}/action/${action}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(input),
+      signal: AbortSignal.timeout(MAC_MIND_PROBE_TIMEOUT_MS * 2),
+    })
+    if (!res.ok) {
+      return {
+        reachable: true,
+        ok: false,
+        error: `HTTP ${res.status}`,
+      }
+    }
+    const body = (await res.json()) as MacMindActionResponse
+    if (body.ok === false) {
+      return {
+        reachable: true,
+        ok: false,
+        error: body.error ?? 'unknown',
+      }
+    }
+    return { reachable: true, ok: true }
+  } catch (e) {
+    return {
+      reachable: false,
+      error: e instanceof Error ? e.message : String(e),
+    }
+  }
+}
+
+/**
+ * A MacMind action failure indicates a permission problem (as opposed to the
+ * daemon being unreachable or a genuine bug) when the error mentions one of
+ * the TCC frameworks or the phrase "not authorized" / "denied". We match
+ * loosely because MacMind wraps errors from several macOS APIs and the exact
+ * string varies by framework.
+ */
+function isPermissionDenied(error: string | undefined): boolean {
+  if (!error) return false
+  const lowered = error.toLowerCase()
+  return (
+    lowered.includes('not authorized') ||
+    lowered.includes('permission') ||
+    lowered.includes('denied') ||
+    lowered.includes('accessibility') ||
+    lowered.includes('automation') ||
+    lowered.includes('tcc') ||
+    lowered.includes('-1743') || // errAEEventNotPermitted
+    lowered.includes('screencapture')
+  )
+}
+
+export async function detectMacHelperHealthWarnings(): Promise<
+  Array<{ issue: string; fix: string }>
+> {
+  if (getPlatform() !== 'macos') {
+    return []
+  }
+
+  const warnings: Array<{ issue: string; fix: string }> = []
+
+  // 1. Is the MacMind daemon reachable at all? Use /actions since it's the
+  //    canonical "is the daemon alive" endpoint (MacMindTool/prompt.ts uses
+  //    the same). If this fails, everything downstream will fail — no point
+  //    probing permissions, just tell the user to start MacMind.
+  let daemonReachable = false
+  try {
+    const res = await fetch(`${MAC_MIND_API_BASE}/actions`, {
+      signal: AbortSignal.timeout(MAC_MIND_PROBE_TIMEOUT_MS),
+    })
+    daemonReachable = res.ok
+    if (!res.ok) {
+      warnings.push({
+        issue: `MacMind daemon at ${MAC_MIND_API_BASE} returned HTTP ${res.status}`,
+        fix: 'Restart the MacMind app. If the problem persists, check MacMind logs.',
+      })
+    }
+  } catch {
+    warnings.push({
+      issue: `MacMind daemon is not reachable at ${MAC_MIND_API_BASE}`,
+      fix: 'Open the MacMind app (or run the MacMind daemon) so MacHelper can drive your Mac. Without it, all MacAction tool calls will fail.',
+    })
+  }
+
+  if (!daemonReachable) {
+    // Don't probe permissions if the daemon is down — every probe will
+    // false-positive as "denied" and spam the doctor output.
+    return warnings
+  }
+
+  // 2. Accessibility permission — exercise via window.list, which reads the
+  //    window server and requires the Accessibility TCC gate. If this call
+  //    errors with a permission-shaped error, AX is not granted.
+  const accessibility = await callMacMindAction('window.list', {})
+  if (accessibility.reachable && !accessibility.ok) {
+    if (isPermissionDenied(accessibility.error)) {
+      warnings.push({
+        issue: 'Accessibility permission not granted to MacMind',
+        fix: 'System Settings → Privacy & Security → Accessibility → enable MacMind. MacHelper cannot click, type, or move windows without this.',
+      })
+    } else {
+      warnings.push({
+        issue: `MacMind window.list probe failed: ${accessibility.error ?? 'unknown error'}`,
+        fix: 'Check MacMind logs. This usually indicates a daemon bug or stale build.',
+      })
+    }
+  }
+
+  // 3. Automation permission (Apple Events) — fire a trivial AppleScript via
+  //    MacMind. macOS prompts once per target app the first time; for a
+  //    script with no target, the call should just succeed if Apple Events
+  //    are allowed.
+  const automation = await callMacMindAction('shell.applescript', {
+    script: 'return "ok"',
+  })
+  if (automation.reachable && !automation.ok) {
+    if (isPermissionDenied(automation.error)) {
+      warnings.push({
+        issue: 'Automation (Apple Events) permission not granted to MacMind',
+        fix: 'System Settings → Privacy & Security → Automation → enable the apps MacMind needs to control. Individual app prompts also appear on first use.',
+      })
+    } else {
+      warnings.push({
+        issue: `MacMind AppleScript probe failed: ${automation.error ?? 'unknown error'}`,
+        fix: 'Check MacMind logs. The shell.applescript action may not be published by your daemon build.',
+      })
+    }
+  }
+
+  // 4. Screen Recording permission — probe via screen.shot. Unlike
+  //    accessibility, screen recording is per-app and must be granted before
+  //    the first capture; denied captures typically return a permission
+  //    error or a zero-byte image.
+  const screen = await callMacMindAction('screen.shot', {})
+  if (screen.reachable && !screen.ok) {
+    if (isPermissionDenied(screen.error)) {
+      warnings.push({
+        issue: 'Screen Recording permission not granted to MacMind',
+        fix: 'System Settings → Privacy & Security → Screen & System Audio Recording → enable MacMind. Required for OCR and screen.shot actions.',
+      })
+    } else {
+      warnings.push({
+        issue: `MacMind screen.shot probe failed: ${screen.error ?? 'unknown error'}`,
+        fix: 'Check MacMind logs or daemon build — screen.shot action may be unavailable.',
+      })
+    }
+  }
+
+  // 5. Full Disk Access — the canonical "do I have FDA" probe is whether
+  //    we can read into ~/Library/Mail, which is gated behind FDA on modern
+  //    macOS. We only check cheaply via fs.exists; a truly thorough check
+  //    would open a file and read a byte, but that overreaches for a
+  //    doctor command. Note we do NOT require FDA for MacHelper to work —
+  //    this is informational unless the user needs Mail/Messages automation.
+  try {
+    const fs = getFsImplementation()
+    const mailDir = join(homedir(), 'Library', 'Mail')
+    // Mail may not exist (user never used Mail.app). We want to know:
+    // the dir exists but we can't list it → FDA not granted. The dir not
+    // existing at all is fine.
+    if (fs.existsSync(mailDir)) {
+      try {
+        // readdirSync will throw EPERM if FDA is missing.
+        fs.readdirSync(mailDir)
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e)
+        if (
+          msg.includes('EPERM') ||
+          msg.includes('operation not permitted') ||
+          isPermissionDenied(msg)
+        ) {
+          warnings.push({
+            issue: 'Full Disk Access not granted (optional)',
+            fix: 'System Settings → Privacy & Security → Full Disk Access → enable your terminal and MacMind. Only needed if you want MacHelper to read Mail, Messages, or other TCC-protected folders.',
+          })
+        }
+      }
+    }
+  } catch {
+    // fsOperations may not expose readdirSync in this build — skip silently.
+  }
+
+  return warnings
+}
+
 export async function getDoctorDiagnostic(): Promise<DiagnosticInfo> {
   const installationType = await getCurrentInstallationType()
   const version =
@@ -522,6 +734,11 @@ export async function getDoctorDiagnostic(): Promise<DiagnosticInfo> {
 
   // Add glob pattern warnings for Linux sandboxing
   warnings.push(...detectLinuxGlobPatternWarnings())
+
+  // Add MacHelper-specific health checks: MacMind daemon + TCC permissions.
+  // These run in parallel to the install checks but are awaited here so they
+  // appear in the same warnings list the doctor renderer already shows.
+  warnings.push(...(await detectMacHelperHealthWarnings()))
 
   // Add warnings for leftover npm installations when running native
   if (installationType === 'native') {

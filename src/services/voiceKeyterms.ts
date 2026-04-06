@@ -1,8 +1,8 @@
 // Voice keyterms for improving STT accuracy in the voice_stream endpoint.
 //
 // Provides domain-specific vocabulary hints (Deepgram "keywords") so the STT
-// engine correctly recognises coding terminology, project names, and branch
-// names that would otherwise be misheard.
+// engine correctly recognises Mac app names, UI actions, and MacHelper /
+// MacMind vocabulary that would otherwise be misheard.
 
 import { basename } from 'path'
 import { getProjectRoot } from '../bootstrap/state.js'
@@ -14,20 +14,55 @@ const GLOBAL_KEYTERMS: readonly string[] = [
   // Terms Deepgram consistently mangles without keyword hints.
   // Note: "Claude" and "Anthropic" are already server-side base keyterms.
   // Avoid terms nobody speaks aloud as-spelled (stdout → "standard out").
-  'MCP',
-  'symlink',
-  'grep',
-  'regex',
-  'localhost',
-  'codebase',
-  'TypeScript',
-  'JSON',
-  'OAuth',
-  'webhook',
-  'gRPC',
-  'dotfiles',
-  'subagent',
-  'worktree',
+
+  // Mac apps — commonly referenced by name in voice commands.
+  'Safari',
+  'Chrome',
+  'Mail',
+  'Calendar',
+  'Notes',
+  'Finder',
+  'Terminal',
+  'Slack',
+  'VSCode',
+  'Preview',
+
+  // UI actions — the verbs of Mac automation.
+  'click',
+  'drag',
+  'launch',
+  'quit',
+  'open',
+  'close',
+  'minimize',
+  'maximize',
+  'focus',
+  'switch',
+
+  // Mac-specific UI surfaces and shortcuts.
+  'Cmd-Space',
+  'Cmd-Tab',
+  'Spotlight',
+  'Mission Control',
+  'Dock',
+  'Menu Bar',
+  'Dark Mode',
+
+  // MacHelper / MacMind vocabulary.
+  'MacMind',
+  'MacHelper',
+  'action',
+  'OCR',
+  'clipboard',
+  'window',
+  'shortcut',
+
+  // Calendar / scheduling vocabulary.
+  'meeting',
+  'event',
+  'reminder',
+  'invite',
+  'schedule',
 ]
 
 // ─── Helpers ────────────────────────────────────────────────────────
@@ -57,8 +92,8 @@ const MAX_KEYTERMS = 50
 /**
  * Build a list of keyterms for the voice_stream STT endpoint.
  *
- * Combines hardcoded global coding terms with session context (project name,
- * git branch, recent files) without any model calls.
+ * Combines hardcoded global Mac-automation terms with session context
+ * (project name, git branch, recent files) without any model calls.
  */
 export async function getVoiceKeyterms(
   recentFiles?: ReadonlySet<string>,

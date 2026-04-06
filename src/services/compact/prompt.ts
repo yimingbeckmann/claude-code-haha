@@ -32,48 +32,50 @@ const DETAILED_ANALYSIS_INSTRUCTION_BASE = `Before providing your final summary,
 
 1. Chronologically analyze each message and section of the conversation. For each section thoroughly identify:
    - The user's explicit requests and intents
-   - Your approach to addressing the user's requests
-   - Key decisions, technical concepts and code patterns
+   - Your approach to addressing the user's requests on the Mac
+   - Key decisions, workflows, and automation patterns
    - Specific details like:
-     - file names
-     - full code snippets
-     - function signatures
-     - file edits
-   - Errors that you ran into and how you fixed them
+     - apps and windows that were opened, focused, or manipulated
+     - MacMind actions invoked (with the arguments passed and the observable results)
+     - files, documents, and system state that were touched or modified
+     - the user's Mac state (active app, focused window, selection, clipboard, pending workflows) at key moments
+   - Errors, permission prompts, or failed actions that you ran into and how you resolved them
    - Pay special attention to specific user feedback that you received, especially if the user told you to do something differently.
-2. Double-check for technical accuracy and completeness, addressing each required element thoroughly.`
+2. Double-check for accuracy and completeness, addressing each required element thoroughly.`
 
 const DETAILED_ANALYSIS_INSTRUCTION_PARTIAL = `Before providing your final summary, wrap your analysis in <analysis> tags to organize your thoughts and ensure you've covered all necessary points. In your analysis process:
 
 1. Analyze the recent messages chronologically. For each section thoroughly identify:
    - The user's explicit requests and intents
-   - Your approach to addressing the user's requests
-   - Key decisions, technical concepts and code patterns
+   - Your approach to addressing the user's requests on the Mac
+   - Key decisions, workflows, and automation patterns
    - Specific details like:
-     - file names
-     - full code snippets
-     - function signatures
-     - file edits
-   - Errors that you ran into and how you fixed them
+     - apps and windows that were opened, focused, or manipulated
+     - MacMind actions invoked (with the arguments passed and the observable results)
+     - files, documents, and system state that were touched or modified
+     - the user's Mac state (active app, focused window, selection, clipboard, pending workflows) at key moments
+   - Errors, permission prompts, or failed actions that you ran into and how you resolved them
    - Pay special attention to specific user feedback that you received, especially if the user told you to do something differently.
-2. Double-check for technical accuracy and completeness, addressing each required element thoroughly.`
+2. Double-check for accuracy and completeness, addressing each required element thoroughly.`
 
-const BASE_COMPACT_PROMPT = `Your task is to create a detailed summary of the conversation so far, paying close attention to the user's explicit requests and your previous actions.
-This summary should be thorough in capturing technical details, code patterns, and architectural decisions that would be essential for continuing development work without losing context.
+const BASE_COMPACT_PROMPT = `Your task is to create a detailed summary of the conversation so far, paying close attention to the user's explicit requests and the Mac automation work you performed on their behalf.
+This summary should be thorough in capturing what apps and windows were manipulated, which MacMind actions were invoked, what files and documents were touched, and the resulting Mac state — everything essential for continuing to act as the user's Mac coworker without losing context.
 
 ${DETAILED_ANALYSIS_INSTRUCTION_BASE}
 
 Your summary should include the following sections:
 
-1. Primary Request and Intent: Capture all of the user's explicit requests and intents in detail
-2. Key Technical Concepts: List all important technical concepts, technologies, and frameworks discussed.
-3. Files and Code Sections: Enumerate specific files and code sections examined, modified, or created. Pay special attention to the most recent messages and include full code snippets where applicable and include a summary of why this file read or edit is important.
-4. Errors and fixes: List all errors that you ran into, and how you fixed them. Pay special attention to specific user feedback that you received, especially if the user told you to do something differently.
-5. Problem Solving: Document problems solved and any ongoing troubleshooting efforts.
-6. All user messages: List ALL user messages that are not tool results. These are critical for understanding the users' feedback and changing intent.
-7. Pending Tasks: Outline any pending tasks that you have explicitly been asked to work on.
-8. Current Work: Describe in detail precisely what was being worked on immediately before this summary request, paying special attention to the most recent messages from both user and assistant. Include file names and code snippets where applicable.
-9. Optional Next Step: List the next step that you will take that is related to the most recent work you were doing. IMPORTANT: ensure that this step is DIRECTLY in line with the user's most recent explicit requests, and the task you were working on immediately before this summary request. If your last task was concluded, then only list next steps if they are explicitly in line with the users request. Do not start on tangential requests or really old requests that were already completed without confirming with the user first.
+1. Primary Request and Intent: Capture all of the user's explicit requests and intents in detail — what they want their Mac to do, what outcome they are after.
+2. Mac Actions Performed and Results: Enumerate the concrete actions you took on the Mac in chronological order. For each action, describe what app or window was manipulated, the observable result (what changed on screen or on disk), any files that were edited, and which MacMind actions ran with the key arguments and the responses/values they returned. Pay special attention to the most recent messages. Include enough detail that the work can be resumed or audited without replaying the transcript.
+3. Apps, Documents, and Files Touched: List every app, document, URL, and file path the session affected, with a brief note on how each was affected (opened, focused, edited, saved, moved, closed, etc.).
+4. MacMind Actions and Argument Shapes: For MacMind actions that matter for continuing the work, note the action name and the shape/key arguments used (and any non-obvious argument conventions you discovered). Skip trivial or purely read-only calls unless they are load-bearing for the current task.
+5. Errors and Fixes: List errors, failed actions, permission prompts, denied accessibility/automation access, unexpected UI states, and how you resolved them. Pay special attention to specific user feedback, especially if the user told you to do something differently.
+6. Problem Solving: Document problems solved and any ongoing troubleshooting efforts around the Mac workflow.
+7. All User Messages: List ALL user messages that are not tool results, verbatim or near-verbatim. These are critical for understanding the user's feedback and changing intent.
+8. Pending Tasks: Outline any pending tasks the user has explicitly asked you to work on.
+9. Current Work: Describe in detail precisely what was being worked on immediately before this summary request — which app, which window, which workflow step — paying special attention to the most recent messages from both user and assistant.
+10. Mac State at Compaction Time: Capture the live Mac state snapshot needed to resume cleanly: currently active/frontmost app, focused window and document, any text selection or cursor position that matters, clipboard contents if relevant, any multi-step workflow that is mid-flight and which step it's on, and the known permission state (accessibility, automation, screen recording, etc.) including any prompts that are still pending.
+11. Optional Next Step: List the next step you will take that is related to the most recent work you were doing. IMPORTANT: ensure that this step is DIRECTLY in line with the user's most recent explicit requests, and the task you were working on immediately before this summary request. If your last task was concluded, then only list next steps if they are explicitly in line with the user's request. Do not start on tangential requests or really old requests that were already completed without confirming with the user first.
                        If there is a next step, include direct quotes from the most recent conversation showing exactly what task you were working on and where you left off. This should be verbatim to ensure there's no drift in task interpretation.
 
 Here's an example of how your output should be structured:
@@ -85,78 +87,86 @@ Here's an example of how your output should be structured:
 
 <summary>
 1. Primary Request and Intent:
-   [Detailed description]
+   [Detailed description of what the user wanted done on their Mac]
 
-2. Key Technical Concepts:
-   - [Concept 1]
-   - [Concept 2]
+2. Mac Actions Performed and Results:
+   - [Action 1: app/window manipulated, observable result, files edited, MacMind action + key args + result]
+   - [Action 2: ...]
    - [...]
 
-3. Files and Code Sections:
-   - [File Name 1]
-      - [Summary of why this file is important]
-      - [Summary of the changes made to this file, if any]
-      - [Important Code Snippet]
-   - [File Name 2]
-      - [Important Code Snippet]
+3. Apps, Documents, and Files Touched:
+   - [App / document / file path] — [how it was affected]
    - [...]
 
-4. Errors and fixes:
-    - [Detailed description of error 1]:
-      - [How you fixed the error]
-      - [User feedback on the error if any]
+4. MacMind Actions and Argument Shapes:
+   - [action_name] — [key arguments / shape / conventions]
+   - [...]
+
+5. Errors and Fixes:
+    - [Error or failed action]:
+      - [How you fixed it]
+      - [User feedback, if any]
     - [...]
 
-5. Problem Solving:
+6. Problem Solving:
    [Description of solved problems and ongoing troubleshooting]
 
-6. All user messages: 
-    - [Detailed non tool use user message]
+7. All User Messages:
+    - [Detailed non-tool-use user message]
     - [...]
 
-7. Pending Tasks:
+8. Pending Tasks:
    - [Task 1]
    - [Task 2]
    - [...]
 
-8. Current Work:
-   [Precise description of current work]
+9. Current Work:
+   [Precise description of the Mac workflow step in progress]
 
-9. Optional Next Step:
-   [Optional Next step to take]
+10. Mac State at Compaction Time:
+    - Frontmost app: [app]
+    - Focused window/document: [window]
+    - Selection / cursor / clipboard: [if relevant]
+    - In-flight workflow: [which multi-step workflow and which step]
+    - Permission state: [accessibility / automation / screen recording / pending prompts]
+
+11. Optional Next Step:
+    [Optional next step to take]
 
 </summary>
 </example>
 
-Please provide your summary based on the conversation so far, following this structure and ensuring precision and thoroughness in your response. 
+Please provide your summary based on the conversation so far, following this structure and ensuring precision and thoroughness in your response.
 
 There may be additional summarization instructions provided in the included context. If so, remember to follow these instructions when creating the above summary. Examples of instructions include:
 <example>
 ## Compact Instructions
-When summarizing the conversation focus on typescript code changes and also remember the mistakes you made and how you fixed them.
+When summarizing the conversation focus on the Calendar and Mail automation steps, and remember which permission prompts were denied and how you worked around them.
 </example>
 
 <example>
 # Summary instructions
-When you are using compact - please focus on test output and code changes. Include file reads verbatim.
+When you are using compact — please focus on the exact MacMind action arguments used and the resulting window/app state. Include key action payloads verbatim.
 </example>
 `
 
-const PARTIAL_COMPACT_PROMPT = `Your task is to create a detailed summary of the RECENT portion of the conversation — the messages that follow earlier retained context. The earlier messages are being kept intact and do NOT need to be summarized. Focus your summary on what was discussed, learned, and accomplished in the recent messages only.
+const PARTIAL_COMPACT_PROMPT = `Your task is to create a detailed summary of the RECENT portion of the conversation — the messages that follow earlier retained context. The earlier messages are being kept intact and do NOT need to be summarized. Focus your summary on the Mac automation work (apps manipulated, MacMind actions invoked, files touched, errors handled) that happened in the recent messages only.
 
 ${DETAILED_ANALYSIS_INSTRUCTION_PARTIAL}
 
 Your summary should include the following sections:
 
-1. Primary Request and Intent: Capture the user's explicit requests and intents from the recent messages
-2. Key Technical Concepts: List important technical concepts, technologies, and frameworks discussed recently.
-3. Files and Code Sections: Enumerate specific files and code sections examined, modified, or created. Include full code snippets where applicable and include a summary of why this file read or edit is important.
-4. Errors and fixes: List errors encountered and how they were fixed.
-5. Problem Solving: Document problems solved and any ongoing troubleshooting efforts.
-6. All user messages: List ALL user messages from the recent portion that are not tool results.
-7. Pending Tasks: Outline any pending tasks from the recent messages.
-8. Current Work: Describe precisely what was being worked on immediately before this summary request.
-9. Optional Next Step: List the next step related to the most recent work. Include direct quotes from the most recent conversation.
+1. Primary Request and Intent: Capture the user's explicit requests and intents from the recent messages.
+2. Mac Actions Performed and Results: Enumerate the concrete Mac actions you took recently. For each, describe the app/window manipulated, the observable result, any files edited, and which MacMind actions ran with key arguments and results.
+3. Apps, Documents, and Files Touched: List apps, documents, URLs, and file paths affected in the recent portion, each with a brief note on how.
+4. MacMind Actions and Argument Shapes: For the MacMind actions that matter for continuing, note the action name and key argument shape / conventions.
+5. Errors and Fixes: List errors, failed actions, permission prompts, and how they were resolved.
+6. Problem Solving: Document problems solved and any ongoing troubleshooting efforts.
+7. All User Messages: List ALL user messages from the recent portion that are not tool results.
+8. Pending Tasks: Outline any pending tasks from the recent messages.
+9. Current Work: Describe precisely what Mac workflow step was being worked on immediately before this summary request.
+10. Mac State at Compaction Time: Frontmost app, focused window/document, relevant selection/clipboard, in-flight multi-step workflow and its current step, known permission state and any pending prompts.
+11. Optional Next Step: List the next step related to the most recent work. Include direct quotes from the most recent conversation.
 
 Here's an example of how your output should be structured:
 
@@ -169,33 +179,41 @@ Here's an example of how your output should be structured:
 1. Primary Request and Intent:
    [Detailed description]
 
-2. Key Technical Concepts:
-   - [Concept 1]
-   - [Concept 2]
+2. Mac Actions Performed and Results:
+   - [Action 1: app/window, result, files edited, MacMind action + args + result]
+   - [...]
 
-3. Files and Code Sections:
-   - [File Name 1]
-      - [Summary of why this file is important]
-      - [Important Code Snippet]
+3. Apps, Documents, and Files Touched:
+   - [App / document / file path] — [how affected]
 
-4. Errors and fixes:
-    - [Error description]:
+4. MacMind Actions and Argument Shapes:
+   - [action_name] — [key arguments / shape]
+
+5. Errors and Fixes:
+    - [Error or failed action]:
       - [How you fixed it]
 
-5. Problem Solving:
+6. Problem Solving:
    [Description]
 
-6. All user messages:
-    - [Detailed non tool use user message]
+7. All User Messages:
+    - [Detailed non-tool-use user message]
 
-7. Pending Tasks:
+8. Pending Tasks:
    - [Task 1]
 
-8. Current Work:
+9. Current Work:
    [Precise description of current work]
 
-9. Optional Next Step:
-   [Optional Next step to take]
+10. Mac State at Compaction Time:
+    - Frontmost app: [app]
+    - Focused window/document: [window]
+    - Selection / cursor / clipboard: [if relevant]
+    - In-flight workflow: [which step]
+    - Permission state: [accessibility / automation / screen recording / pending prompts]
+
+11. Optional Next Step:
+    [Optional next step to take]
 
 </summary>
 </example>
@@ -205,21 +223,23 @@ Please provide your summary based on the RECENT messages only (after the retaine
 
 // 'up_to': model sees only the summarized prefix (cache hit). Summary will
 // precede kept recent messages, hence "Context for Continuing Work" section.
-const PARTIAL_COMPACT_UP_TO_PROMPT = `Your task is to create a detailed summary of this conversation. This summary will be placed at the start of a continuing session; newer messages that build on this context will follow after your summary (you do not see them here). Summarize thoroughly so that someone reading only your summary and then the newer messages can fully understand what happened and continue the work.
+const PARTIAL_COMPACT_UP_TO_PROMPT = `Your task is to create a detailed summary of this conversation. This summary will be placed at the start of a continuing session; newer messages that build on this context will follow after your summary (you do not see them here). Summarize thoroughly so that someone reading only your summary and then the newer messages can fully understand what happened on the user's Mac and continue the work as their Mac coworker.
 
 ${DETAILED_ANALYSIS_INSTRUCTION_BASE}
 
 Your summary should include the following sections:
 
-1. Primary Request and Intent: Capture the user's explicit requests and intents in detail
-2. Key Technical Concepts: List important technical concepts, technologies, and frameworks discussed.
-3. Files and Code Sections: Enumerate specific files and code sections examined, modified, or created. Include full code snippets where applicable and include a summary of why this file read or edit is important.
-4. Errors and fixes: List errors encountered and how they were fixed.
-5. Problem Solving: Document problems solved and any ongoing troubleshooting efforts.
-6. All user messages: List ALL user messages that are not tool results.
-7. Pending Tasks: Outline any pending tasks.
-8. Work Completed: Describe what was accomplished by the end of this portion.
-9. Context for Continuing Work: Summarize any context, decisions, or state that would be needed to understand and continue the work in subsequent messages.
+1. Primary Request and Intent: Capture the user's explicit requests and intents in detail — what they want their Mac to do.
+2. Mac Actions Performed and Results: Enumerate the concrete Mac actions taken in chronological order. For each, describe the app/window manipulated, the observable result, any files edited, and which MacMind actions ran with key arguments and results.
+3. Apps, Documents, and Files Touched: List every app, document, URL, and file path the session affected, each with a brief note on how.
+4. MacMind Actions and Argument Shapes: For the MacMind actions that matter for continuing, note the action name and key argument shape / conventions discovered.
+5. Errors and Fixes: List errors, failed actions, permission prompts, and how they were resolved.
+6. Problem Solving: Document problems solved and any ongoing troubleshooting efforts.
+7. All User Messages: List ALL user messages that are not tool results.
+8. Pending Tasks: Outline any pending tasks.
+9. Work Completed: Describe what was accomplished on the Mac by the end of this portion.
+10. Mac State at Compaction Time: Frontmost app, focused window/document, relevant selection/clipboard, any in-flight multi-step workflow and which step it's on, known permission state (accessibility, automation, screen recording, etc.) and any pending prompts.
+11. Context for Continuing Work: Summarize the context, decisions, and Mac/workflow state that would be needed to understand and continue the work in subsequent messages.
 
 Here's an example of how your output should be structured:
 
@@ -232,33 +252,41 @@ Here's an example of how your output should be structured:
 1. Primary Request and Intent:
    [Detailed description]
 
-2. Key Technical Concepts:
-   - [Concept 1]
-   - [Concept 2]
+2. Mac Actions Performed and Results:
+   - [Action 1: app/window, result, files edited, MacMind action + args + result]
+   - [...]
 
-3. Files and Code Sections:
-   - [File Name 1]
-      - [Summary of why this file is important]
-      - [Important Code Snippet]
+3. Apps, Documents, and Files Touched:
+   - [App / document / file path] — [how affected]
 
-4. Errors and fixes:
-    - [Error description]:
+4. MacMind Actions and Argument Shapes:
+   - [action_name] — [key arguments / shape]
+
+5. Errors and Fixes:
+    - [Error or failed action]:
       - [How you fixed it]
 
-5. Problem Solving:
+6. Problem Solving:
    [Description]
 
-6. All user messages:
-    - [Detailed non tool use user message]
+7. All User Messages:
+    - [Detailed non-tool-use user message]
 
-7. Pending Tasks:
+8. Pending Tasks:
    - [Task 1]
 
-8. Work Completed:
+9. Work Completed:
    [Description of what was accomplished]
 
-9. Context for Continuing Work:
-   [Key context, decisions, or state needed to continue the work]
+10. Mac State at Compaction Time:
+    - Frontmost app: [app]
+    - Focused window/document: [window]
+    - Selection / cursor / clipboard: [if relevant]
+    - In-flight workflow: [which step]
+    - Permission state: [accessibility / automation / screen recording / pending prompts]
+
+11. Context for Continuing Work:
+    [Key context, decisions, or Mac/workflow state needed to continue]
 
 </summary>
 </example>

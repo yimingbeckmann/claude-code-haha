@@ -65,24 +65,11 @@ export async function processBashCommand(inputString: string, precedingInputBloc
       });
     };
 
-    // User-initiated `!` commands run outside sandbox. Both shell tools honor
-    // dangerouslyDisableSandbox (checked against areUnsandboxedCommandsAllowed()
-    // in shouldUseSandbox.ts). PS sandbox is Linux/macOS/WSL2 only — on Windows
-    // native, shouldUseSandbox() returns false regardless (unsupported platform).
-    // Lazy-require PowerShellTool so its ~300KB chunk only loads when the
-    // user has actually selected the powershell default shell.
-    type PSMod = typeof import('src/tools/PowerShellTool/PowerShellTool.js');
-    let PowerShellTool: PSMod['PowerShellTool'] | null = null;
-    if (usePowerShell) {
-      /* eslint-disable @typescript-eslint/no-require-imports */
-      PowerShellTool = (require('src/tools/PowerShellTool/PowerShellTool.js') as PSMod).PowerShellTool;
-      /* eslint-enable @typescript-eslint/no-require-imports */
-    }
-    const shellTool = PowerShellTool ?? BashTool;
-    const response = PowerShellTool ? await PowerShellTool.call({
-      command: inputString,
-      dangerouslyDisableSandbox: true
-    }, bashModeContext, undefined, undefined, onProgress) : await BashTool.call({
+    // PowerShellTool was removed in MacHelper (macOS-only coworker); every
+    // user-initiated `!` command now flows through BashTool regardless of the
+    // configured defaultShell. BashTool honors dangerouslyDisableSandbox.
+    const shellTool = BashTool;
+    const response = await BashTool.call({
       command: inputString,
       dangerouslyDisableSandbox: true
     }, bashModeContext, undefined, undefined, onProgress);

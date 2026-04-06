@@ -15,7 +15,6 @@ import { GLOB_TOOL_NAME } from '../tools/GlobTool/prompt.js'
 import { SHELL_TOOL_NAMES } from '../utils/shell/shellToolUtils.js'
 import { FILE_EDIT_TOOL_NAME } from '../tools/FileEditTool/constants.js'
 import { FILE_WRITE_TOOL_NAME } from '../tools/FileWriteTool/prompt.js'
-import { NOTEBOOK_EDIT_TOOL_NAME } from '../tools/NotebookEditTool/constants.js'
 import { SKILL_TOOL_NAME } from '../tools/SkillTool/constants.js'
 import { SEND_MESSAGE_TOOL_NAME } from '../tools/SendMessageTool/constants.js'
 import { TASK_CREATE_TOOL_NAME } from '../tools/TaskCreateTool/constants.js'
@@ -24,8 +23,6 @@ import { TASK_LIST_TOOL_NAME } from '../tools/TaskListTool/constants.js'
 import { TASK_UPDATE_TOOL_NAME } from '../tools/TaskUpdateTool/constants.js'
 import { TOOL_SEARCH_TOOL_NAME } from '../tools/ToolSearchTool/prompt.js'
 import { SYNTHETIC_OUTPUT_TOOL_NAME } from '../tools/SyntheticOutputTool/SyntheticOutputTool.js'
-import { ENTER_WORKTREE_TOOL_NAME } from '../tools/EnterWorktreeTool/constants.js'
-import { EXIT_WORKTREE_TOOL_NAME } from '../tools/ExitWorktreeTool/constants.js'
 import { WORKFLOW_TOOL_NAME } from '../tools/WorkflowTool/constants.js'
 import {
   CRON_CREATE_TOOL_NAME,
@@ -62,12 +59,9 @@ export const ASYNC_AGENT_ALLOWED_TOOLS = new Set([
   ...SHELL_TOOL_NAMES,
   FILE_EDIT_TOOL_NAME,
   FILE_WRITE_TOOL_NAME,
-  NOTEBOOK_EDIT_TOOL_NAME,
   SKILL_TOOL_NAME,
   SYNTHETIC_OUTPUT_TOOL_NAME,
   TOOL_SEARCH_TOOL_NAME,
-  ENTER_WORKTREE_TOOL_NAME,
-  EXIT_WORKTREE_TOOL_NAME,
 ])
 /**
  * Tools allowed only for in-process teammates (not general async agents).

@@ -49,7 +49,9 @@ import {
 import type { PermissionDecision } from '../../utils/permissions/PermissionResult.js'
 import { matchWildcardPattern } from '../../utils/permissions/shellRuleMatching.js'
 import { validateInputForSettingsFileEdit } from '../../utils/settings/validateEditTool.js'
-import { NOTEBOOK_EDIT_TOOL_NAME } from '../NotebookEditTool/constants.js'
+// NotebookEditTool removed in MacHelper; keep the name string for the
+// user-facing "use X to edit" hint below.
+const NOTEBOOK_EDIT_TOOL_NAME = 'NotebookEdit'
 import {
   FILE_EDIT_TOOL_NAME,
   FILE_UNEXPECTEDLY_MODIFIED_ERROR,

@@ -616,6 +616,24 @@ function validateGitCommit(context: ValidationContext): PermissionResult {
     return { behavior: 'passthrough', message: 'Not a git commit' }
   }
 
+  // MacHelper-specific opt-out. Most MacHelper sessions are Mac automation,
+  // not code work — the user may set MACHELPER_SKIP_GIT_ATTRIBUTION=1 to skip
+  // this MacHelper-specific git-commit pre-validation (including the
+  // GIT_COMMIT_SUBSTITUTION check below, which forces Co-Authored-By-style
+  // attribution handling). When skipped, git commits fall through to the
+  // main validator chain like any other command. Attribution, if wanted,
+  // is handled elsewhere (prompt-level guidance and /commit skills).
+  const skipAttribution = process.env.MACHELPER_SKIP_GIT_ATTRIBUTION
+  if (
+    skipAttribution &&
+    ['1', 'true', 'yes', 'on'].includes(skipAttribution.toLowerCase().trim())
+  ) {
+    return {
+      behavior: 'passthrough',
+      message: 'Git commit attribution skipped (MACHELPER_SKIP_GIT_ATTRIBUTION)',
+    }
+  }
+
   // SECURITY: Backslashes can cause our regex to mis-identify quote boundaries
   // (e.g., `git commit -m "test\"msg" && evil`). Legitimate commit messages
   // virtually never contain backslashes, so bail to the full validator chain.

@@ -1776,18 +1776,35 @@ export function recordFirstStartTime(): void {
   }
 }
 
+// Project-local instruction filename constants.
+//
+// MacHelper's primary project-local instruction file is MACHELPER.md.
+// CLAUDE.md is kept as a fallback so users migrating from upstream
+// claude-code-haha forks with existing CLAUDE.md files still work without
+// having to rename anything. The fallback logic lives in claudemd.ts —
+// the loader tries the primary filename first, then falls back to the
+// alias if nothing was found.
+export const MACHELPER_MD_FILENAME = 'MACHELPER.md'
+// Deprecated alias for the legacy upstream filename. Retained for fallback
+// discovery only; prefer MACHELPER_MD_FILENAME for new writes.
+export const CLAUDE_MD_FILENAME = 'CLAUDE.md'
+
 export function getMemoryPath(memoryType: MemoryType): string {
   const cwd = getOriginalCwd()
 
   switch (memoryType) {
     case 'User':
-      return join(getClaudeConfigHomeDir(), 'CLAUDE.md')
+      return join(getClaudeConfigHomeDir(), CLAUDE_MD_FILENAME)
     case 'Local':
       return join(cwd, 'CLAUDE.local.md')
     case 'Project':
-      return join(cwd, 'CLAUDE.md')
+      // Primary project-local instruction file is MACHELPER.md. The loader
+      // in claudemd.ts falls back to CLAUDE.md (legacy fork filename) if
+      // MACHELPER.md is absent. Callers that need the fallback path should
+      // use CLAUDE_MD_FILENAME directly rather than hardcoding the string.
+      return join(cwd, MACHELPER_MD_FILENAME)
     case 'Managed':
-      return join(getManagedFilePath(), 'CLAUDE.md')
+      return join(getManagedFilePath(), CLAUDE_MD_FILENAME)
     case 'AutoMem':
       return getAutoMemEntrypoint()
   }

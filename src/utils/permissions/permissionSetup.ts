@@ -51,7 +51,8 @@ import {
 import { AGENT_TOOL_NAME } from '../../tools/AgentTool/constants.js'
 import { BASH_TOOL_NAME } from '../../tools/BashTool/toolName.js'
 /* eslint-enable @typescript-eslint/no-require-imports */
-import { POWERSHELL_TOOL_NAME } from '../../tools/PowerShellTool/toolName.js'
+// PowerShellTool removed in MacHelper; sentinel used for dead branches.
+const POWERSHELL_TOOL_NAME = '__machelper_powershell_removed__'
 import { getToolsForDefaultPreset, parseToolPreset } from '../../tools.js'
 import {
   getFsImplementation,

@@ -5,7 +5,8 @@ import React, { useRef } from 'react';
 import { useMinDisplayTime } from '../../hooks/useMinDisplayTime.js';
 import { Ansi, Box, Text, useTheme } from '../../ink.js';
 import { findToolByName, type Tools } from '../../Tool.js';
-import { getReplPrimitiveTools } from '../../tools/REPLTool/primitiveTools.js';
+// REPLTool removed in MacHelper; no primitive tools to fall back to.
+const getReplPrimitiveTools = (): Tools => [];
 import type { CollapsedReadSearchGroup, NormalizedAssistantMessage } from '../../types/message.js';
 import { uniq } from '../../utils/array.js';
 import { getToolUseIdsFromCollapsedGroup } from '../../utils/collapseReadSearch.js';

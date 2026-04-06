@@ -1532,14 +1532,146 @@ export const PYRIGHT_READ_ONLY_COMMANDS: Record<string, ExternalCommandConfig> =
 
 // ---------------------------------------------------------------------------
 // EXTERNAL_READONLY_COMMANDS — cross-shell read-only commands
-// Only commands that work identically in bash and PowerShell on Windows.
+// Primarily commands that work identically in bash and PowerShell on Windows.
 // Unix-specific commands (cat, head, wc, etc.) belong in BashTool's READONLY_COMMANDS.
+// macOS-specific read-only commands are also included here because BashTool
+// spreads this list into its READONLY_COMMANDS; entries become prefix-anchored
+// regexes via makeRegexForSafeCommand (shell metacharacters are blocked).
 // ---------------------------------------------------------------------------
 
 export const EXTERNAL_READONLY_COMMANDS: readonly string[] = [
   // Cross-platform external tools that work the same in bash and PowerShell on Windows
   'docker ps',
   'docker images',
+
+  // ---------------------------------------------------------------------------
+  // macOS-specific read-only commands
+  //
+  // SECURITY: Each multi-token entry is treated as a fixed prefix. After the
+  // prefix, makeRegexForSafeCommand permits any tokens that do NOT contain
+  // shell metacharacters (`<>()$|{}&;` + newlines/backticks). Be deliberate:
+  // only add entries whose documented behavior remains read-only for ANY
+  // suffix tokens (including positional args and additional flags). Prefer
+  // pinning the first subcommand/flag that distinguishes the read variant
+  // from a mutating variant (e.g., `defaults read` vs `defaults write`).
+  //
+  // Explicitly NOT included (mutating or too risky to safely prefix-match):
+  //   - `pbcopy`       — writes to the clipboard
+  //   - `defaults write|delete|rename|import|export` — mutates preferences
+  //   - `launchctl load|unload|bootstrap|kickstart|...` — mutates launchd state
+  //   - bare `pmset` / `pmset -a|-b|-c|-u|set ...` — mutates power settings
+  //   - `systemsetup -set*` — mutates system settings (also many require sudo)
+  //   - `networksetup -set*|-create*|-delete*|-remove*` — mutates network state
+  //   - `diskutil erase*|unmount*|mount*|repair*|verify*|partitionDisk|...`
+  //   - `security` (all forms) — keychain access is privacy-sensitive
+  //   - `say`          — has `-o <file>` / `--output-file` which writes audio
+  //   - `open -a` / `open ...` — mutates focus / launches arbitrary apps
+  //   - `osascript` (any form) — can drive arbitrary AppleScript / shell exec
+  // ---------------------------------------------------------------------------
+
+  // Clipboard — READ only. `pbcopy` is intentionally excluded (it writes).
+  'pbpaste',
+
+  // System / OS identification
+  'sw_vers',
+
+  // Locate commands on PATH (`which`, `type` are already in BashTool's list)
+  'whereis',
+
+  // Spotlight search — the macOS equivalent of `find`/`locate`. `mdfind` has
+  // no documented write/exec flags; `-onlyin <dir>`, `-name`, `-literal`,
+  // `-interpret`, `-count`, `-0`, `-live` are all read-only.
+  'mdfind',
+
+  // User defaults — READ only. The `read` subcommand cannot write; `write`,
+  // `delete`, `rename`, `import`, `export` are NOT prefix-matched here.
+  'defaults read',
+  'defaults read-type',
+  'defaults domains',
+  'defaults find',
+  'defaults help',
+
+  // launchd — only the `list` subcommand is read-only. `load`, `unload`,
+  // `bootstrap`, `bootout`, `kickstart`, `enable`, `disable`, `remove`,
+  // `kill`, `print`, `procinfo`, `blame` are all intentionally excluded.
+  'launchctl list',
+
+  // Power management — `-g` ("get") is the READ mode. Bare `pmset`, `pmset
+  // -a|-b|-c|-u`, and `pmset <setting> <value>` all mutate and are NOT
+  // prefix-matched here.
+  'pmset -g',
+
+  // Disk utility — only `list` and `info` are read-only. Everything else
+  // (`erase*`, `unmount*`, `mount*`, `repairDisk`, `verifyDisk`,
+  // `partitionDisk`, `apfs ...`, `cs ...`) is NOT prefix-matched here.
+  'diskutil list',
+  'diskutil info',
+
+  // networksetup — only specific `-get*`/`-listall*` read variants. The
+  // `-set*`, `-create*`, `-delete*`, `-remove*`, `-add*`, `-switch*`
+  // mutating variants are NOT prefix-matched here.
+  'networksetup -getinfo',
+  'networksetup -getairportnetwork',
+  'networksetup -getairportpower',
+  'networksetup -getautoproxyurl',
+  'networksetup -getcomputername',
+  'networksetup -getcurrentlocation',
+  'networksetup -getdnsservers',
+  'networksetup -getmacaddress',
+  'networksetup -getmedia',
+  'networksetup -getnetworkserviceenabled',
+  'networksetup -getproxybypassdomains',
+  'networksetup -getsearchdomains',
+  'networksetup -getwebproxy',
+  'networksetup -getsecurewebproxy',
+  'networksetup -getsocksfirewallproxy',
+  'networksetup -getftpproxy',
+  'networksetup -getstreamingproxy',
+  'networksetup -getgopherproxy',
+  'networksetup -listallhardwareports',
+  'networksetup -listallnetworkservices',
+  'networksetup -listnetworkserviceorder',
+  'networksetup -listlocations',
+  'networksetup -listpreferredwirelessnetworks',
+  'networksetup -printcommands',
+
+  // systemsetup — only specific `-get*` variants. The `-set*` mutating
+  // variants are NOT prefix-matched here. (Note: many `systemsetup` commands
+  // require sudo, so auto-approval is usually moot anyway.)
+  'systemsetup -getdate',
+  'systemsetup -gettime',
+  'systemsetup -gettimezone',
+  'systemsetup -getnetworktimeserver',
+  'systemsetup -getusingnetworktime',
+  'systemsetup -getsleep',
+  'systemsetup -getcomputersleep',
+  'systemsetup -getdisplaysleep',
+  'systemsetup -getharddisksleep',
+  'systemsetup -getwakeonmodem',
+  'systemsetup -getwakeonnetworkaccess',
+  'systemsetup -getrestartpowerfailure',
+  'systemsetup -getrestartfreeze',
+  'systemsetup -getallowpowerbuttontosleepcomputer',
+  'systemsetup -getremotelogin',
+  'systemsetup -getremoteappleevents',
+  'systemsetup -getcomputername',
+  'systemsetup -getlocalsubnetname',
+  'systemsetup -getstartupdisk',
+  'systemsetup -listtimezones',
+  'systemsetup -getwaitforstartupafterpowerfailure',
+  'systemsetup -getdisablekeyboardwhenenclosurelockisengaged',
+  'systemsetup -printcommands',
+
+  // Directory Services — only `-read`/`-readall`/`-list`/`-search` against
+  // the local node (`.`) are auto-allowed. The `.` is regex-escaped below
+  // because makeRegexForSafeCommand does not escape metacharacters; an
+  // unescaped `.` would also match `dscl X -read ...` for any single char.
+  // The mutating verbs (`-create`, `-delete`, `-append`, `-merge`, `-change`,
+  // `-changei`, `-passwd`) are NOT prefix-matched here.
+  'dscl \\. -read',
+  'dscl \\. -readall',
+  'dscl \\. -list',
+  'dscl \\. -search',
 ] as const
 
 // ---------------------------------------------------------------------------

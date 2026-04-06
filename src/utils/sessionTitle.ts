@@ -53,19 +53,23 @@ export function extractConversationText(messages: Message[]): string {
     : text
 }
 
-const SESSION_TITLE_PROMPT = `Generate a concise, sentence-case title (3-7 words) that captures the main topic or goal of this coding session. The title should be clear enough that the user recognizes the session in a list. Use sentence case: capitalize only the first word and proper nouns.
+const SESSION_TITLE_PROMPT = `Generate a concise, sentence-case title (3-7 words) that captures the main topic or goal of this Mac automation session. The title should be clear enough that the user recognizes the session in a list. Use sentence case: capitalize only the first word and proper nouns.
 
 Return JSON with a single "title" field.
 
 Good examples:
-{"title": "Fix login button on mobile"}
-{"title": "Add OAuth authentication"}
-{"title": "Debug failing CI tests"}
-{"title": "Refactor API client error handling"}
+{"title": "Morning app launch"}
+{"title": "Calendar weekly review"}
+{"title": "Email triage"}
+{"title": "File organization"}
+{"title": "Research session"}
+{"title": "Deep focus mode"}
+{"title": "End-of-day shutdown"}
+{"title": "Screen dictation"}
 
-Bad (too vague): {"title": "Code changes"}
-Bad (too long): {"title": "Investigate and fix the issue where the login button does not respond on mobile devices"}
-Bad (wrong case): {"title": "Fix Login Button On Mobile"}`
+Bad (too vague): {"title": "Mac stuff"}
+Bad (too long): {"title": "Organize all the files in the Downloads folder by type and then archive the old ones"}
+Bad (wrong case): {"title": "Morning App Launch"}`
 
 const titleSchema = lazySchema(() => z.object({ title: z.string() }))
 
