@@ -1,25 +1,32 @@
-# MacHelper Haha
+# MacHelper — Mac automation coworker powered by MacMind
 
 <p align="center">
-  <img src="docs/images/banner.jpg" alt="MacHelper Haha Banner" width="800">
+  <img src="docs/images/banner.jpg" alt="MacHelper Banner" width="800">
 </p>
 
 <div align="center">
 
-[![GitHub Stars](https://img.shields.io/github/stars/NanmiCoder/cc-haha?style=social)](https://github.com/NanmiCoder/cc-haha/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/NanmiCoder/cc-haha?style=social)](https://github.com/NanmiCoder/cc-haha/network/members)
-[![GitHub Issues](https://img.shields.io/github/issues/NanmiCoder/cc-haha)](https://github.com/NanmiCoder/cc-haha/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/NanmiCoder/cc-haha)](https://github.com/NanmiCoder/cc-haha/pulls)
-[![License](https://img.shields.io/github/license/NanmiCoder/cc-haha)](https://github.com/NanmiCoder/cc-haha/blob/main/LICENSE)
 [![中文](https://img.shields.io/badge/🇨🇳_中文-Available-green)](README.md)
-[![English](https://img.shields.io/badge/🇺🇸_English-当前-blue)](README.en.md)
-[![Docs](https://img.shields.io/badge/📖_Documentation-Visit-D97757)](https://claudecode-haha.relakkesyang.org)
+[![English](https://img.shields.io/badge/🇺🇸_English-Current-blue)](README.en.md)
 
 </div>
 
-A **locally runnable version** repaired from the leaked MacHelper source, with support for any Anthropic-compatible API endpoint such as MiniMax and OpenRouter.
+MacHelper is a fork of [claude-code-haha](https://github.com/NanmiCoder/cc-haha) retargeted as a **Mac automation coworker**. Instead of just giving advice in the terminal, MacHelper drives your real Mac end-to-end — opening apps, clicking, typing, reading the screen, and orchestrating multi-step workflows across the native stack — by talking to the **MacMind HTTP daemon** running locally at `127.0.0.1:8484`.
 
-> The original leaked source does not run as-is. This repository fixes multiple blocking issues in the startup path so the full Ink TUI can work locally.
+Through MacMind, MacHelper gets roughly **57 actions** spanning:
+
+- **Mouse** — move, click, double-click, right-click, drag, scroll
+- **Keyboard** — typing, key combos, modifier holds, hotkeys
+- **Windows** — list, focus, move, resize, minimize, close
+- **Applications** — launch, quit, switch, list running apps
+- **Safari** — tab control, navigation, reading page content
+- **Clipboard** — read, write, history
+- **Screen & OCR** — screenshots, region reads, text extraction
+- **Filesystem** — read, write, list, move, delete
+- **Shell** — run commands with captured output
+- **Calendar** — list, create, and update events
+
+Think of it as a coworker who actually sits at your Mac: you describe what you want done, MacHelper opens the apps, navigates the UI, reads the screen, recovers from failures, and reports back.
 
 <p align="center">
   <a href="#features">Features</a> · <a href="#architecture-overview">Architecture</a> · <a href="#quick-start">Quick Start</a> · <a href="docs/en/guide/env-vars.md">Env Vars</a> · <a href="docs/en/guide/faq.md">FAQ</a> · <a href="docs/en/guide/global-usage.md">Global Usage</a> · <a href="#more-documentation">More Docs</a>
@@ -29,14 +36,15 @@ A **locally runnable version** repaired from the leaked MacHelper source, with s
 
 ## Features
 
-- Full Ink TUI experience (matching the official MacHelper interface)
-- `--print` headless mode for scripts and CI
-- MCP server, plugin, and Skills support
-- Custom API endpoint and model support ([Third-Party Models Guide](docs/en/guide/third-party-models.md))
+- Native Mac automation via the MacMind HTTP daemon — drive any application through accessibility, keystrokes, clicks, and screen reads
+- Full Ink TUI for interactive Mac automation sessions
+- `--print` headless mode for scripting and scheduled automations
+- MCP servers, plugins, and Skills for packaging reusable Mac workflows
+- Support for custom API endpoints and models ([Third-Party Models Guide](docs/en/guide/third-party-models.md))
 - **Memory System** (cross-session persistent memory) — [Usage Guide](docs/memory/01-usage-guide.md)
-- **Multi-Agent System** (agent orchestration, parallel tasks, Teams collaboration) — [Usage Guide](docs/agent/01-usage-guide.md) | [Implementation](docs/agent/02-implementation.md)
-- **Skills System** (extensible capability plugins, custom workflows) — [Usage Guide](docs/skills/01-usage-guide.md) | [Implementation](docs/skills/02-implementation.md)
-- **Computer Use desktop control** — [Guide](docs/en/features/computer-use.md) | [Architecture](docs/en/features/computer-use-architecture.md)
+- **Multi-Agent System** (agent orchestration, parallel Mac automation tasks, Teams collaboration) — [Usage Guide](docs/agent/01-usage-guide.md) | [Implementation](docs/agent/02-implementation.md)
+- **Skills System** (packaged Mac automation capability plugins, custom workflows) — [Usage Guide](docs/skills/01-usage-guide.md) | [Implementation](docs/skills/02-implementation.md)
+- **Computer Use desktop control** — screen, mouse, keyboard, clipboard — [Guide](docs/en/features/computer-use.md) | [Architecture](docs/en/features/computer-use-architecture.md)
 - Fallback Recovery CLI mode (`MACHELPER_FORCE_RECOVERY_CLI=1 ./bin/machelper`)
 
 ---
@@ -65,19 +73,14 @@ A **locally runnable version** repaired from the leaked MacHelper source, with s
 ### 1. Install Bun
 
 ```bash
-# macOS / Linux
+# macOS
 curl -fsSL https://bun.sh/install | bash
 
 # macOS (Homebrew)
 brew install bun
-
-# Windows (PowerShell)
-powershell -c "irm bun.sh/install.ps1 | iex"
 ```
 
-> On minimal Linux images, if you see `unzip is required`, run `apt update && apt install -y unzip` first.
-
-### 2. Install Dependencies and Configure
+### 2. Install dependencies and configure
 
 ```bash
 bun install
@@ -85,9 +88,11 @@ cp .env.example .env
 # Edit .env with your API key — see docs/en/guide/env-vars.md for details
 ```
 
-### 3. Start
+### 3. Make sure the MacMind daemon is running
 
-#### macOS / Linux
+MacHelper talks to the MacMind daemon over HTTP at `127.0.0.1:8484`. Launch the MacMind app (or its headless daemon) before starting a session so MacHelper has a real Mac to drive.
+
+### 4. Launch
 
 ```bash
 ./bin/machelper                          # Interactive TUI mode
@@ -95,21 +100,9 @@ cp .env.example .env
 ./bin/machelper --help                   # Show all options
 ```
 
-#### Windows
+### 5. Global usage (optional)
 
-> **Prerequisite**: [Git for Windows](https://git-scm.com/download/win) must be installed.
-
-```powershell
-# PowerShell / cmd — call Bun directly
-bun --env-file=.env ./src/entrypoints/cli.tsx
-
-# Or run inside Git Bash
-./bin/machelper
-```
-
-### 4. Global Usage (Optional)
-
-Add `bin/` to your PATH to run from any directory. See [Global Usage Guide](docs/en/guide/global-usage.md):
+Add `bin/` to your PATH to launch from any directory. See [Global Usage Guide](docs/en/guide/global-usage.md):
 
 ```bash
 export PATH="$HOME/path/to/machelper/bin:$PATH"
@@ -124,9 +117,10 @@ export PATH="$HOME/path/to/machelper/bin:$PATH"
 | Runtime | [Bun](https://bun.sh) |
 | Language | TypeScript |
 | Terminal UI | React + [Ink](https://github.com/vadimdemedes/ink) |
-| CLI parsing | Commander.js |
+| CLI parser | Commander.js |
 | API | Anthropic SDK |
 | Protocols | MCP, LSP |
+| Native bridge | MacMind Swift daemon (HTTP at `127.0.0.1:8484`) |
 
 ---
 
@@ -137,16 +131,21 @@ export PATH="$HOME/path/to/machelper/bin:$PATH"
 | [Environment Variables](docs/en/guide/env-vars.md) | Full env var reference and configuration methods |
 | [Third-Party Models](docs/en/guide/third-party-models.md) | Using OpenAI / DeepSeek / Ollama and other non-Anthropic models |
 | [Memory System](docs/memory/01-usage-guide.md) | Cross-session persistent memory usage and implementation |
-| [Multi-Agent System](docs/agent/01-usage-guide.md) | Agent orchestration, parallel tasks and Teams collaboration |
-| [Skills System](docs/skills/01-usage-guide.md) | Extensible capability plugins, custom workflows and conditional activation |
+| [Multi-Agent System](docs/agent/01-usage-guide.md) | Agent orchestration, parallel Mac automation tasks, and Teams collaboration |
+| [Skills System](docs/skills/01-usage-guide.md) | Extensible capability plugins, custom workflows, and conditional activation |
 | [Computer Use](docs/en/features/computer-use.md) | Desktop control (screenshots, mouse, keyboard) — [Architecture](docs/en/features/computer-use-architecture.md) |
-| [Global Usage](docs/en/guide/global-usage.md) | Run machelper from any directory |
+| [Global Usage](docs/en/guide/global-usage.md) | Launch machelper from any directory |
 | [FAQ](docs/en/guide/faq.md) | Common error troubleshooting |
-| [Source Fixes](docs/en/reference/fixes.md) | Fixes compared with the original leaked source |
 | [Project Structure](docs/en/reference/project-structure.md) | Code directory structure |
+
+---
+
+## Credits
+
+MacHelper is a fork of [claude-code-haha](https://github.com/NanmiCoder/cc-haha) — a locally runnable Ink TUI CLI. This fork retargets the project as a Mac automation coworker by wiring the tool layer to the MacMind HTTP daemon. Thanks to the upstream authors for the solid TUI and tool-loop foundation.
 
 ---
 
 ## Disclaimer
 
-This repository is based on the MacHelper source leaked from the Anthropic npm registry on 2026-03-31. All original source code copyrights belong to [Anthropic](https://www.anthropic.com). It is provided for learning and research purposes only.
+MacHelper is a Mac automation coworker built on top of the MacMind runtime. It is intended for automating your own Mac and personal workflows. Always review what automation you grant it access to before running unattended sessions.

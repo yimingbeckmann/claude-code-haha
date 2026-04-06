@@ -20,6 +20,7 @@ import {
   isInternalModelRepo,
   isInternalModelRepoCached,
   sanitizeModelName,
+  shouldAttributeCommit,
 } from './commitAttribution.js'
 import { logForDebugging } from './debug.js'
 import { parseJSONL } from './json.js'
@@ -50,6 +51,10 @@ export type AttributionTexts = {
  * - Remote mode: returns session URL for attribution
  */
 export function getAttributionTexts(): AttributionTexts {
+  if (!shouldAttributeCommit()) {
+    return { commit: '', pr: '' }
+  }
+
   if (process.env.USER_TYPE === 'ant' && isUndercover()) {
     return { commit: '', pr: '' }
   }
@@ -297,6 +302,10 @@ async function getTranscriptStats(): Promise<{
 export async function getEnhancedPRAttribution(
   getAppState: () => AppState,
 ): Promise<string> {
+  if (!shouldAttributeCommit()) {
+    return ''
+  }
+
   if (process.env.USER_TYPE === 'ant' && isUndercover()) {
     return ''
   }

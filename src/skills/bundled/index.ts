@@ -43,10 +43,6 @@ export function initBundledSkills(): void {
     } = require('./scheduleRemoteAgents.js')
     registerScheduleRemoteAgentsSkill()
   }
-  if (feature('BUILDING_CLAUDE_APPS')) {
-    const { registerClaudeApiSkill } = require('./claudeApi.js')
-    registerClaudeApiSkill()
-  }
   if (shouldAutoEnableClaudeInChrome()) {
     require('./claudeInChrome.js').registerClaudeInChromeSkill()
   }

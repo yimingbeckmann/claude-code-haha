@@ -1,62 +1,64 @@
 import { AGENT_TOOL_NAME } from '../../tools/AgentTool/constants.js'
 import { registerBundledSkill } from '../bundledSkills.js'
 
-const SIMPLIFY_PROMPT = `# Simplify: Code Review and Cleanup
+const SIMPLIFY_PROMPT = `# Simplify: Mac Workflow Review and Cleanup
 
-Review all changed files for reuse, quality, and efficiency. Fix any issues found.
+Review the most recent Mac automation workflow (or the one the user names) and tighten it up. Philosophy: **less is more — remove anything that isn't earning its keep**. A shorter, sturdier workflow beats a clever one every time.
 
-## Phase 1: Identify Changes
+## Phase 1: Identify the Workflow
 
-Run \`git diff\` (or \`git diff HEAD\` if there are staged changes) to see what changed. If there are no git changes, review the most recently modified files that the user mentioned or that you edited earlier in this conversation.
+Find the workflow under review. In order of preference:
+
+1. The workflow file, script, AppleScript, Shortcut, or MacMind action sequence the user just mentioned or that you edited earlier in this conversation.
+2. Recently modified \`.applescript\`, \`.scpt\`, \`.shortcut\`, \`.sh\`, or MacMind workflow definitions in the current directory.
+3. If nothing obvious exists, ask the user which workflow to review.
+
+Read the full workflow into context before launching review agents so they can reason about it end-to-end.
 
 ## Phase 2: Launch Three Review Agents in Parallel
 
-Use the ${AGENT_TOOL_NAME} tool to launch all three agents concurrently in a single message. Pass each agent the full diff so it has the complete context.
+Use the ${AGENT_TOOL_NAME} tool to launch all three agents concurrently in a single message. Pass each agent the full workflow text so it has complete context.
 
-### Agent 1: Code Reuse Review
+### Agent 1: Consolidation Review
 
-For each change:
+Look for sequences of low-level actions that can collapse into a single higher-level action:
 
-1. **Search for existing utilities and helpers** that could replace newly written code. Look for similar patterns elsewhere in the codebase — common locations are utility directories, shared modules, and files adjacent to the changed ones.
-2. **Flag any new function that duplicates existing functionality.** Suggest the existing function to use instead.
-3. **Flag any inline logic that could use an existing utility** — hand-rolled string manipulation, manual path handling, custom environment checks, ad-hoc type guards, and similar patterns are common candidates.
+1. **Combine sequential actions** that always run back-to-back on the same target — multiple \`keystroke\`/\`key code\` calls that could be one \`type\`, multi-step menu navigation that could be a single menu item invocation, repeated \`System Events\` calls that could be batched.
+2. **Prefer higher-level MacMind actions over low-level mouse/keyboard.** If a MacMind action exists for the task (open app, switch window, run shortcut, send notification, read/write clipboard, take screenshot), use it instead of scripting \`click at {x, y}\` or raw key events. Low-level mouse coordinates are fragile and break across displays/resolutions.
+3. **Eliminate redundant waits.** Flag every \`delay\`, \`sleep\`, \`wait\`, or polling loop. Is it actually needed, or was it added to paper over a race? Can it be replaced with a proper "wait until window exists / element ready" check? Can two waits back-to-back be merged?
 
-### Agent 2: Code Quality Review
+### Agent 2: Robustness Review
 
-Review the same changes for hacky patterns:
+Review the workflow for fragile patterns that will break on a different Mac, different display, different app version, or different user state:
 
-1. **Redundant state**: state that duplicates existing state, cached values that could be derived, observers/effects that could be direct calls
-2. **Parameter sprawl**: adding new parameters to a function instead of generalizing or restructuring existing ones
-3. **Copy-paste with slight variation**: near-duplicate code blocks that should be unified with a shared abstraction
-4. **Leaky abstractions**: exposing internal details that should be encapsulated, or breaking existing abstraction boundaries
-5. **Stringly-typed code**: using raw strings where constants, enums (string unions), or branded types already exist in the codebase
-6. **Unnecessary JSX nesting**: wrapper Boxes/elements that add no layout value — check if inner component props (flexShrink, alignItems, etc.) already provide the needed behavior
-7. **Unnecessary comments**: comments explaining WHAT the code does (well-named identifiers already do that), narrating the change, or referencing the task/caller — delete; keep only non-obvious WHY (hidden constraints, subtle invariants, workarounds)
+1. **Fragile UI scripting**: hardcoded screen coordinates, clicks on UI elements identified only by position, assumptions about window placement. Prefer AppleScript \`tell application\` targeting, Shortcuts actions, or accessibility-API lookups by role/title over \`click at\`.
+2. **Prefer AppleScript/Shortcuts over UI scripting where possible.** Most Apple and well-behaved third-party apps expose a scriptable dictionary or a Shortcuts action — use those instead of simulating keystrokes in the GUI.
+3. **Unverified assumptions**: assuming an app is already running, a specific window is frontmost, the clipboard holds what you expect, a file exists at a path. Flag each and either add a guard or remove the assumption.
+4. **Stringly-typed bundle IDs, paths, and key codes** scattered through the script — hoist to named constants so they're greppable and fixable in one place.
+5. **Narrating comments** (\`# now click the button\`) — delete. Keep only non-obvious WHY (this \`delay 0.5\` exists because Notes.app's window takes ~400ms to become responsive after activate).
 
 ### Agent 3: Efficiency Review
 
-Review the same changes for efficiency:
+Review the workflow for wasted work:
 
-1. **Unnecessary work**: redundant computations, repeated file reads, duplicate network/API calls, N+1 patterns
-2. **Missed concurrency**: independent operations run sequentially when they could run in parallel
-3. **Hot-path bloat**: new blocking work added to startup or per-request/per-render hot paths
-4. **Recurring no-op updates**: state/store updates inside polling loops, intervals, or event handlers that fire unconditionally — add a change-detection guard so downstream consumers aren't notified when nothing changed. Also: if a wrapper function takes an updater/reducer callback, verify it honors same-reference returns (or whatever the "no change" signal is) — otherwise callers' early-return no-ops are silently defeated
-5. **Unnecessary existence checks**: pre-checking file/resource existence before operating (TOCTOU anti-pattern) — operate directly and handle the error
-6. **Memory**: unbounded data structures, missing cleanup, event listener leaks
-7. **Overly broad operations**: reading entire files when only a portion is needed, loading all items when filtering for one
+1. **Unnecessary app launches / activations**: activating an app that's already frontmost, re-opening a document that's already open, repeated \`tell application "Finder" to activate\`.
+2. **Repeated expensive reads**: re-reading the same file, re-running the same \`osascript\`, re-querying the same window list when one read would do.
+3. **Missed concurrency**: independent automations run sequentially when they could run in parallel (e.g., screenshotting multiple monitors, sending several notifications, processing a batch of files). Note: most UI automation shares focus/clipboard state and **cannot** run concurrently — flag only genuinely independent work. See the \`/batch\` skill for parallel fan-out.
+4. **Over-broad operations**: reading a whole Mail mailbox to find one message, scanning every file in a folder when a Spotlight query would do, \`ls\`-ing a huge directory when a glob for one file suffices.
+5. **Dead branches**: error handlers that will never fire, toggles for states the script never reaches, \`if\` arms that are always true.
 
 ## Phase 3: Fix Issues
 
 Wait for all three agents to complete. Aggregate their findings and fix each issue directly. If a finding is a false positive or not worth addressing, note it and move on — do not argue with the finding, just skip it.
 
-When done, briefly summarize what was fixed (or confirm the code was already clean).
+When done, briefly summarize what was tightened (or confirm the workflow was already lean).
 `
 
 export function registerSimplifySkill(): void {
   registerBundledSkill({
     name: 'simplify',
     description:
-      'Review changed code for reuse, quality, and efficiency, then fix any issues found.',
+      'Review a Mac automation workflow for consolidation, robustness, and efficiency, then tighten it up.',
     userInvocable: true,
     async getPromptForCommand(args) {
       let prompt = SIMPLIFY_PROMPT
