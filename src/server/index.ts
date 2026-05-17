@@ -135,6 +135,17 @@ export function startServer(port = PORT, host = HOST) {
   const forceAuth =
     SERVER_OPTIONS.authRequired ||
     process.env.SERVER_AUTH_REQUIRED === '1'
+
+  /**
+   * Loom-specific escape hatch: when LOOM_INTERNAL_NO_AUTH=1, the kernel
+   * is running inside a private VPC behind a gateway and treats every
+   * request as trusted (skipping H5 gating and forceAuth alike). This
+   * is safe ONLY when the deployment guarantees the kernel port is not
+   * reachable from outside the trust boundary — which is the case for
+   * Loom's per-tenant Fargate kernels in a private subnet behind a
+   * security group that only the gateway can ingress.
+   */
+  const internalNoAuth = process.env.LOOM_INTERNAL_NO_AUTH === '1'
   const h5AccessService = new H5AccessService()
 
   const server = Bun.serve<WebSocketData>({
@@ -171,11 +182,11 @@ export function startServer(port = PORT, host = HOST) {
       })
       const h5AccessControlBlocked = isH5AccessControlRequest(req, url, h5RequestContext)
 
-      if (h5AccessControlBlocked) {
+      if (!internalNoAuth && h5AccessControlBlocked) {
         return h5AccessControlRejectedResponse()
       }
 
-      if (h5AccessDisabledBlocked) {
+      if (!internalNoAuth && h5AccessDisabledBlocked) {
         return h5AccessDisabledResponse()
       }
 
@@ -194,15 +205,17 @@ export function startServer(port = PORT, host = HOST) {
         }
 
         // Enforce authentication when required
-        if (authRequired) {
-          const authError = await requireH5Token(req, url.searchParams.get('token'))
-          if (authError) {
-            return withCors(authError, cors)
-          }
-        } else if (forceAuth) {
-          const authError = await requireAuth(req, url.searchParams.get('token'))
-          if (authError) {
-            return withCors(authError, cors)
+        if (!internalNoAuth) {
+          if (authRequired) {
+            const authError = await requireH5Token(req, url.searchParams.get('token'))
+            if (authError) {
+              return withCors(authError, cors)
+            }
+          } else if (forceAuth) {
+            const authError = await requireAuth(req, url.searchParams.get('token'))
+            if (authError) {
+              return withCors(authError, cors)
+            }
           }
         }
 
@@ -275,15 +288,17 @@ export function startServer(port = PORT, host = HOST) {
         }
 
         // Enforce authentication when required
-        if (authRequired) {
-          const authError = await requireH5Token(req)
-          if (authError) {
-            return withCors(authError, cors)
-          }
-        } else if (forceAuth) {
-          const authError = await requireAuth(req)
-          if (authError) {
-            return withCors(authError, cors)
+        if (!internalNoAuth) {
+          if (authRequired) {
+            const authError = await requireH5Token(req)
+            if (authError) {
+              return withCors(authError, cors)
+            }
+          } else if (forceAuth) {
+            const authError = await requireAuth(req)
+            if (authError) {
+              return withCors(authError, cors)
+            }
           }
         }
 
@@ -311,15 +326,17 @@ export function startServer(port = PORT, host = HOST) {
           return corsRejectedResponse(cors)
         }
 
-        if (authRequired) {
-          const authError = await requireH5Token(req)
-          if (authError) {
-            return withCors(authError, cors)
-          }
-        } else if (forceAuth) {
-          const authError = await requireAuth(req)
-          if (authError) {
-            return withCors(authError, cors)
+        if (!internalNoAuth) {
+          if (authRequired) {
+            const authError = await requireH5Token(req)
+            if (authError) {
+              return withCors(authError, cors)
+            }
+          } else if (forceAuth) {
+            const authError = await requireAuth(req)
+            if (authError) {
+              return withCors(authError, cors)
+            }
           }
         }
         try {
