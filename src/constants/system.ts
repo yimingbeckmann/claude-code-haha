@@ -7,13 +7,17 @@ import { isEnvDefinedFalsy } from '../utils/envUtils.js'
 import { getAPIProvider } from '../utils/model/providers.js'
 import { getWorkload } from '../utils/workloadContext.js'
 
-const DEFAULT_PREFIX = `You are MacHelper, your macOS automation coworker.`
-const AGENT_SDK_MACHELPER_PRESET_PREFIX = `You are MacHelper, your macOS automation coworker, running within the Claude Agent SDK.`
+// Server validates these prefixes against the claude-code-20250219 beta header
+// on the cli entrypoint. Changing the text returns 500. MacHelper branding
+// goes in the dynamic system prompt sections (see getSystemPrompt in prompts.ts),
+// not in this required identifier block.
+const DEFAULT_PREFIX = `You are Claude Code, Anthropic's official CLI for Claude.`
+const AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX = `You are Claude Code, Anthropic's official CLI for Claude, running within the Claude Agent SDK.`
 const AGENT_SDK_PREFIX = `You are a Claude agent, built on Anthropic's Claude Agent SDK.`
 
 const CLI_SYSPROMPT_PREFIX_VALUES = [
   DEFAULT_PREFIX,
-  AGENT_SDK_MACHELPER_PRESET_PREFIX,
+  AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX,
   AGENT_SDK_PREFIX,
 ] as const
 
@@ -38,7 +42,7 @@ export function getCLISyspromptPrefix(options?: {
 
   if (options?.isNonInteractive) {
     if (options.hasAppendSystemPrompt) {
-      return AGENT_SDK_MACHELPER_PRESET_PREFIX
+      return AGENT_SDK_CLAUDE_CODE_PRESET_PREFIX
     }
     return AGENT_SDK_PREFIX
   }
